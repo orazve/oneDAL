@@ -1,39 +1,89 @@
-cmake_minimum_required(VERSION 3.0)
-project(Benchmarking_Demo LANGUAGES CXX)
-
-# Location of additional cmake modules
+#===============================================================================
+# Copyright 2019 Intel Corporation
 #
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/cmake)
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
 #
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#===============================================================================
 
-set(TOOLCHAIN_CONFIG dpcpp)
+cmake_minimum_required(VERSION 3.6)
 
-if(1)
-    include(${CMAKE_SOURCE_DIR}/cmake/${TOOLCHAIN_CONFIG}.cmake)
+option(DAL_USE_DPCPP_INTERFACES "Use DAL DPC++ interfaces" ON)
+
+if(DAL_USE_DPCPP_INTERFACES)
+  find_program(
+    DPCPP_COMPILER
+    NAMES dpcpp
+    PATHS $ENV{DPCPP_ROOT} $ENV{PATH}
+    PATH_SUFFIXES compiler/latest/linux/bin)
+
+  if(NOT DPCPP_COMPILER)
+    message(FATAL_ERROR "Could not find DPCPP Compiler")
+  endif()
+  set(CMAKE_CXX_COMPILER "${DPCPP_COMPILER}")
 endif()
 
+project(Benchmarking_Demo LANGUAGES CXX)
+
+option(KERNEL_PROFILER "Use kernel profiler" OFF)
+option(DAL_USE_PARALLEL "Use DAL parallel version" ON)
+option(DAL_USE_STATIC "Use DAL static version" ON)
+option(BENCHMARK_DOWNLOAD_DEPENDENCIES "Download dependencies" OFF)
+
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/cmake)
+
+if(DAL_USE_DPCPP_INTERFACES)
+  find_package(DPCPP REQUIRED)
+endif()
+
+set(CMAKE_CXX_STANDARD 14)
+
+if(CMAKE_BUILD_TYPE)
+  if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
+    add_definitions(-D__DEBUG__)
+  endif()
+else()
+  set(CMAKE_BUILD_TYPE "Release")
+endif()
+
+if(KERNEL_PROFILER)
+  add_definitions(-DKERNEL_PROFILER)
+endif()
+
+message(STATUS "CMAKE_BUILD_TYPE ...................... " ${CMAKE_BUILD_TYPE})
 message(STATUS "CMAKE_BINARY_DIR ...................... " ${CMAKE_BINARY_DIR})
 message(STATUS "CMAKE_SOURCE_DIR ...................... " ${CMAKE_SOURCE_DIR})
 message(STATUS "CMAKE_GENERATOR ....................... " ${CMAKE_GENERATOR})
-message(STATUS "CMAKE_C_COMPILER_ID ................... " ${CMAKE_C_COMPILER_ID})
-message(STATUS "CMAKE_CXX_COMPILER_ID ................. " ${CMAKE_CXX_COMPILER_ID})
-message(STATUS "CMAKE_C_COMPILER_VERSION .............. " ${CMAKE_C_COMPILER_VERSION})
-message(STATUS "CMAKE_CXX_COMPILER_VERSION ............ " ${CMAKE_CXX_COMPILER_VERSION})
-message(STATUS "TOOLCHAIN_CONFIG ...................... " ${CMAKE_SOURCE_DIR}/cmake/${TOOLCHAIN_CONFIG}.cmake)
+message(STATUS "CMAKE_CXX_COMPILER_VERSION ............ "
+               ${CMAKE_CXX_COMPILER_VERSION})
+message(STATUS "KERNEL_PROFILER ....................... " ${KERNEL_PROFILER})
+message(STATUS "DAL_USE_DPCPP_INTERFACES .............. "
+               ${DAL_USE_DPCPP_INTERFACES})
+message(STATUS "DAL_USE_PARALLEL ...................... " ${DAL_USE_PARALLEL})
+message(STATUS "DAL_USE_STATIC ........................ " ${DAL_USE_STATIC})
 
-option(DAAL_USE_parallel "Use DAAL parallel" False)
-option(DAAL_USE_static "Single Dynamic Library or static/dynamic" True)
+set(BENCHMARK_ENABLE_TESTING
+    OFF
+    CACHE BOOL "Suppressing benchmark's tests" FORCE)
+set(BENCHMARK_ENABLE_INSTALL
+    OFF
+    CACHE BOOL "Suppressing benchmark's install" FORCE)
+set(MESSAGE_QUIET ON)
+add_subdirectory(third_party/benchmark)
+unset(MESSAGE_QUIET)
 
-include(CTest)
+find_package(DAL REQUIRED)
 
-# If you want to self-test benchmark lib too, turn me ON
-#
-set(BENCHMARK_ENABLE_TESTING OFF CACHE BOOL "Enable benchmark self-testing?")
+include_directories(include)
 
-set(BENCHMARK_DOWNLOAD_DEPENDENCIES OFF CACHE BOOL "Download dependencies?")
+add_subdirectory(src)
 
-include(ConfigGBench)
-
-find_package(DAAL REQUIRED)
-
-add_subdirectory(${PROJECT_SOURCE_DIR}/src)
+include(${CMAKE_MODULE_PATH}/clang-format.cmake)

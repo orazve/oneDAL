@@ -1,0 +1,9 @@
+_*
+build
+bin
+*.csv
+*.csv.gz
+*.train.bz2
+*.txt.zip
+*.zip
+*.pyc
