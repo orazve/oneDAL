@@ -35,6 +35,9 @@
   #include "daal.h"
 #endif
 
+#define ONEDAL_VERSION_2021_U1_BETA_03 (2021 * 10000 + 1 * 100 + 3)
+#define ONEDAL_VERSION_2021_U1_BETA_04 (2021 * 10000 + 1 * 100 + 4)
+
 #include "dataset.hpp"
 #include "error_types.hpp"
 #include "profiler.hpp"

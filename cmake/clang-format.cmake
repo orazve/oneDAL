@@ -31,5 +31,5 @@ if(CLANG_FORMAT_EXE)
     COMMAND ${CLANG_FORMAT_EXE} -i -style=file ${ALL_CXX_SOURCE_FILES}
     COMMENT "Formating with ${CLANG_FORMAT_EXE} ...")
 else()
-  message(WARNING "clang-format was not found")
+  message(STATUS "clang-format was not found")
 endif()

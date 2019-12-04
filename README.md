@@ -1,4 +1,5 @@
 # oneDAL Benchmarks
+[![Build Status](https://dev.azure.com/daal/onedal-benchmarks/_apis/build/status/otcshare.onedal-benchmarks?branchName=master)](https://dev.azure.com/daal/onedal-benchmarks/_build/latest?definitionId=4&branchName=master) ![License](https://img.shields.io/github/license/intel/daal.svg)
 
 The repo contains benchmarks for oneDAL algorithms. This software use Google Benchmark library under the hood and generate a report of performance metrics in human readable view.
 

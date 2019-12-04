@@ -18,9 +18,6 @@
 #ifndef DALBENCH_INCLUDE_PROFILER_HPP_
 #define DALBENCH_INCLUDE_PROFILER_HPP_
 
-#include <CL/cl.h>
-
-#include <CL/sycl.hpp>
 #include <cstring>
 #include <map>
 #include <vector>

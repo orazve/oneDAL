@@ -72,10 +72,12 @@ private:
 DAAL_BENCH_REGISTER(LowOrderMomentsOnline, CpuDevice, float);
 DAAL_BENCH_REGISTER(LowOrderMomentsOnline, CpuDevice, double);
 
-#ifdef DPCPP_INTERFACES
+#if INTEL_DAAL_VERSION >= ONEDAL_VERSION_2021_U1_BETA_04
+  #ifdef DPCPP_INTERFACES
 DAAL_BENCH_REGISTER(LowOrderMomentsOnline, GpuDevice, float);
 DAAL_BENCH_REGISTER(LowOrderMomentsOnline, GpuDevice, double);
-#endif
+  #endif // DPCPP_INTERFACES
+#endif // INTEL_DAAL_VERSION >= ONEDAL_VERSION_2021_U1_BETA_04
 
 } // end namespace low_order_moments
 } // end namespace dalbench

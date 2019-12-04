@@ -32,18 +32,11 @@ set(CMAKE_CXX_FLAGS
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0 -g3 -D_GLIBCXX_DEBUG")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O2 -DNDEBUG")
 
-find_path(
-  DPCPP_INCLUDE_DIR
-  NAMES CL/sycl.hpp
-  PATHS ${DPCPP_ROOT_DIR}/include $ENV{DPCPP_ROOT} $ENV{CPATH}
-  PATH_SUFFIXES compiler/latest/linux/include)
-
 foreach(DPCPP_LIB sycl OpenCL)
   find_library(
     DPCPP_LIBRARY
     NAMES ${DPCPP_LIB}
-    PATHS ${DPCPP_ROOT_DIR}/lib $ENV{DPCPP_ROOT} $ENV{CPATH}
-    PATH_SUFFIXES compiler/latest/linux/lib)
+    PATHS ${DPCPP_ROOT_DIR}/lib $ENV{DPCPP_ROOT} $ENV{LD_LIBRARY})
 
   if(DPCPP_LIBRARY)
     list(APPEND DPCPP_LIBRARIES ${DPCPP_LIBRARY})
@@ -53,10 +46,8 @@ foreach(DPCPP_LIB sycl OpenCL)
 
 endforeach()
 
-if(NOT DPCPP_INCLUDE_DIR MATCHES NOTFOUND)
-  if(NOT DPCPP_LIBRARY MATCHES NOTFOUND)
-    set(DPCPP_FOUND TRUE)
-  endif()
+if(NOT DPCPP_LIBRARY MATCHES NOTFOUND)
+  set(DPCPP_FOUND TRUE)
 endif()
 
 if(NOT DEFINED DPCPP_FOUND)
@@ -67,7 +58,5 @@ if(NOT DEFINED DPCPP_FOUND)
 else()
   message(STATUS "DPCPP_ROOT_DIR ........................ " ${DPCPP_ROOT_DIR})
   message(STATUS "DPCPP_LIBRARIES ....................... " ${DPCPP_LIBRARIES})
-  message(STATUS "DPCPP_INCLUDE_DIR ..................... "
-                 ${DPCPP_INCLUDE_DIR})
   add_definitions(-DDPCPP_INTERFACES)
 endif()

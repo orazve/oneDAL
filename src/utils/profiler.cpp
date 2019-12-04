@@ -15,9 +15,12 @@
 * limitations under the License.
 *******************************************************************************/
 
-#include <CL/cl.h>
+#ifdef DPCPP_INTERFACES
+  #include <CL/cl.h>
 
-#include <CL/sycl.hpp>
+  #include <CL/sycl.hpp>
+#endif
+
 #include <cstring>
 #include <map>
 #include <vector>

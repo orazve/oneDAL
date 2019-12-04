@@ -52,8 +52,7 @@ target_include_directories(
   ${BENCHMARK_TARGET}
   PRIVATE ${CMAKE_SOURCE_DIR}/src/utils
   PRIVATE ${GBENCH_INCLUDE_DIR}
-  PRIVATE ${DAL_INCLUDE_DIR}
-  PRIVATE ${DPCPP_INCLUDE_DIR})
+  PRIVATE ${DAL_INCLUDE_DIR})
 
 target_link_libraries(
   ${BENCHMARK_TARGET}

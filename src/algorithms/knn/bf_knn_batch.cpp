@@ -17,6 +17,9 @@
 
 #include "fixture.hpp"
 
+// New algorithm in oneDAL 2021.1-beta04
+#if INTEL_DAAL_VERSION >= ONEDAL_VERSION_2021_U1_BETA_04
+
 namespace dalbench {
 namespace bf_knn {
 
@@ -94,10 +97,12 @@ private:
   KnnParams params_;
 };
 
-#ifdef DPCPP_INTERFACES
+  #ifdef DPCPP_INTERFACES
 DAAL_BENCH_REGISTER(KnnPredict, GpuDevice, float);
 DAAL_BENCH_REGISTER(KnnPredict, GpuDevice, double);
-#endif
+  #endif
 
 } // namespace bf_knn
 } // namespace dalbench
+
+#endif // INTEL_DAAL_VERSION >= ONEDAL_VERSION_2021_U1_BETA_04
