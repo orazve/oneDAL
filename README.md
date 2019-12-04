@@ -8,6 +8,7 @@ The repo contains benchmarks for oneDAL algorithms. This software use Google Ben
 | **Category**                 | **Algorithm**                       | **CPU Batch** | **CPU Online** | **GPU Batch** | **GPU Online** |
 | :---                         | :---                                | :---:         | :---:          | :---:         | :---:          |
 | **Classification**           | Logistic Regression SGD             | &#x2611;      | **-**          | &#x2611;      | **-**          |
+|   | kNN Brute Force          | **-**       | **-**          | &#x2611;      | **-**          |
 | **Clustering**               | K-Means                             | &#x2611;      | **-**          | &#x2611;      | **-**          |
 | **Dimensionality reduction** | Principal Components Analysis (PCA) | &#x2611;      | **-**          | &#x2611;      | **-**          |
 | **Regression**               | Linear Regression                   | &#x2611;      | **-**          | &#x2611;      | **-**          |
@@ -21,8 +22,10 @@ The repo contains benchmarks for oneDAL algorithms. This software use Google Ben
 To build and run `oneDAL benchmark`, ensure the following dependencies are met:
 
 * [CMake](https://cmake.org/) (>=3.6)
-* [Intel(R) oneAPI Data Analytics Library]((https://github.com/intel/daal)) latest release
-* [Intel(R) oneAPI DPC++ Compiler](https://github.com/intel/llvm) latest release
+* [Intel(R) oneAPI Data Analytics Library](https://github.com/intel/daal)
+* [Intel(R) oneAPI DPC++ Compiler](https://github.com/intel/llvm)
+
+Information of getting DPC++ Compiler and oneDAL packages can be found [here](https://software.intel.com/en-us/oneapi/onedal#oneapi-base-toolkit-download-popup-1).
 
 Once dependencies are present, follow the steps below:
 
@@ -73,6 +76,8 @@ make -j install
 
 ### Running Benchmarks
 
+#### Download datasets
+
 Before running benchmarks it's necessary to download datasets (if you have no it) which will be used with them. To download datasets `Python` is used whose version should be >=3.7.
 
 Note, it's required as dependencies for `Python` the following [modules](requirements.txt) are used. To install modules required use the following command:
@@ -82,7 +87,7 @@ Note, it's required as dependencies for `Python` the following [modules](require
 $ pip install -r requirements.txt
 ```
 
-Download datasets:
+Run scripts:
 
 ```bash
 # Go to the workloads directory
@@ -98,7 +103,8 @@ By default all datasets which are used with benchmarks will be downloaded. To se
 $ python higgs_loader.py
 ```
 
-Run benchmarks:
+#### Run benchmarks
+
 ```bash
 # Go to the build directory
 $ cd ../_build
@@ -129,10 +135,14 @@ $ ./Benchmark --benchmark_out=result.json --benchmark_out_format=json
 
 | **Flag**                 | **Possible Values**  | **Default Value** | **Behavior**                      |
 | :---                     | :---:                | :---:             | :---                              |
-| KERNEL_PROFILER          | [ON, OFF]            | OFF               | Enable/disable kernels profiling. |
+| KERNEL_PROFILER*         | [ON, OFF]            | OFF               | Enable/disable kernels profiling. |
 | DAL_USE_DPCPP_INTERFACES | [ON, OFF]            | ON                | Enable/disable DPCPP interfaces of oneDAL. Traditional interfaces of oneDAL will be used when flag is set to [OFF]. |
 | DAL_USE_PARALLEL         | [ON, OFF]            | ON                | Enable/disable parallel version of oneDAL. Sequential version of oneDAL will be used when flag is set to [OFF]. |
 | DAL_USE_STATIC           | [ON, OFF]            | ON                | Enable/disable static linking of oneDAL. Dynamic linking of oneDAL will be used when flag is set to [OFF]. |
+
+Note:
+
+Kernel profiling of algorithms is available from version oneDAL beta04 and up.
 
 ## Command Line Options for oneDAL Benchmarks
 
