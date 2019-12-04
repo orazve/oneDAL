@@ -76,9 +76,10 @@ set(BENCHMARK_ENABLE_TESTING
 set(BENCHMARK_ENABLE_INSTALL
     OFF
     CACHE BOOL "Suppressing benchmark's install" FORCE)
+
 set(MESSAGE_QUIET ON)
-add_subdirectory(third_party/benchmark)
-unset(MESSAGE_QUIET)
+add_subdirectory(third-party/benchmark)
+set(MESSAGE_QUIET OFF)
 
 find_package(DAL REQUIRED)
 

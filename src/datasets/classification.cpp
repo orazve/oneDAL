@@ -45,5 +45,46 @@ class DATASET(mnist) {
   }
 };
 
+class DATASET(higgs_small_classifier) {
+  Dataset load(NumericTableType numeric_table_type, size_t num_blocks) override {
+    return DatasetFromCsv()
+      .path_to_train(Workload("higgs").path_to_dataset("higgs_100t_train.csv"))
+      .path_to_test(Workload("higgs").path_to_dataset("higgs_50t_test.csv"))
+      .num_features(28)
+      .num_responses(2)
+      .num_blocks(num_blocks)
+      .on_error("Make sure that HIGGS dataset is downloaded and extracted.")
+      .load(numeric_table_type);
+  }
+};
+
+class DATASET(hepmass_small_classifier) {
+  Dataset load(NumericTableType numeric_table_type, size_t num_blocks) override {
+    return DatasetFromCsv()
+      .path_to_train(Workload("hepmass").path_to_dataset("hepmass_100t_train.csv"))
+      .path_to_test(Workload("hepmass").path_to_dataset("hepmass_50t_test.csv"))
+      .num_features(28)
+      .num_responses(2)
+      .num_blocks(num_blocks)
+      .on_error("Make sure that HEPMASS dataset is downloaded and extracted. "
+                "To download and preproces dataset run hepmass_load.py located in HEPMASS workload "
+                "directory: ")
+      .load(numeric_table_type);
+  }
+};
+
+class DATASET(epsilion_50k_classifier) {
+  Dataset load(NumericTableType numeric_table_type, size_t num_blocks) override {
+    return DatasetFromCsv()
+      .path_to_train(Workload("epsilon").path_to_dataset("epsilon_50k.csv"))
+      .path_to_test(Workload("epsilon").path_to_dataset("epsilon_50k.csv"))
+      .num_features(2000)
+      .num_responses(2)
+      .num_blocks(num_blocks)
+      .on_error("Make sure that epsilon dataset is downloaded and extracted.")
+      .load(numeric_table_type);
+  }
+};
+
 } // namespace datasets
 } // namespace dalbench

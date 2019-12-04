@@ -80,6 +80,14 @@ def epsilon(root_dir=None):
     df_train = pd.DataFrame(np.concatenate((X_train, y_train[:, None]), axis=1))
     df_train.to_csv(csv_file, header=False, index=False)
 
+    num_train = 50000
+    X_train = df_patched.iloc[:num_train, 1:]
+    y_train = df_patched.iloc[:num_train, 0].values
+
+    csv_file = os.path.join(dataset_dir, 'epsilon_50k.csv')
+    df_train = pd.DataFrame(np.concatenate((X_train, y_train[:, None]), axis=1))
+    df_train.to_csv(csv_file, header=False, index=False)
+
     print('epsion dataset is ready to be used')
 
 if __name__ == '__main__':

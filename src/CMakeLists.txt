@@ -18,8 +18,14 @@ find_package(Threads REQUIRED)
 
 set(BENCHMARK_TARGET "Benchmark")
 
-set(ALGORITHMS_LIST covariance logistic_regression kmeans pca linear_regression
-                    low_order_moments)
+set(ALGORITHMS_LIST
+    covariance
+    logistic_regression
+    kmeans
+    pca
+    linear_regression
+    low_order_moments
+    knn)
 
 list(SORT ALGORITHMS_LIST)
 

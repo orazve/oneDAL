@@ -71,6 +71,18 @@ def hepmass(root_dir=None):
     df_test = pd.DataFrame(np.concatenate((X_test, y_test[:, None]), axis=1))
     df_test.to_csv(os.path.join(dataset_dir, 'hepmass_500t_test.csv'), header=False, index=False)
 
+    num_train = 100000
+    X_train = df_train_raw.iloc[:num_train, 1:].values
+    y_train = df_train_raw.iloc[:num_train, 0].values
+    df_train = pd.DataFrame(np.concatenate((X_train, y_train[:, None]), axis=1))
+    df_train.to_csv(os.path.join(dataset_dir, 'hepmass_100t_train.csv'), header=False, index=False)
+
+    num_test = 50000
+    X_test = df_test_raw.iloc[:num_test, 1:].values
+    y_test = df_test_raw.iloc[:num_test, 0].values
+    df_test = pd.DataFrame(np.concatenate((X_test, y_test[:, None]), axis=1))
+    df_test.to_csv(os.path.join(dataset_dir, 'hepmass_50t_test.csv'), header=False, index=False)
+
     print('hepmass dataset is ready to be used')
 
 if __name__ == '__main__':
