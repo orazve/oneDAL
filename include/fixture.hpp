@@ -64,8 +64,9 @@ struct GpuDevice {
 };
 
 template <typename ParamsType>
-using DictionaryParams = std::list<std::pair<std::string, ParamsType>>;
-using DatasetName      = std::string;
+using DictionaryParams       = std::list<std::pair<std::string, ParamsType>>;
+using DatasetName            = std::string;
+const size_t MAX_NUM_OF_RUNS = 5; // TODO
 
 struct CommonAlgorithmParams {
   CommonAlgorithmParams(const DatasetName& dataset_name,
@@ -104,7 +105,7 @@ public:
     try {
       device = cl::sycl::device(DeviceType::get_device());
     } catch (...) {
-      throw NotAvalibleDevice("device is not support");
+      throw NotAvailableDevice("The device is not supported");
     }
     cl::sycl::queue queue(device);
     ctx_ = std::make_unique<daal::services::ExecutionContext>(
@@ -175,7 +176,6 @@ protected:
 private:
   size_t num_runs_;
   size_t current_run_;
-  static const size_t MAX_NUM_OF_RUNS = 5; // TODO
 };
 
 template <typename AlgorithmType, typename DeviceType>
@@ -203,7 +203,12 @@ protected:
     for (auto _ : state) {
       for (size_t block_index = 0; block_index < this->common_params_.num_blocks; ++block_index) {
         state.PauseTiming();
-        this->set_input_block(block_index);
+        try {
+          this->set_input_block(block_index);
+        } catch (std::exception const& e) {
+          state.SkipWithError(e.what());
+          return;
+        }
         state.ResumeTiming();
         this->algorithm_->compute();
       }
@@ -224,7 +229,7 @@ struct BenchmarkRegistrator {
         ::benchmark::internal::RegisterBenchmarkInternal(new BenchAlg(name + "/" + key, param));
       bench->Unit(benchmark::kMillisecond);
       bench->Iterations(1);
-      bench->Repetitions(5);
+      bench->Repetitions(MAX_NUM_OF_RUNS);
       bench->ReportAggregatesOnly();
 #ifndef __DEBUG__
       bench->ComputeStatistics("box_filter", statistics::box_filter);

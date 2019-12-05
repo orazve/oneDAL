@@ -17,12 +17,15 @@
 
 #include "config.hpp"
 
+#include "error_types.hpp"
+
 namespace dalbench {
 
 std::string get_env_var(const char* var_name) {
   const char* value = std::getenv(var_name);
   if (!value) {
-    throw std::runtime_error("Environment variable " + std::string(var_name) + " undefined");
+    throw NotDefinedEnvironmentVariable("Environment variable " + std::string(var_name) +
+                                        " undefined");
   }
   return std::string(value);
 }

@@ -19,20 +19,35 @@
 
 namespace dalbench {
 
-NotImplementedException::NotImplementedException(const std::string& feature_name) :
-  std::runtime_error(feature_name + " is not implemented") {
+NotAvailableDevice::NotAvailableDevice(const std::string& error_message) :
+  std::runtime_error(error_message) {
 }
 
-NotAvalibleDevice::NotAvalibleDevice(const std::string& feature_name) :
-  std::runtime_error(feature_name + " is not implemented") {
+EmptyNumericTable::EmptyNumericTable(const std::string& error_message) :
+  std::runtime_error(error_message) {
 }
 
-NotAvalibleNumericTable::NotAvalibleNumericTable(const std::string& feature_name) :
-  std::runtime_error(feature_name + " is not implemented") {
+NotAvailableNumericTable::NotAvailableNumericTable(const std::string& error_message) :
+  std::runtime_error(error_message) {
 }
 
-CannotFindObjectError::CannotFindObjectError(const std::string& object_name) :
-  std::runtime_error("Cannot find object {" + object_name + "} in the registry") {
+CannotFindObject::CannotFindObject(const std::string& error_message) :
+  std::runtime_error(error_message) {
+}
+
+CannotOpenFile::CannotOpenFile(const std::string& error_message) :
+  std::runtime_error(error_message) {
+}
+
+CannotLoadDataset::CannotLoadDataset(const std::string& error_message) :
+  std::runtime_error(error_message) {
+}
+
+CannotReadCsv::CannotReadCsv(const std::string& error_message) : std::runtime_error(error_message) {
+}
+
+NotDefinedEnvironmentVariable::NotDefinedEnvironmentVariable(const std::string& error_message) :
+  std::runtime_error(error_message) {
 }
 
 } // namespace dalbench

@@ -23,24 +23,44 @@
 
 namespace dalbench {
 
-class NotImplementedException : public std::runtime_error {
+class NotAvailableDevice : public std::runtime_error {
 public:
-  explicit NotImplementedException(const std::string& feature_name);
+  explicit NotAvailableDevice(const std::string& error_message);
 };
 
-class NotAvalibleDevice : public std::runtime_error {
+class EmptyNumericTable : public std::runtime_error {
 public:
-  explicit NotAvalibleDevice(const std::string& feature_name);
+  explicit EmptyNumericTable(const std::string& error_message);
 };
 
-class NotAvalibleNumericTable : public std::runtime_error {
+class NotAvailableNumericTable : public std::runtime_error {
 public:
-  explicit NotAvalibleNumericTable(const std::string& feature_name);
+  explicit NotAvailableNumericTable(const std::string& error_message);
 };
 
-class CannotFindObjectError : public std::runtime_error {
+class CannotFindObject : public std::runtime_error {
 public:
-  explicit CannotFindObjectError(const std::string& object_name);
+  explicit CannotFindObject(const std::string& error_message);
+};
+
+class CannotOpenFile : public std::runtime_error {
+public:
+  explicit CannotOpenFile(const std::string& error_message);
+};
+
+class CannotLoadDataset : public std::runtime_error {
+public:
+  explicit CannotLoadDataset(const std::string& error_message);
+};
+
+class CannotReadCsv : public std::runtime_error {
+public:
+  explicit CannotReadCsv(const std::string& error_message);
+};
+
+class NotDefinedEnvironmentVariable : public std::runtime_error {
+public:
+  explicit NotDefinedEnvironmentVariable(const std::string& error_message);
 };
 
 } // namespace dalbench

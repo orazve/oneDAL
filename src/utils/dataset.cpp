@@ -34,7 +34,7 @@ NumericTablePtr NumericTableFactory::create_numeric_table(
                                                  num_observations,
                                                  memory_allocation_flag);
     default:
-      throw std::runtime_error("The given numeric table type is not implemented");
+      throw NotAvailableNumericTable("The given numeric table type is not implemented");
       break;
   }
 }
@@ -42,7 +42,8 @@ NumericTablePtr NumericTableFactory::create_numeric_table(
 DataSlice::DataSlice(const NumericTablePtr& x,
                      const size_t num_blocks,
                      NumericTableType numeric_table_type) :
-  x_blocks_(num_blocks) {
+  x_blocks_(num_blocks),
+  labeled_(false) {
   initialize(numeric_table_type, num_blocks, x);
 }
 
@@ -51,7 +52,7 @@ DataSlice::DataSlice(const NumericTablePtr& x,
                      const size_t num_blocks,
                      NumericTableType numeric_table_type) :
   x_blocks_(num_blocks),
-  y_blocks_(num_blocks) {
+  y_blocks_(num_blocks), labeled_(true) {
   initialize(numeric_table_type, num_blocks, x, y);
 }
 
@@ -60,65 +61,76 @@ DataSlice DataSlice::make_empty() {
 }
 
 NumericTablePtr DataSlice::x() const {
-  if (!x_blocks_.back().get()) {
-    throw std::runtime_error("Dataset does not contain X slice");
+  if (x_blocks_.empty()) {
+    throw EmptyNumericTable("Dataset does not contain X slice");
   }
   return x_blocks_.back();
 }
 
 NumericTablePtr DataSlice::y() const {
-  if (!y_blocks_.back().get()) {
-    throw std::runtime_error("Dataset does not contain Y slice");
+  if (y_blocks_.empty()) {
+    throw EmptyNumericTable("Dataset does not contain Y slice");
   }
   return y_blocks_.back();
 }
 
 NumericTablePtr DataSlice::x_block(const size_t block_index) const {
-  if (!x_blocks_[block_index].get()) {
-    throw std::runtime_error("Dataset does not contain X slice");
+  if ((x_blocks_.empty()) || (!x_blocks_[block_index].get())) {
+    throw EmptyNumericTable("Dataset does not contain X slice");
   }
   return x_blocks_[block_index];
 }
 
 NumericTablePtr DataSlice::y_block(const size_t block_index) const {
-  if (!y_blocks_[block_index].get()) {
-    throw std::runtime_error("Dataset does not contain Y slice");
+  if ((y_blocks_.empty()) || (!y_blocks_[block_index].get())) {
+    throw EmptyNumericTable("Dataset does not contain Y slice");
   }
   return y_blocks_[block_index];
 }
 
 NumericTablePtr DataSlice::xy() const {
   using namespace daal::data_management;
-  if (x_blocks_.back().get() && y_blocks_.back().get()) {
+
+  if ((x_blocks_.empty()) && (y_blocks_.empty())) {
+    throw EmptyNumericTable("Dataset does not contain neither X nor Y slices");
+  } else {
     return MergedNumericTable::create(x_blocks_.back(), y_blocks_.back());
   }
-  if (x_blocks_.back().get() && !y_blocks_.back().get()) {
-    return x_blocks_.back();
-  }
-  if (!x_blocks_.back().get() && y_blocks_.back().get()) {
-    return y_blocks_.back();
+
+  if ((x_blocks_.empty()) && (!y_blocks_.empty())) {
+    throw EmptyNumericTable("Dataset does not contain X slice");
   }
 
-  throw std::runtime_error("Dataset does not contain neither X nor Y slices");
+  if ((!x_blocks_.empty()) && (y_blocks_.empty())) {
+    throw EmptyNumericTable("Dataset does not contain Y slice");
+  }
 }
 
 NumericTablePtr DataSlice::xy_blocks(const size_t block_index) const {
   using namespace daal::data_management;
-  if (x_blocks_[block_index].get() && y_blocks_[block_index].get()) {
+
+  if (((x_blocks_.empty()) && (y_blocks_.empty())) ||
+      ((!x_blocks_[block_index].get()) && ((!y_blocks_[block_index].get())))) {
+    throw EmptyNumericTable("Dataset does not contain neither X nor Y slices");
+  } else {
     return MergedNumericTable::create(x_blocks_[block_index], y_blocks_[block_index]);
   }
-  if (x_blocks_[block_index].get() && !y_blocks_[block_index].get()) {
-    return x_blocks_[block_index];
-  }
-  if (!x_blocks_[block_index].get() && y_blocks_[block_index].get()) {
-    return y_blocks_[block_index];
+
+  if ((x_blocks_.empty()) || (!x_blocks_[block_index].get())) {
+    throw EmptyNumericTable("Dataset does not contain X slice");
   }
 
-  throw std::runtime_error("Dataset does not contain neither X nor Y slices");
+  if ((y_blocks_.empty()) || (!y_blocks_[block_index].get())) {
+    throw EmptyNumericTable("Dataset does not contain Y slice");
+  }
 }
 
 bool DataSlice::empty() const {
-  return !(x_blocks_.back().get() || y_blocks_.back().get());
+  if (labeled_) {
+    return (x_blocks_.empty()) || (y_blocks_.empty());
+  } else {
+    return x_blocks_.empty();
+  }
 }
 
 void DataSlice::initialize(NumericTableType numeric_table_type,
@@ -212,42 +224,30 @@ Dataset::Dataset(const DataSlice& full_slice) : full_slice_(full_slice) {
 }
 
 DataSlice Dataset::full() const {
-  if (!full_slice_.empty()) {
+  if (full_slice_.empty()) {
+    throw EmptyNumericTable("Full slice of the dataset is empty");
+  } else {
     return full_slice_;
   }
-
-  const bool has_train = !train_slice_.empty();
-  const bool has_test  = !test_slice_.empty();
-
-  if (has_train && !has_test) {
-    return train_slice_;
-  }
-
-  if (!has_train && has_test) {
-    return test_slice_;
-  }
-
-  // TODO: Merge slices
-  throw std::runtime_error("Dataset::Full");
 }
 
 DataSlice Dataset::train() const {
   if (train_slice_.empty()) {
-    throw std::runtime_error("Train slice of the dataset is empty");
+    throw EmptyNumericTable("Train slice of the dataset is empty");
   }
   return train_slice_;
 }
 
 DataSlice Dataset::test() const {
   if (test_slice_.empty()) {
-    throw std::runtime_error("Test slice of the dataset is empty");
+    throw EmptyNumericTable("Test slice of the dataset is empty");
   }
   return test_slice_;
 }
 
 DataSlice Dataset::index() const {
   if (index_slice_.empty()) {
-    throw std::runtime_error("Index slice of the dataset is empty");
+    throw EmptyNumericTable("Index slice of the dataset is empty");
   }
   return index_slice_;
 }
@@ -261,7 +261,19 @@ DataSlice Dataset::full_or_train() const {
     return train();
   }
 
-  throw std::runtime_error("Full and Train slices of the dataset are empty");
+  throw EmptyNumericTable("Full and Train slices of the dataset are empty");
+}
+
+DataSlice Dataset::full_or_test() const {
+  if (has_full()) {
+    return full();
+  }
+
+  if (has_test()) {
+    return test();
+  }
+
+  throw EmptyNumericTable("Full and Test slices of the dataset are empty");
 }
 
 Dataset& Dataset::num_responses(size_t num_responses) {
@@ -378,7 +390,7 @@ DataSlice DatasetFromCsv::load_slice(const std::string& path, NumericTableType n
   }
 
   if (!can_open_file(path)) {
-    throw std::runtime_error(
+    throw CannotOpenFile(
       join_sentences({ "Cannot open dataset file '" + path + "'", on_error_message_ }));
   }
 
@@ -406,10 +418,10 @@ DataSlice DatasetFromCsv::load_with_response_variable(const std::string& path,
   using namespace daal::data_management;
 
   if (num_features_ == 0) {
-    throw std::runtime_error("Cannot load dataset '" + path +
-                             "' with responses. "
-                             "Number of features undefined. To load CSV dataset with "
-                             "responses FeaturesNumber must be specified.");
+    throw CannotLoadDataset("Cannot load dataset '" + path +
+                            "' with responses. "
+                            "Number of features undefined. To load CSV dataset with "
+                            "responses FeaturesNumber must be specified.");
   }
 
   auto x  = NumericTableFactory().create_numeric_table(numeric_table_type, num_features_);
@@ -427,7 +439,7 @@ DataSlice DatasetFromCsv::load_with_response_variable(const std::string& path,
 void DatasetFromCsv::check_data_source_status(const std::string& path,
                                               const daal::services::Status& status) const {
   if (!status) {
-    throw std::runtime_error("Cannot read CSV file '" + path + "'");
+    throw CannotReadCsv("Cannot read CSV file '" + path + "'");
   }
 }
 

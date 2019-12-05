@@ -30,7 +30,8 @@ class DATASET(year_prediction_msd) {
       .num_features(90)
       .num_blocks(num_blocks)
       .regression()
-      .on_error("Make sure that year_prediction_msd dataset is downloaded and extracted.")
+      .on_error(
+        "Make sure that year_prediction_msd dataset is downloaded and extracted and DATASETSROOT variable is set correctly.")
       .load(numeric_table_type);
   }
 };
@@ -43,7 +44,8 @@ class DATASET(higgs_1M_reg) {
       .num_features(28)
       .num_blocks(num_blocks)
       .regression()
-      .on_error("Make sure that higgs dataset is downloaded and extracted.")
+      .on_error(
+        "Make sure that higgs dataset is downloaded and extracted and DATASETSROOT variable is set correctly.")
       .load(numeric_table_type);
   }
 };

@@ -86,7 +86,7 @@ protected:
   const ObjectCreator<T>* get_creator(const std::string& name) {
     const auto it = creators_.find(name);
     if (it == creators_.end()) {
-      throw CannotFindObjectError(name);
+      throw CannotFindObject("Cannot find object {" + name + "} in the registry");
     }
     return it->second;
   }

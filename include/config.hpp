@@ -18,7 +18,6 @@
 #ifndef DALBENCH_INCLUDE_CONFIG_HPP_
 #define DALBENCH_INCLUDE_CONFIG_HPP_
 
-#include <stdexcept>
 #include <string>
 
 namespace dalbench {

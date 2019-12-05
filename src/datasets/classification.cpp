@@ -27,7 +27,8 @@ class DATASET(SUSY) {
       .num_features(18)
       .num_responses(2)
       .num_blocks(num_blocks)
-      .on_error("Make sure that susy dataset is downloaded and extracted.")
+      .on_error(
+        "Make sure that susy dataset is downloaded and extracted and DATASETSROOT variable is set correctly.")
       .load(numeric_table_type);
   }
 };
@@ -40,7 +41,8 @@ class DATASET(mnist) {
       .num_features(784)
       .num_responses(10)
       .num_blocks(num_blocks)
-      .on_error("Make sure that mnist dataset is downloaded and extracted.")
+      .on_error(
+        "Make sure that mnist dataset is downloaded and extracted and DATASETSROOT variable is set correctly.")
       .load(numeric_table_type);
   }
 };

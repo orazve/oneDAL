@@ -28,7 +28,8 @@ class DATASET(higgs_1M) {
       .num_responses(100)
       .num_blocks(num_blocks)
       .unlabeled()
-      .on_error("Make sure that higgs dataset is downloaded and extracted.")
+      .on_error(
+        "Make sure that higgs dataset is downloaded and extracted and DATASETSROOT variable is set correctly.")
       .load(numeric_table_type);
   }
 };
@@ -40,7 +41,8 @@ class DATASET(epsilon_30k) {
       .num_features(2000)
       .num_blocks(num_blocks)
       .unlabeled()
-      .on_error("Make sure that epsilon dataset is downloaded and extracted.")
+      .on_error(
+        "Make sure that epsilon dataset is downloaded and extracted and DATASETSROOT variable is set correctly.")
       .load(numeric_table_type);
   }
 };

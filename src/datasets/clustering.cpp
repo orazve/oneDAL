@@ -27,7 +27,8 @@ class DATASET(higgs_1M_cluster) {
       .num_features(28)
       .num_responses(2)
       .num_blocks(num_blocks)
-      .on_error("Make sure that higgs dataset is downloaded and extracted.")
+      .on_error(
+        "Make sure that higgs dataset is downloaded and extracted and DATASETSROOT variable is set correctly.")
       .load(numeric_table_type);
   }
 };
@@ -39,7 +40,8 @@ class DATASET(hepmass_1M_cluster) {
       .num_features(28)
       .num_responses(2)
       .num_blocks(num_blocks)
-      .on_error("Make sure that hepmass dataset is downloaded and extracted.")
+      .on_error(
+        "Make sure that hepmass dataset is downloaded and extracted and DATASETSROOT variable is set correctly.")
       .load(numeric_table_type);
   }
 };
@@ -51,7 +53,8 @@ class DATASET(SUSY_cluster) {
       .num_features(18)
       .num_responses(2)
       .num_blocks(num_blocks)
-      .on_error("Make sure that susy dataset is downloaded and extracted.")
+      .on_error(
+        "Make sure that susy dataset is downloaded and extracted and DATASETSROOT variable is set correctly.")
       .load(numeric_table_type);
   }
 };

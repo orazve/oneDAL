@@ -119,6 +119,7 @@ private:
 private:
   std::vector<NumericTablePtr> x_blocks_;
   std::vector<NumericTablePtr> y_blocks_;
+  bool labeled_;
 };
 
 class Dataset {
@@ -148,6 +149,8 @@ public:
   DataSlice test() const;
 
   DataSlice full_or_train() const;
+
+  DataSlice full_or_test() const;
 
   Dataset& num_responses(size_t num_responses);
 
