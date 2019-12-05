@@ -7,6 +7,21 @@ trigger:
 - master
 
 jobs:
+- job: 'ClangFormat'
+  pool:
+    vmImage: 'ubuntu-18.04'
+  steps:
+    - script: |
+        wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
+        sudo add-apt-repository "deb http://apt.llvm.org/xenial/ llvm-toolchain-xenial-9 main"
+        sudo apt-get update && sudo apt-get install -y clang-format-9
+        sudo update-alternatives --install /usr/bin/clang-format clang-format /usr/bin/clang-format-9 100
+      displayName: 'apt-get'
+    - script: |
+        .ci/scripts/clang-format.sh
+      displayName: 'clang-format check'
+      failOnStderr: true
+
 - job: DPCPP
   pool:
     vmImage: 'ubuntu-18.04'
@@ -26,7 +41,6 @@ jobs:
         sudo apt-get update
         sudo apt-get install intel-oneapi-tbb-devel intel-oneapi-daal-devel intel-oneapi-dpcpp-compiler
         sudo apt-get install cmake
-
       displayName: 'apt-get'
 
     - script: |
@@ -76,7 +90,6 @@ jobs:
         sudo apt-get install intel-oneapi-tbb-devel intel-oneapi-daal-devel
         sudo apt-get install gcc-multilib g++-multilib
         sudo apt-get install cmake
-
       displayName: 'apt-get'
 
     - script: |
@@ -93,10 +106,43 @@ jobs:
 
     - script: |
         source /opt/intel/inteloneapi/setvars.sh
+        mkdir build-dynamic-thread && cd build-dynamic-thread
+        cmake -DDAL_USE_DPCPP_INTERFACES=OFF -DDAL_USE_STATIC=OFF ..
+      displayName: 'cmake dynamic + thread configurate'
+
+    - script: |
+        source /opt/intel/inteloneapi/setvars.sh
+        mkdir build-dynamic-sequence && cd build-dynamic-sequence
+        cmake -DDAL_USE_DPCPP_INTERFACES=OFF -DDAL_USE_PARALLEL=OFF -DDAL_USE_STATIC=OFF ..
+      displayName: 'cmake dynamic + sequence configurate'
+
+    - script: |
+        source /opt/intel/inteloneapi/setvars.sh
+        cd build-static-thread
+        make
+        make install
+      displayName: 'make static + thread'
+
+    - script: |
+        source /opt/intel/inteloneapi/setvars.sh
         cd build-static-sequence
         make
         make install
       displayName: 'make static + sequence'
+
+    - script: |
+        source /opt/intel/inteloneapi/setvars.sh
+        cd build-dynamic-thread
+        make
+        make install
+      displayName: 'make dynamic + thread'
+
+    - script: |
+        source /opt/intel/inteloneapi/setvars.sh
+        cd build-dynamic-sequence
+        make
+        make install
+      displayName: 'make dynamic + sequence'
 
     - script: |
         cd workloads
@@ -114,4 +160,25 @@ jobs:
         export DATASETSROOT=`pwd`
         cd build-static-sequence
         ./Benchmark --benchmark_filter=Logreg.*Cpu.*float.*Mnist:60K/
-      displayName: 'run Logreg benchmark on CPU for MNIST'
+      displayName: 'run logreg benchmark (sequence + thread) on cpu for mnist'
+
+    - script: |
+        source /opt/intel/inteloneapi/setvars.sh
+        export DATASETSROOT=`pwd`
+        cd build-static-thread
+        ./Benchmark --benchmark_filter=Logreg.*Cpu.*float.*Mnist:60K/
+      displayName: 'run logreg benchmark (static + thread) on cpu for mnist'
+
+    - script: |
+        source /opt/intel/inteloneapi/setvars.sh
+        export DATASETSROOT=`pwd`
+        cd build-dynamic-sequence
+        ./Benchmark --benchmark_filter=Logreg.*Cpu.*float.*Mnist:60K/
+      displayName: 'run logreg benchmark (dynamic + sequence) on cpu for mnist'
+
+    - script: |
+        source /opt/intel/inteloneapi/setvars.sh
+        export DATASETSROOT=`pwd`
+        cd build-dynamic-thread
+        ./Benchmark --benchmark_filter=Logreg.*Cpu.*float.*Mnist:60K/
+      displayName: 'run logreg benchmark (dynamic + thread) on cpu for mnist'
