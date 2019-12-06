@@ -35,8 +35,9 @@
   #include "daal.h"
 #endif
 
-#define ONEDAL_VERSION_2021_U1_BETA_03 (2021 * 10000 + 1 * 100 + 3)
-#define ONEDAL_VERSION_2021_U1_BETA_04 (2021 * 10000 + 1 * 100 + 4)
+#define ONEDAL_VERSION_2021_BETA_03        20191000
+#define ONEDAL_VERSION_2021_BETA_03_UPDATE 20191200
+#define ONEDAL_VERSION_2021_BETA_04        20200100
 
 #include "dataset.hpp"
 #include "error_types.hpp"
@@ -161,10 +162,10 @@ protected:
 
   virtual void set_algorithm() {
   }
+
   virtual void set_input() {
   }
-  virtual void set_input_block(const size_t block_index) {
-  }
+
   virtual void set_parameters() {
   }
 
@@ -199,6 +200,8 @@ public:
   }
 
 protected:
+  virtual void set_input_block(const size_t block_index) = 0;
+
   void run_benchmark(::benchmark::State& state) final {
     for (auto _ : state) {
       for (size_t block_index = 0; block_index < this->common_params_.num_blocks; ++block_index) {

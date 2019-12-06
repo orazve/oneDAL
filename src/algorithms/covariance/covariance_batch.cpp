@@ -65,7 +65,7 @@ DAAL_BENCH_REGISTER(CovarianceBatch, CpuDevice, double);
 #ifdef DPCPP_INTERFACES
 DAAL_BENCH_REGISTER(CovarianceBatch, GpuDevice, float);
 DAAL_BENCH_REGISTER(CovarianceBatch, GpuDevice, double);
-#endif
+#endif // DPCPP_INTERFACES
 
 } // end namespace covariance
 } // end namespace dalbench

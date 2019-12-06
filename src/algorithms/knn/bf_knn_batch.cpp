@@ -18,7 +18,7 @@
 #include "fixture.hpp"
 
 // New algorithm in oneDAL 2021.1-beta04
-#if INTEL_DAAL_VERSION >= ONEDAL_VERSION_2021_U1_BETA_04
+#if __INTEL_DAAL_BUILD_DATE >= ONEDAL_VERSION_2021_BETA_03_UPDATE
 
 namespace dalbench {
 namespace bf_knn {
@@ -105,4 +105,4 @@ DAAL_BENCH_REGISTER(KnnPredict, GpuDevice, double);
 } // namespace bf_knn
 } // namespace dalbench
 
-#endif // INTEL_DAAL_VERSION >= ONEDAL_VERSION_2021_U1_BETA_04
+#endif // INTEL_DAAL_VERSION >= ONEDAL_VERSION_2021_BETA_03_UPDATE

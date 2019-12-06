@@ -81,12 +81,10 @@ private:
 DAAL_BENCH_REGISTER(LinRegTrain, CpuDevice, float);
 DAAL_BENCH_REGISTER(LinRegTrain, CpuDevice, double);
 
-#if INTEL_DAAL_VERSION >= ONEDAL_VERSION_2021_U1_BETA_04
-  #ifdef DPCPP_INTERFACES
+#if defined(DPCPP_INTERFACES) && (__INTEL_DAAL_BUILD_DATE >= ONEDAL_VERSION_2021_BETA_03_UPDATE)
 DAAL_BENCH_REGISTER(LinRegTrain, GpuDevice, float);
 DAAL_BENCH_REGISTER(LinRegTrain, GpuDevice, double);
-  #endif // DPCPP_INTERFACES
-#endif // INTEL_DAAL_VERSION >= ONEDAL_VERSION_2021_U1_BETA_04
+#endif // defined(DPCPP_INTERFACES) && (__INTEL_DAAL_BUILD_DATE >= ONEDAL_VERSION_2021_BETA_03_UPDATE)
 
 } // end namespace lin_reg
 } // end namespace dalbench
