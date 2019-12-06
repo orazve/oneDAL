@@ -41,10 +41,10 @@ public:
   }
 
   static DictionaryParams<LowOrderMomentsParams> get_params() {
-    return { { "Higgs:1M",
-               LowOrderMomentsParams(DatasetName("higgs_1M"), TableType(SyclHomogen, FPType)) },
-             { "Epsilon:30K",
-               LowOrderMomentsParams(DatasetName("epsilon_30k"),
+    return { { "Higgs:2M",
+               LowOrderMomentsParams(DatasetName("higgs_2M"), TableType(SyclHomogen, FPType)) },
+             { "Epsilon:80K",
+               LowOrderMomentsParams(DatasetName("epsilon_80k"),
                                      TableType(SyclHomogen, FPType)) } };
   }
 

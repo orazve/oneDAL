@@ -48,15 +48,19 @@ def higgs(root_dir=None):
 
     df = pd.read_csv(filename)
 
-    num_train = 1000000
+    num_train = 2000000
+    X_train = df.iloc[:num_train, 1:].values
+    y_train = df.iloc[:num_train, 0].values
+    df_train = pd.DataFrame(np.concatenate((X_train, y_train[:, None]), axis=1))
+    df_train.to_csv(os.path.join(dataset_dir, 'higgs_2m_train.csv'), header=False, index=False)
 
+    num_train = 1000000
     X_train = df.iloc[:num_train, 1:].values
     y_train = df.iloc[:num_train, 0].values
     df_train = pd.DataFrame(np.concatenate((X_train, y_train[:, None]), axis=1))
     df_train.to_csv(os.path.join(dataset_dir, 'higgs_1m_train.csv'), header=False, index=False)
 
     num_test = 1500000
-
     X_test = df.iloc[num_train:num_test, 1:].values
     y_test = df.iloc[num_train:num_test, 0].values
     df_test = pd.DataFrame(np.concatenate((X_test, y_test[:, None]), axis=1))
