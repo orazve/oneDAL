@@ -28,13 +28,14 @@ public:
   using AlgorithmType = typename daal_covariance::Batch<FPType>;
 
   struct CovarianceParams : public CommonAlgorithmParams {
-    CovarianceParams(const DatasetName& dataset_name, const NumericTableType numeric_table_type) :
-      CommonAlgorithmParams(dataset_name, numeric_table_type) {
+    CovarianceParams(const DatasetName& dataset_name, const NumericTableType numeric_table_type)
+        : CommonAlgorithmParams(dataset_name, numeric_table_type) {
     }
   };
 
-  CovarianceBatch(const std::string& name, const CovarianceParams& params) :
-    params_(params), FixtureBatch<AlgorithmType, DeviceType>(params_) {
+  CovarianceBatch(const std::string& name, const CovarianceParams& params)
+      : params_(params),
+        FixtureBatch<AlgorithmType, DeviceType>(params_) {
     this->SetName(name.c_str());
   }
 

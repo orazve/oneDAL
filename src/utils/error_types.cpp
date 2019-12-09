@@ -19,35 +19,35 @@
 
 namespace dalbench {
 
-NotAvailableDevice::NotAvailableDevice(const std::string& error_message) :
-  std::runtime_error(error_message) {
+NotAvailableDevice::NotAvailableDevice(const std::string& error_message)
+    : std::runtime_error(error_message) {
 }
 
-EmptyNumericTable::EmptyNumericTable(const std::string& error_message) :
-  std::runtime_error(error_message) {
+EmptyNumericTable::EmptyNumericTable(const std::string& error_message)
+    : std::runtime_error(error_message) {
 }
 
-NotAvailableNumericTable::NotAvailableNumericTable(const std::string& error_message) :
-  std::runtime_error(error_message) {
+NotAvailableNumericTable::NotAvailableNumericTable(const std::string& error_message)
+    : std::runtime_error(error_message) {
 }
 
-CannotFindObject::CannotFindObject(const std::string& error_message) :
-  std::runtime_error(error_message) {
+CannotFindObject::CannotFindObject(const std::string& error_message)
+    : std::runtime_error(error_message) {
 }
 
-CannotOpenFile::CannotOpenFile(const std::string& error_message) :
-  std::runtime_error(error_message) {
+CannotOpenFile::CannotOpenFile(const std::string& error_message)
+    : std::runtime_error(error_message) {
 }
 
-CannotLoadDataset::CannotLoadDataset(const std::string& error_message) :
-  std::runtime_error(error_message) {
+CannotLoadDataset::CannotLoadDataset(const std::string& error_message)
+    : std::runtime_error(error_message) {
 }
 
 CannotReadCsv::CannotReadCsv(const std::string& error_message) : std::runtime_error(error_message) {
 }
 
-NotDefinedEnvironmentVariable::NotDefinedEnvironmentVariable(const std::string& error_message) :
-  std::runtime_error(error_message) {
+NotDefinedEnvironmentVariable::NotDefinedEnvironmentVariable(const std::string& error_message)
+    : std::runtime_error(error_message) {
 }
 
 } // namespace dalbench

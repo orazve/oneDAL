@@ -32,17 +32,19 @@ public:
     PcaParams(const DatasetName& dataset_name,
               const NumericTableType numeric_table_type,
               const daal_pca::ResultToComputeId compute_id,
-              const FPType ratio_components) :
-      CommonAlgorithmParams(dataset_name, numeric_table_type),
-      compute_id(compute_id), ratio_components(ratio_components) {
+              const FPType ratio_components)
+        : CommonAlgorithmParams(dataset_name, numeric_table_type),
+          compute_id(compute_id),
+          ratio_components(ratio_components) {
     }
 
     const daal_pca::ResultToComputeId compute_id;
     const FPType ratio_components;
   };
 
-  PCABatch(const std::string& name, const PcaParams& params) :
-    params_(params), FixtureBatch<AlgorithmType, DeviceType>(params_) {
+  PCABatch(const std::string& name, const PcaParams& params)
+      : params_(params),
+        FixtureBatch<AlgorithmType, DeviceType>(params_) {
     this->SetName(name.c_str());
   }
 

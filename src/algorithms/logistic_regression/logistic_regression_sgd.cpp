@@ -40,10 +40,13 @@ public:
                  const size_t num_iterations,
                  const bool intercept_flag,
                  const FPType penaltyL2,
-                 const FPType ratio_batch) :
-      CommonAlgorithmParams(dataset_name, numeric_table_type),
-      num_iterations(num_iterations), intercept_flag(intercept_flag), penalty_l2(penalty_l2),
-      ratio_batch(ratio_batch), accuracy_threshold(0.0) {
+                 const FPType ratio_batch)
+        : CommonAlgorithmParams(dataset_name, numeric_table_type),
+          num_iterations(num_iterations),
+          intercept_flag(intercept_flag),
+          penalty_l2(penalty_l2),
+          ratio_batch(ratio_batch),
+          accuracy_threshold(0.0) {
     }
 
     const size_t num_iterations;
@@ -55,8 +58,9 @@ public:
 
   using DictionaryAlgParams = DictionaryParams<LogregParams>;
 
-  LogregTrainSGD(const std::string& name, const LogregParams& params) :
-    params_(params), FixtureBatch<AlgorithmType, DeviceType>(params_) {
+  LogregTrainSGD(const std::string& name, const LogregParams& params)
+      : params_(params),
+        FixtureBatch<AlgorithmType, DeviceType>(params_) {
     this->SetName(name.c_str());
   }
 

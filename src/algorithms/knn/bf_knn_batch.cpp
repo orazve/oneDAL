@@ -37,9 +37,9 @@ public:
   struct KnnParams : public CommonAlgorithmParams {
     KnnParams(const DatasetName& dataset_name,
               const NumericTableType numeric_type,
-              const size_t num_k) :
-      CommonAlgorithmParams(dataset_name, numeric_type),
-      num_k(num_k) {
+              const size_t num_k)
+        : CommonAlgorithmParams(dataset_name, numeric_type),
+          num_k(num_k) {
     }
 
     const kNeighbors num_k;
@@ -47,8 +47,9 @@ public:
 
   using DictionaryAlgParams = DictionaryParams<KnnParams>;
 
-  KnnPredict(const std::string& name, const KnnParams& params) :
-    params_(params), FixtureBatch<AlgorithmType, DeviceType>(params_) {
+  KnnPredict(const std::string& name, const KnnParams& params)
+      : params_(params),
+        FixtureBatch<AlgorithmType, DeviceType>(params_) {
     this->SetName(name.c_str());
   }
 

@@ -31,13 +31,14 @@ public:
   struct CovarianceParams : public CommonAlgorithmParams {
     CovarianceParams(const DatasetName& dataset_name,
                      const NumericTableType numeric_table_type,
-                     const size_t num_blocks) :
-      CommonAlgorithmParams(dataset_name, numeric_table_type, num_blocks) {
+                     const size_t num_blocks)
+        : CommonAlgorithmParams(dataset_name, numeric_table_type, num_blocks) {
     }
   };
 
-  CovarianceOnline(const std::string& name, const CovarianceParams& params) :
-    params_(params), FixtureOnline<AlgorithmType, DeviceType>(params_) {
+  CovarianceOnline(const std::string& name, const CovarianceParams& params)
+      : params_(params),
+        FixtureOnline<AlgorithmType, DeviceType>(params_) {
     this->SetName(name.c_str());
   }
 

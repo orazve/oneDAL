@@ -71,7 +71,8 @@ std::map<const char*, uint64_t> Profiler::combine() {
 
       if (it == res.kernels.end()) {
         res.kernels.insert(y_i);
-      } else {
+      }
+      else {
         it->second = std::max(it->second, y_i.second);
       }
     }
@@ -142,7 +143,8 @@ void Profiler::endTask(const char* task_name) {
   auto it = task_local.kernels.find(task_name);
   if (it == task_local.kernels.end()) {
     task_local.kernels.insert({ task_name, times });
-  } else {
+  }
+  else {
     it->second += times;
   }
 }

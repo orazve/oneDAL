@@ -72,9 +72,10 @@ const size_t MAX_NUM_OF_RUNS = 5; // TODO
 struct CommonAlgorithmParams {
   CommonAlgorithmParams(const DatasetName& dataset_name,
                         const NumericTableType numeric_table_type,
-                        const size_t num_blocks = 1) :
-    dataset_name(dataset_name),
-    numeric_table_type(numeric_table_type), num_blocks(num_blocks) {
+                        const size_t num_blocks = 1)
+      : dataset_name(dataset_name),
+        numeric_table_type(numeric_table_type),
+        num_blocks(num_blocks) {
   }
 
   void load_dataset() {
@@ -99,13 +100,17 @@ struct CommonAlgorithmParams {
 template <typename AlgorithmType, typename DeviceType>
 class Fixture : public ::benchmark::Fixture {
 public:
-  Fixture(CommonAlgorithmParams& params) :
-    ::benchmark::Fixture(), common_params_(params), current_run_(0), num_runs_(MAX_NUM_OF_RUNS) {
+  Fixture(CommonAlgorithmParams& params)
+      : ::benchmark::Fixture(),
+        common_params_(params),
+        current_run_(0),
+        num_runs_(MAX_NUM_OF_RUNS) {
 #ifdef DPCPP_INTERFACES
     cl::sycl::device device;
     try {
       device = cl::sycl::device(DeviceType::get_device());
-    } catch (...) {
+    }
+    catch (...) {
       throw NotAvailableDevice("The device is not supported");
     }
     cl::sycl::queue queue(device);
@@ -126,7 +131,8 @@ public:
       set_algorithm();
       set_input();
       set_parameters();
-    } catch (std::exception const& e) {
+    }
+    catch (std::exception const& e) {
       state.SkipWithError(e.what());
     }
   }
@@ -208,7 +214,8 @@ protected:
         state.PauseTiming();
         try {
           this->set_input_block(block_index);
-        } catch (std::exception const& e) {
+        }
+        catch (std::exception const& e) {
           state.SkipWithError(e.what());
           return;
         }

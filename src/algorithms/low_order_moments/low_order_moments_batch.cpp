@@ -23,20 +23,21 @@ namespace low_order_moments {
 namespace daal_low_order_moments = daal::algorithms::low_order_moments;
 
 template <typename DeviceType, typename FPType>
-class LowOrderMomentsBatch :
-  public FixtureBatch<daal_low_order_moments::Batch<FPType>, DeviceType> {
+class LowOrderMomentsBatch
+    : public FixtureBatch<daal_low_order_moments::Batch<FPType>, DeviceType> {
 public:
   using AlgorithmType = typename daal_low_order_moments::Batch<FPType>;
 
   struct LowOrderMomentsParams : public CommonAlgorithmParams {
     LowOrderMomentsParams(const DatasetName& dataset_name,
-                          const NumericTableType numeric_table_type) :
-      CommonAlgorithmParams(dataset_name, numeric_table_type) {
+                          const NumericTableType numeric_table_type)
+        : CommonAlgorithmParams(dataset_name, numeric_table_type) {
     }
   };
 
-  LowOrderMomentsBatch(const std::string& name, const LowOrderMomentsParams& params) :
-    params_(params), FixtureBatch<AlgorithmType, DeviceType>(params_) {
+  LowOrderMomentsBatch(const std::string& name, const LowOrderMomentsParams& params)
+      : params_(params),
+        FixtureBatch<AlgorithmType, DeviceType>(params_) {
     this->SetName(name.c_str());
   }
 

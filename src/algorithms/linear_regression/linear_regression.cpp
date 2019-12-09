@@ -31,9 +31,9 @@ public:
   struct LinRegParams : public CommonAlgorithmParams {
     LinRegParams(const DatasetName& dataset_name,
                  const NumericTableType numeric_table_type,
-                 const bool intercept_flag) :
-      CommonAlgorithmParams(dataset_name, numeric_table_type),
-      intercept_flag(intercept_flag) {
+                 const bool intercept_flag)
+        : CommonAlgorithmParams(dataset_name, numeric_table_type),
+          intercept_flag(intercept_flag) {
     }
 
     const bool intercept_flag;
@@ -41,8 +41,9 @@ public:
 
   using DictionaryAlgParams = DictionaryParams<LinRegParams>;
 
-  LinRegTrain(const std::string& name, const LinRegParams& params) :
-    params_(params), FixtureBatch<AlgorithmType, DeviceType>(params_) {
+  LinRegTrain(const std::string& name, const LinRegParams& params)
+      : params_(params),
+        FixtureBatch<AlgorithmType, DeviceType>(params_) {
     this->SetName(name.c_str());
   }
 

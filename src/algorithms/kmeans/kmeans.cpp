@@ -36,9 +36,10 @@ public:
     KMeansParams(const DatasetName& dataset_name,
                  const NumericTableType numeric_table_type,
                  const size_t num_iterations,
-                 const size_t num_clusters = 0) :
-      CommonAlgorithmParams(dataset_name, numeric_table_type),
-      num_iterations(num_iterations), num_clusters(num_clusters) {
+                 const size_t num_clusters = 0)
+        : CommonAlgorithmParams(dataset_name, numeric_table_type),
+          num_iterations(num_iterations),
+          num_clusters(num_clusters) {
     }
 
     size_t num_iterations;
@@ -47,8 +48,9 @@ public:
 
   using DictionaryAlgParams = DictionaryParams<KMeansParams>;
 
-  KMeans(const std::string& name, const KMeansParams& params) :
-    params_(params), FixtureBatch<AlgorithmType, DeviceType>(params_) {
+  KMeans(const std::string& name, const KMeansParams& params)
+      : params_(params),
+        FixtureBatch<AlgorithmType, DeviceType>(params_) {
     this->SetName(name.c_str());
   }
 

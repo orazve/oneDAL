@@ -43,7 +43,8 @@ NumericTableType getSyclHomogenNumericTableType() {
 
   if (std::is_same<FPType, float>::value) {
     numeric_table_type = NumericTableType::SyclHomogenNumericTableFloat;
-  } else if (std::is_same<FPType, double>::value) {
+  }
+  else if (std::is_same<FPType, double>::value) {
     numeric_table_type = NumericTableType::SyclHomogenNumericTableDouble;
   }
 

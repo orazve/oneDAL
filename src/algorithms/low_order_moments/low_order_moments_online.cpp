@@ -26,21 +26,22 @@ const size_t higgs_blocks   = 4;
 const size_t epsilon_blocks = 4;
 
 template <typename DeviceType, typename FPType>
-class LowOrderMomentsOnline :
-  public FixtureOnline<daal_low_order_moments::Online<FPType>, DeviceType> {
+class LowOrderMomentsOnline
+    : public FixtureOnline<daal_low_order_moments::Online<FPType>, DeviceType> {
 public:
   using AlgorithmType = typename daal_low_order_moments::Online<FPType>;
 
   struct LowOrderMomentsParams : public CommonAlgorithmParams {
     LowOrderMomentsParams(const DatasetName& dataset_name,
                           const NumericTableType numeric_table_type,
-                          const size_t num_blocks) :
-      CommonAlgorithmParams(dataset_name, numeric_table_type, num_blocks) {
+                          const size_t num_blocks)
+        : CommonAlgorithmParams(dataset_name, numeric_table_type, num_blocks) {
     }
   };
 
-  LowOrderMomentsOnline(const std::string& name, const LowOrderMomentsParams& params) :
-    params_(params), FixtureOnline<AlgorithmType, DeviceType>(params_) {
+  LowOrderMomentsOnline(const std::string& name, const LowOrderMomentsParams& params)
+      : params_(params),
+        FixtureOnline<AlgorithmType, DeviceType>(params_) {
     this->SetName(name.c_str());
   }
 

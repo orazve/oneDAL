@@ -41,18 +41,19 @@ NumericTablePtr NumericTableFactory::create_numeric_table(
 
 DataSlice::DataSlice(const NumericTablePtr& x,
                      const size_t num_blocks,
-                     NumericTableType numeric_table_type) :
-  x_blocks_(num_blocks),
-  labeled_(false) {
+                     NumericTableType numeric_table_type)
+    : x_blocks_(num_blocks),
+      labeled_(false) {
   initialize(numeric_table_type, num_blocks, x);
 }
 
 DataSlice::DataSlice(const NumericTablePtr& x,
                      const NumericTablePtr& y,
                      const size_t num_blocks,
-                     NumericTableType numeric_table_type) :
-  x_blocks_(num_blocks),
-  y_blocks_(num_blocks), labeled_(true) {
+                     NumericTableType numeric_table_type)
+    : x_blocks_(num_blocks),
+      y_blocks_(num_blocks),
+      labeled_(true) {
   initialize(numeric_table_type, num_blocks, x, y);
 }
 
@@ -93,7 +94,8 @@ NumericTablePtr DataSlice::xy() const {
 
   if ((x_blocks_.empty()) && (y_blocks_.empty())) {
     throw EmptyNumericTable("Dataset does not contain neither X nor Y slices");
-  } else {
+  }
+  else {
     return MergedNumericTable::create(x_blocks_.back(), y_blocks_.back());
   }
 
@@ -112,7 +114,8 @@ NumericTablePtr DataSlice::xy_blocks(const size_t block_index) const {
   if (((x_blocks_.empty()) && (y_blocks_.empty())) ||
       ((!x_blocks_[block_index].get()) && ((!y_blocks_[block_index].get())))) {
     throw EmptyNumericTable("Dataset does not contain neither X nor Y slices");
-  } else {
+  }
+  else {
     return MergedNumericTable::create(x_blocks_[block_index], y_blocks_[block_index]);
   }
 
@@ -128,7 +131,8 @@ NumericTablePtr DataSlice::xy_blocks(const size_t block_index) const {
 bool DataSlice::empty() const {
   if (labeled_) {
     return (x_blocks_.empty()) || (y_blocks_.empty());
-  } else {
+  }
+  else {
     return x_blocks_.empty();
   }
 }
@@ -142,7 +146,8 @@ void DataSlice::initialize(NumericTableType numeric_table_type,
     if (y.get()) {
       y_blocks_[0] = y;
     }
-  } else {
+  }
+  else {
     const size_t num_rows   = x->getNumberOfRows();
     const size_t block_size = std::ceil(float(num_rows) / num_blocks);
 
@@ -204,20 +209,24 @@ NumericTablePtr DataSlice::copy_block(const NumericTablePtr& numeric_table,
 Dataset::Dataset(const DataSlice& train_slice,
                  const DataSlice& test_slice,
                  const DataSlice& full_slice,
-                 const DataSlice& index_slice) :
-  train_slice_(train_slice),
-  test_slice_(test_slice), full_slice_(full_slice), index_slice_(index_slice) {
+                 const DataSlice& index_slice)
+    : train_slice_(train_slice),
+      test_slice_(test_slice),
+      full_slice_(full_slice),
+      index_slice_(index_slice) {
 }
 
 Dataset::Dataset(const DataSlice& train_slice,
                  const DataSlice& test_slice,
-                 const DataSlice& full_slice) :
-  train_slice_(train_slice),
-  test_slice_(test_slice), full_slice_(full_slice) {
+                 const DataSlice& full_slice)
+    : train_slice_(train_slice),
+      test_slice_(test_slice),
+      full_slice_(full_slice) {
 }
 
-Dataset::Dataset(const DataSlice& train_slice, const DataSlice& test_slice) :
-  train_slice_(train_slice), test_slice_(test_slice) {
+Dataset::Dataset(const DataSlice& train_slice, const DataSlice& test_slice)
+    : train_slice_(train_slice),
+      test_slice_(test_slice) {
 }
 
 Dataset::Dataset(const DataSlice& full_slice) : full_slice_(full_slice) {
@@ -226,7 +235,8 @@ Dataset::Dataset(const DataSlice& full_slice) : full_slice_(full_slice) {
 DataSlice Dataset::full() const {
   if (full_slice_.empty()) {
     throw EmptyNumericTable("Full slice of the dataset is empty");
-  } else {
+  }
+  else {
     return full_slice_;
   }
 }
