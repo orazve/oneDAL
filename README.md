@@ -15,7 +15,7 @@ The repo contains benchmarks for oneDAL algorithms. This software use Google Ben
 | **Statistics**               | Covariance                          | &#x2611;      | &#x2611;       | &#x2611;      | &#x2611;       |
 |                              | Moments of Low Order                | &#x2611;      | &#x2611;       | &#x2611;      | &#x2611;       |
 
-## How to Build and Run oneDAL benchmarks
+## How to Build and Run oneDAL Benchmarks
 
 ### Setting Up Your Build Environment
 
@@ -76,7 +76,7 @@ make -j install
 
 ### Running Benchmarks
 
-#### Download datasets
+#### Download Datasets
 
 Before running benchmarks it's necessary to download datasets (if you have no it) which will be used with them. To download datasets `Python` is used whose version should be >=3.7.
 
@@ -103,7 +103,7 @@ By default all datasets which are used with benchmarks will be downloaded. To se
 $ python higgs_loader.py
 ```
 
-#### Run benchmarks
+#### Run Benchmarks
 
 ```bash
 # Go to the build directory
@@ -111,6 +111,35 @@ $ cd ../_build
 # Run becnhmarks for oneDAL algorithms
 $ ./Benchmark
 ```
+
+#### Benchmark Output
+
+Below benchmark output is presented for `Logistic Regression SGD` algorithm with the following parameters:
+
+- device at which algorithm is run: GPU
+- data type of the algorithm: float
+- repetitions count of the benchmark (algorithm): 5
+- dataset: Susy with observations count is equal to 4.5 M
+
+```bash
+-------------------------------------------------------------------------------------------------------------------------------
+Benchmark                                                                           Time        CPU  Iterations UserCounters...
+-------------------------------------------------------------------------------------------------------------------------------
+LogregTrainSGD/GpuDevice/float/Susy:4.5M/iterations:1/repeats:5_mean            29133 ms   20809 ms           5 applyBeta=4.03009k applyGradient=24.1492k buildProgram=140.492 makeStep=104.176 sigmoids=137.736 subVectors=363.964
+LogregTrainSGD/GpuDevice/float/Susy:4.5M/iterations:1/repeats:5_median          28631 ms   20419 ms           5 applyBeta=3.81528k applyGradient=24.0848k buildProgram=0.502345 makeStep=36.5954 sigmoids=65.0416 subVectors=295.365
+LogregTrainSGD/GpuDevice/float/Susy:4.5M/iterations:1/repeats:5_stddev           1129 ms     903 ms           5 applyBeta=502.621 applyGradient=143.781 buildProgram=313.049 makeStep=150.985 sigmoids=162.632 subVectors=159.857
+LogregTrainSGD/GpuDevice/float/Susy:4.5M/iterations:1/repeats:5_box_filter      28628 ms   20406 ms           5 applyBeta=3.8054k applyGradient=24.0854k buildProgram=0.492648 makeStep=36.654 sigmoids=65.0047 subVectors=292.531
+LogregTrainSGD/GpuDevice/float/Susy:4.5M/iterations:1/repeats:5_first_iteration 31152 ms   22423 ms           5 applyBeta=4.92885k applyGradient=24.4044k buildProgram=700.492 makeStep=374.263 sigmoids=428.661 subVectors=649.693
+```
+
+where:
+
+- `Time` column devotes wall clock time
+- `CPU` column devotes CPU time
+- `Iterations` column devotes repetitions count of the benchmark (algorithm)
+- `UserCounters` column devotes time of the algorithm kernels
+
+Currently, the following time statistics are supported: `mean`, `median`, `stddev`, `box filter` and `first iteration`.
 
 ### Optional Possibilities of Running
 
