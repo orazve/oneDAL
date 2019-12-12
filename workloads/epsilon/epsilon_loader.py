@@ -62,13 +62,6 @@ def epsilon(root_dir=None):
 
     df_raw = pd.read_csv(filename)
 
-    num_train = 80000
-    csv_file = os.path.join(dataset_dir, 'epsilon_80k_train.csv')
-    X_train = df_raw.iloc[:num_train, 1:].values
-    y_train = df_raw.iloc[:num_train, 0].values
-    df_train = pd.DataFrame(np.concatenate((X_train, y_train[:, None]), axis=1))
-    df_train.to_csv(csv_file, header=False, index=False)
-
     num_train = 30000
     csv_file = os.path.join(dataset_dir, 'epsilon_30k_train.csv')
     data_full = df_raw.iloc[:num_train, :].values
@@ -77,20 +70,37 @@ def epsilon(root_dir=None):
     patch_epsilon(csv_file)
 
     df_patched = pd.read_csv(csv_file)
-    X_train = df_patched.iloc[:num_train, 1:]
+    X_train = df_patched.iloc[:num_train, 1:].values
     y_train = df_patched.iloc[:num_train, 0].values
-
-    # y_train[y_train <= 0] = 0
-    # y_train[y_train > 0]  = 1
 
     df_train = pd.DataFrame(np.concatenate((X_train, y_train[:, None]), axis=1))
     df_train.to_csv(csv_file, header=False, index=False)
 
     num_train = 50000
-    X_train = df_patched.iloc[:num_train, 1:]
+    csv_file = os.path.join(dataset_dir, 'epsilon_50k.csv')
+    data_full = df_raw.iloc[:num_train, :].values
+    df_train = pd.DataFrame(data_full)
+    df_train.to_csv(csv_file, header=False, index=False)
+    patch_epsilon(csv_file)
+
+    df_patched = pd.read_csv(csv_file)
+    X_train = df_patched.iloc[:num_train, 1:].values
     y_train = df_patched.iloc[:num_train, 0].values
 
-    csv_file = os.path.join(dataset_dir, 'epsilon_50k.csv')
+    df_train = pd.DataFrame(np.concatenate((X_train, y_train[:, None]), axis=1))
+    df_train.to_csv(csv_file, header=False, index=False)
+
+    num_train = 80000
+    csv_file = os.path.join(dataset_dir, 'epsilon_80k_train.csv')
+    data_full = df_raw.iloc[:num_train, :].values
+    df_train = pd.DataFrame(data_full)
+    df_train.to_csv(csv_file, header=False, index=False)
+    patch_epsilon(csv_file)
+
+    df_patched = pd.read_csv(csv_file)
+    X_train = df_patched.iloc[:num_train, 1:].values
+    y_train = df_patched.iloc[:num_train, 0].values
+
     df_train = pd.DataFrame(np.concatenate((X_train, y_train[:, None]), axis=1))
     df_train.to_csv(csv_file, header=False, index=False)
 
