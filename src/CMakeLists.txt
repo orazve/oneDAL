@@ -25,7 +25,8 @@ set(ALGORITHMS_LIST
     pca
     linear_regression
     low_order_moments
-    knn)
+    knn
+    gradient_boosted_trees)
 
 list(SORT ALGORITHMS_LIST)
 

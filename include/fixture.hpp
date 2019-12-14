@@ -124,10 +124,10 @@ public:
 
   void SetUp(benchmark::State& state) final {
     try {
+      daal::services::Environment::getInstance()->setDefaultExecutionContext(*ctx_);
       if (current_run_ == 0) {
         common_params_.load_dataset();
       }
-      daal::services::Environment::getInstance()->setDefaultExecutionContext(*ctx_);
       set_algorithm();
       set_input();
       set_parameters();
