@@ -35,8 +35,7 @@ public:
               const FPType ratio_components)
         : CommonAlgorithmParams(dataset_name, numeric_table_type),
           compute_id(compute_id),
-          ratio_components(ratio_components) {
-    }
+          ratio_components(ratio_components) {}
 
     const daal_pca::ResultToComputeId compute_id;
     const FPType ratio_components;

@@ -75,8 +75,7 @@ struct CommonAlgorithmParams {
                         const size_t num_blocks = 1)
       : dataset_name(dataset_name),
         numeric_table_type(numeric_table_type),
-        num_blocks(num_blocks) {
-  }
+        num_blocks(num_blocks) {}
 
   void load_dataset() {
     auto dataset_loader = create_registered<DatasetLoader>(dataset_name);
@@ -104,30 +103,29 @@ public:
       : ::benchmark::Fixture(),
         common_params_(params),
         current_run_(0),
-        num_runs_(MAX_NUM_OF_RUNS) {
-#ifdef DPCPP_INTERFACES
-    cl::sycl::device device;
-    try {
-      device = cl::sycl::device(DeviceType::get_device());
-    }
-    catch (...) {
-      throw NotAvailableDevice("The device is not supported");
-    }
-    cl::sycl::queue queue(device);
-    ctx_ = std::make_unique<daal::services::ExecutionContext>(
-      daal::services::SyclExecutionContext(queue));
-#else
-    ctx_ =
-      std::make_unique<daal::services::ExecutionContext>(daal::services::CpuExecutionContext());
-#endif
-  }
+        num_runs_(MAX_NUM_OF_RUNS) {}
 
   void SetUp(benchmark::State& state) final {
     try {
-      daal::services::Environment::getInstance()->setDefaultExecutionContext(*ctx_);
       if (current_run_ == 0) {
+#ifdef DPCPP_INTERFACES
+        cl::sycl::device device;
+        try {
+          device = cl::sycl::device(DeviceType::get_device());
+        }
+        catch (...) {
+          throw NotAvailableDevice("The device is not supported");
+        }
+        cl::sycl::queue queue(device);
+        auto ctx = daal::services::ExecutionContext(daal::services::SyclExecutionContext(queue));
+#else
+        auto ctx = daal::services::ExecutionContext(daal::services::CpuExecutionContext());
+#endif
+        daal::services::Environment::getInstance()->setDefaultExecutionContext(ctx);
+
         common_params_.load_dataset();
       }
+
       set_algorithm();
       set_input();
       set_parameters();
@@ -163,17 +161,13 @@ public:
   }
 
 protected:
-  virtual void run_benchmark(benchmark::State& state) {
-  }
+  virtual void run_benchmark(benchmark::State& state) {}
 
-  virtual void set_algorithm() {
-  }
+  virtual void set_algorithm() {}
 
-  virtual void set_input() {
-  }
+  virtual void set_input() {}
 
-  virtual void set_parameters() {
-  }
+  virtual void set_parameters() {}
 
 protected:
   CommonAlgorithmParams& common_params_;
@@ -188,8 +182,7 @@ private:
 template <typename AlgorithmType, typename DeviceType>
 class FixtureBatch : public Fixture<AlgorithmType, DeviceType> {
 public:
-  FixtureBatch(CommonAlgorithmParams& params) : Fixture<AlgorithmType, DeviceType>(params) {
-  }
+  FixtureBatch(CommonAlgorithmParams& params) : Fixture<AlgorithmType, DeviceType>(params) {}
 
 protected:
   void run_benchmark(benchmark::State& state) final {
@@ -202,8 +195,7 @@ protected:
 template <typename AlgorithmType, typename DeviceType>
 class FixtureOnline : public Fixture<AlgorithmType, DeviceType> {
 public:
-  FixtureOnline(CommonAlgorithmParams& params) : Fixture<AlgorithmType, DeviceType>(params) {
-  }
+  FixtureOnline(CommonAlgorithmParams& params) : Fixture<AlgorithmType, DeviceType>(params) {}
 
 protected:
   virtual void set_input_block(const size_t block_index) = 0;

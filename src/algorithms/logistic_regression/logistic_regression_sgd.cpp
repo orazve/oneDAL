@@ -46,8 +46,7 @@ public:
           intercept_flag(intercept_flag),
           penalty_l2(penalty_l2),
           ratio_batch(ratio_batch),
-          accuracy_threshold(0.0) {
-    }
+          accuracy_threshold(0.0) {}
 
     const size_t num_iterations;
     const bool intercept_flag;

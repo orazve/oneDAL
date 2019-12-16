@@ -39,8 +39,7 @@ public:
                  const size_t num_clusters = 0)
         : CommonAlgorithmParams(dataset_name, numeric_table_type),
           num_iterations(num_iterations),
-          num_clusters(num_clusters) {
-    }
+          num_clusters(num_clusters) {}
 
     size_t num_iterations;
     size_t num_clusters;

@@ -31,8 +31,7 @@ public:
   struct LowOrderMomentsParams : public CommonAlgorithmParams {
     LowOrderMomentsParams(const DatasetName& dataset_name,
                           const NumericTableType numeric_table_type)
-        : CommonAlgorithmParams(dataset_name, numeric_table_type) {
-    }
+        : CommonAlgorithmParams(dataset_name, numeric_table_type) {}
   };
 
   LowOrderMomentsBatch(const std::string& name, const LowOrderMomentsParams& params)

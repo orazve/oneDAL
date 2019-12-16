@@ -56,8 +56,7 @@ Profiler* Profiler::get_instance() {
   return &instance;
 }
 
-Profiler::Profiler() {
-}
+Profiler::Profiler() {}
 
 std::map<const char*, uint64_t> Profiler::combine() {
 #ifdef TBB_USE
@@ -149,8 +148,7 @@ void Profiler::endTask(const char* task_name) {
   }
 }
 
-ProfilerTask::ProfilerTask(const char* task_name) : _task_name(task_name) {
-}
+ProfilerTask::ProfilerTask(const char* task_name) : _task_name(task_name) {}
 
 ProfilerTask::~ProfilerTask() {
   Profiler::endTask(_task_name);

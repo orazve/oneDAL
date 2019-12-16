@@ -33,8 +33,7 @@ public:
                  const NumericTableType numeric_table_type,
                  const bool intercept_flag)
         : CommonAlgorithmParams(dataset_name, numeric_table_type),
-          intercept_flag(intercept_flag) {
-    }
+          intercept_flag(intercept_flag) {}
 
     const bool intercept_flag;
   };

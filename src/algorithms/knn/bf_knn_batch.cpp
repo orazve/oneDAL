@@ -39,8 +39,7 @@ public:
               const NumericTableType numeric_type,
               const size_t num_k)
         : CommonAlgorithmParams(dataset_name, numeric_type),
-          num_k(num_k) {
-    }
+          num_k(num_k) {}
 
     const kNeighbors num_k;
   };

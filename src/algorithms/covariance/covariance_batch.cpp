@@ -29,8 +29,7 @@ public:
 
   struct CovarianceParams : public CommonAlgorithmParams {
     CovarianceParams(const DatasetName& dataset_name, const NumericTableType numeric_table_type)
-        : CommonAlgorithmParams(dataset_name, numeric_table_type) {
-    }
+        : CommonAlgorithmParams(dataset_name, numeric_table_type) {}
   };
 
   CovarianceBatch(const std::string& name, const CovarianceParams& params)

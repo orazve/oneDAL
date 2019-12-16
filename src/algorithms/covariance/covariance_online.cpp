@@ -32,8 +32,7 @@ public:
     CovarianceParams(const DatasetName& dataset_name,
                      const NumericTableType numeric_table_type,
                      const size_t num_blocks)
-        : CommonAlgorithmParams(dataset_name, numeric_table_type, num_blocks) {
-    }
+        : CommonAlgorithmParams(dataset_name, numeric_table_type, num_blocks) {}
   };
 
   CovarianceOnline(const std::string& name, const CovarianceParams& params)

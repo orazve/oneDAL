@@ -213,24 +213,20 @@ Dataset::Dataset(const DataSlice& train_slice,
     : train_slice_(train_slice),
       test_slice_(test_slice),
       full_slice_(full_slice),
-      index_slice_(index_slice) {
-}
+      index_slice_(index_slice) {}
 
 Dataset::Dataset(const DataSlice& train_slice,
                  const DataSlice& test_slice,
                  const DataSlice& full_slice)
     : train_slice_(train_slice),
       test_slice_(test_slice),
-      full_slice_(full_slice) {
-}
+      full_slice_(full_slice) {}
 
 Dataset::Dataset(const DataSlice& train_slice, const DataSlice& test_slice)
     : train_slice_(train_slice),
-      test_slice_(test_slice) {
-}
+      test_slice_(test_slice) {}
 
-Dataset::Dataset(const DataSlice& full_slice) : full_slice_(full_slice) {
-}
+Dataset::Dataset(const DataSlice& full_slice) : full_slice_(full_slice) {}
 
 DataSlice Dataset::full() const {
   if (full_slice_.empty()) {
@@ -316,8 +312,7 @@ bool Dataset::has_test() const {
   return !test_slice_.empty();
 }
 
-Workload::Workload(const std::string& name) : name_(name) {
-}
+Workload::Workload(const std::string& name) : name_(name) {}
 
 std::string Workload::path() const {
   const auto& root_path = GlobalConfig::instance().root_path();

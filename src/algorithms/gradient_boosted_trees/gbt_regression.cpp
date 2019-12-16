@@ -40,8 +40,7 @@ public:
         : CommonAlgorithmParams(dataset_name, numeric_table_type),
           maxBins(maxBins),
           maxIterations(maxIterations),
-          maxTreeDepth(maxTreeDepth) {
-    }
+          maxTreeDepth(maxTreeDepth) {}
 
     size_t maxBins;
     size_t maxIterations;
