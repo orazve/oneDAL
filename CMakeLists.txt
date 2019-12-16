@@ -31,7 +31,7 @@ if(DAL_USE_DPCPP_INTERFACES)
   set(CMAKE_CXX_COMPILER "${DPCPP_COMPILER}")
 endif()
 
-project(Benchmarking_Demo LANGUAGES CXX)
+project(Benchmark LANGUAGES CXX)
 
 option(KERNEL_PROFILER "Use kernel profiler" OFF)
 option(DAL_USE_PARALLEL "Use DAL parallel version" ON)
@@ -70,21 +70,13 @@ message(STATUS "DAL_USE_DPCPP_INTERFACES .............. "
 message(STATUS "DAL_USE_PARALLEL ...................... " ${DAL_USE_PARALLEL})
 message(STATUS "DAL_USE_STATIC ........................ " ${DAL_USE_STATIC})
 
-set(BENCHMARK_ENABLE_TESTING
-    OFF
-    CACHE BOOL "Suppressing benchmark's tests" FORCE)
-set(BENCHMARK_ENABLE_INSTALL
-    OFF
-    CACHE BOOL "Suppressing benchmark's install" FORCE)
-
-set(MESSAGE_QUIET ON)
-add_subdirectory(third-party/benchmark)
-set(MESSAGE_QUIET OFF)
-
 find_package(DAL REQUIRED)
 
 include_directories(include)
 
+set(THIRDPARTY_INSTALL_DIR ${CMAKE_BINARY_DIR}/third-party)
+
+add_subdirectory(third-party)
 add_subdirectory(src)
 
 include(${CMAKE_MODULE_PATH}/clang-format.cmake)

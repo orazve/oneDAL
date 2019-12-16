@@ -40,6 +40,8 @@ file(GLOB UTILS_CPP utils/*.cpp)
 
 add_executable(${BENCHMARK_TARGET} main.cpp)
 
+add_dependencies(${BENCHMARK_TARGET} google-benchmark)
+
 target_sources(
   ${BENCHMARK_TARGET}
   PRIVATE
@@ -52,15 +54,14 @@ target_sources(
 target_include_directories(
   ${BENCHMARK_TARGET}
   PRIVATE ${CMAKE_SOURCE_DIR}/src/utils
-  PRIVATE ${GBENCH_INCLUDE_DIR}
+  PRIVATE ${CMAKE_BINARY_DIR}/third-party/include
   PRIVATE ${DAL_INCLUDE_DIR})
 
 target_link_libraries(
   ${BENCHMARK_TARGET}
-  PRIVATE benchmark
+  PRIVATE ${GBENCHMARK_LIBRARY}
   PRIVATE ${DPCPP_LIBRARIES}
   PRIVATE ${DAL_LIBRARIES}
-  PRIVATE ${UTILS_LIBRARY}
   PRIVATE ${TBB_LIBRARIES}
   PRIVATE ${CMAKE_THREAD_LIBS_INIT}
   PRIVATE ${CMAKE_DL_LIBS})
