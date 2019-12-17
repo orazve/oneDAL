@@ -184,8 +184,8 @@ NumericTablePtr DataSlice::copy_block(const NumericTablePtr& numeric_table,
   }
 
   BlockDescriptor<FPType> bd_r;
-  numeric_table->getBlockOfRows(start_row, end_row - start_row, ReadWriteMode::readOnly, bd_r);
-  FPType* ptr_r = bd_r.getBlockPtr();
+  numeric_table->getBlockOfRows(0, num_rows, ReadWriteMode::readOnly, bd_r);
+  const FPType* const ptr_r = bd_r.getBlockPtr();
 
   NumericTablePtr numeric_table_tmp =
     NumericTableFactory().create_numeric_table(numeric_table_type,
@@ -195,10 +195,11 @@ NumericTablePtr DataSlice::copy_block(const NumericTablePtr& numeric_table,
 
   BlockDescriptor<FPType> bd_w;
   numeric_table_tmp->getBlockOfRows(0, end_row - start_row, ReadWriteMode::writeOnly, bd_w);
-  FPType* ptr_w = bd_w.getBlockPtr();
+  FPType* const ptr_w = bd_w.getBlockPtr();
 
   const size_t num_elems = num_cols * (end_row - start_row);
-  std::copy(ptr_r, ptr_r + num_elems, ptr_w);
+  const size_t offset    = start_row * num_cols;
+  std::copy(ptr_r + offset, ptr_r + offset + num_elems, ptr_w);
 
   numeric_table->releaseBlockOfRows(bd_r);
   numeric_table_tmp->releaseBlockOfRows(bd_w);
