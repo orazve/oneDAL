@@ -25,57 +25,57 @@ namespace daal_lin_reg_train = daal::algorithms::linear_regression::training;
 template <typename DeviceType, typename FPType>
 class LinRegTrain : public FixtureBatch<daal_lin_reg_train::Batch<FPType>, DeviceType> {
 public:
-    using AlgorithmType = typename daal_lin_reg_train::Batch<FPType>;
-    using InterceptFlag = bool;
+  using AlgorithmType = typename daal_lin_reg_train::Batch<FPType>;
+  using InterceptFlag = bool;
 
-    struct LinRegParams : public CommonAlgorithmParams {
-        LinRegParams(const DatasetName& dataset_name,
-                     const NumericTableType numeric_table_type,
-                     const bool intercept_flag)
-                : CommonAlgorithmParams(dataset_name, numeric_table_type),
-                  intercept_flag(intercept_flag) {}
+  struct LinRegParams : public CommonAlgorithmParams {
+    LinRegParams(const DatasetName& dataset_name,
+                 const NumericTableType numeric_table_type,
+                 const bool intercept_flag)
+        : CommonAlgorithmParams(dataset_name, numeric_table_type),
+          intercept_flag(intercept_flag) {}
 
-        const bool intercept_flag;
-    };
+    const bool intercept_flag;
+  };
 
-    using DictionaryAlgParams = DictionaryParams<LinRegParams>;
+  using DictionaryAlgParams = DictionaryParams<LinRegParams>;
 
-    LinRegTrain(const std::string& name, const LinRegParams& params)
-            : params_(params),
-              FixtureBatch<AlgorithmType, DeviceType>(params_) {
-        this->SetName(name.c_str());
-    }
+  LinRegTrain(const std::string& name, const LinRegParams& params)
+      : params_(params),
+        FixtureBatch<AlgorithmType, DeviceType>(params_) {
+    this->SetName(name.c_str());
+  }
 
-    static DictionaryParams<LinRegParams> get_params() {
-        return { { "YearMsdTrain",
-                   LinRegParams(DatasetName("year_prediction_msd"),
-                                TableType(SyclHomogen, FPType),
-                                InterceptFlag(false)) },
-                 { "Higgs:1M",
-                   LinRegParams(DatasetName("higgs_1M_reg"),
-                                TableType(SyclHomogen, FPType),
-                                InterceptFlag(true)) } };
-    }
+  static DictionaryParams<LinRegParams> get_params() {
+    return { { "YearMsdTrain",
+               LinRegParams(DatasetName("year_prediction_msd"),
+                            TableType(SyclHomogen, FPType),
+                            InterceptFlag(false)) },
+             { "Higgs:1M",
+               LinRegParams(DatasetName("higgs_1M_reg"),
+                            TableType(SyclHomogen, FPType),
+                            InterceptFlag(true)) } };
+  }
 
 protected:
-    void set_algorithm() final {
-        this->algorithm_ = std::make_unique<AlgorithmType>(daal_lin_reg_train::Batch<FPType>());
-    }
+  void set_algorithm() final {
+    this->algorithm_ = std::make_unique<AlgorithmType>(daal_lin_reg_train::Batch<FPType>());
+  }
 
-    void set_input() final {
-        auto x = params_.dataset.train().x();
-        auto y = params_.dataset.train().y();
+  void set_input() final {
+    auto x = params_.dataset.train().x();
+    auto y = params_.dataset.train().y();
 
-        this->algorithm_->input.set(daal_lin_reg_train::data, x);
-        this->algorithm_->input.set(daal_lin_reg_train::dependentVariables, y);
-    }
+    this->algorithm_->input.set(daal_lin_reg_train::data, x);
+    this->algorithm_->input.set(daal_lin_reg_train::dependentVariables, y);
+  }
 
-    void set_parameters() final {
-        this->algorithm_->parameter.interceptFlag = params_.intercept_flag;
-    }
+  void set_parameters() final {
+    this->algorithm_->parameter.interceptFlag = params_.intercept_flag;
+  }
 
 private:
-    LinRegParams params_;
+  LinRegParams params_;
 };
 
 DAAL_BENCH_REGISTER(LinRegTrain, CpuDevice, float);

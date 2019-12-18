@@ -25,65 +25,63 @@ namespace daal_pca = daal::algorithms::pca;
 template <typename DeviceType, typename FPType>
 class PCABatch : public FixtureBatch<daal_pca::Batch<FPType>, DeviceType> {
 public:
-    using AlgorithmType = typename daal_pca::Batch<FPType>;
-    using nComponent    = FPType;
+  using AlgorithmType = typename daal_pca::Batch<FPType>;
+  using nComponent    = FPType;
 
-    struct PcaParams : public CommonAlgorithmParams {
-        PcaParams(const DatasetName& dataset_name,
-                  const NumericTableType numeric_table_type,
-                  const daal_pca::ResultToComputeId compute_id,
-                  const FPType ratio_components)
-                : CommonAlgorithmParams(dataset_name, numeric_table_type),
-                  compute_id(compute_id),
-                  ratio_components(ratio_components) {}
+  struct PcaParams : public CommonAlgorithmParams {
+    PcaParams(const DatasetName& dataset_name,
+              const NumericTableType numeric_table_type,
+              const daal_pca::ResultToComputeId compute_id,
+              const FPType ratio_components)
+        : CommonAlgorithmParams(dataset_name, numeric_table_type),
+          compute_id(compute_id),
+          ratio_components(ratio_components) {}
 
-        const daal_pca::ResultToComputeId compute_id;
-        const FPType ratio_components;
-    };
+    const daal_pca::ResultToComputeId compute_id;
+    const FPType ratio_components;
+  };
 
-    PCABatch(const std::string& name, const PcaParams& params)
-            : params_(params),
-              FixtureBatch<AlgorithmType, DeviceType>(params_) {
-        this->SetName(name.c_str());
-    }
+  PCABatch(const std::string& name, const PcaParams& params)
+      : params_(params),
+        FixtureBatch<AlgorithmType, DeviceType>(params_) {
+    this->SetName(name.c_str());
+  }
 
-    static DictionaryParams<PcaParams> get_params() {
-        return {
-            { "Higgs:1M",
-              PcaParams(DatasetName("higgs_1M"),
-                        TableType(SyclHomogen, FPType),
-                        daal_pca::ResultToComputeId(daal_pca::eigenvalues | daal_pca::eigenvectors |
-                                                    daal_pca::variances),
-                        nComponent(0.6)) },
-            { "Epsilon:30K",
-              PcaParams(DatasetName("epsilon_30k"),
-                        TableType(SyclHomogen, FPType),
-                        daal_pca::ResultToComputeId(daal_pca::eigenvalues | daal_pca::eigenvectors |
-                                                    daal_pca::variances),
-                        nComponent(0.6)) }
-        };
-    }
+  static DictionaryParams<PcaParams> get_params() {
+    return { { "Higgs:1M",
+               PcaParams(DatasetName("higgs_1M"),
+                         TableType(SyclHomogen, FPType),
+                         daal_pca::ResultToComputeId(daal_pca::eigenvalues |
+                                                     daal_pca::eigenvectors | daal_pca::variances),
+                         nComponent(0.6)) },
+             { "Epsilon:30K",
+               PcaParams(DatasetName("epsilon_30k"),
+                         TableType(SyclHomogen, FPType),
+                         daal_pca::ResultToComputeId(daal_pca::eigenvalues |
+                                                     daal_pca::eigenvectors | daal_pca::variances),
+                         nComponent(0.6)) } };
+  }
 
 protected:
-    void set_algorithm() final {
-        this->algorithm_ = std::make_unique<AlgorithmType>(AlgorithmType());
-    }
+  void set_algorithm() final {
+    this->algorithm_ = std::make_unique<AlgorithmType>(AlgorithmType());
+  }
 
-    void set_input() final {
-        auto x               = params_.dataset.full().x();
-        params_.num_features = x->getNumberOfColumns();
-        this->algorithm_->input.set(daal_pca::data, x);
-    }
+  void set_input() final {
+    auto x               = params_.dataset.full().x();
+    params_.num_features = x->getNumberOfColumns();
+    this->algorithm_->input.set(daal_pca::data, x);
+  }
 
-    void set_parameters() final {
-        this->algorithm_->parameter.isDeterministic = true;
-        this->algorithm_->parameter.nComponents =
-            size_t(params_.num_features * params_.ratio_components);
-        this->algorithm_->parameter.resultsToCompute = params_.compute_id;
-    }
+  void set_parameters() final {
+    this->algorithm_->parameter.isDeterministic = true;
+    this->algorithm_->parameter.nComponents =
+      size_t(params_.num_features * params_.ratio_components);
+    this->algorithm_->parameter.resultsToCompute = params_.compute_id;
+  }
 
 private:
-    PcaParams params_;
+  PcaParams params_;
 };
 
 DAAL_BENCH_REGISTER(PCABatch, CpuDevice, float);

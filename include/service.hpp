@@ -27,31 +27,31 @@ namespace dalbench {
 
 template <typename Delimeter>
 inline std::string join(const std::vector<std::string>& chunks, const Delimeter& delimeter) {
-    if (chunks.empty()) {
-        return std::string();
-    }
+  if (chunks.empty()) {
+    return std::string();
+  }
 
-    std::stringstream stream;
+  std::stringstream stream;
 
-    stream << chunks.front();
-    for (size_t i = 1; i < chunks.size(); i++) {
-        if (!chunks[i].empty()) {
-            stream << delimeter << chunks[i];
-        }
+  stream << chunks.front();
+  for (size_t i = 1; i < chunks.size(); i++) {
+    if (!chunks[i].empty()) {
+      stream << delimeter << chunks[i];
     }
-    return stream.str();
+  }
+  return stream.str();
 }
 
 inline std::string join_path(const std::vector<std::string>& chunks) {
-    return join(chunks, '/');
+  return join(chunks, '/');
 }
 
 inline std::string join_sentences(const std::vector<std::string>& chunks) {
-    return join(chunks, ". ");
+  return join(chunks, ". ");
 }
 
 inline bool can_open_file(const std::string& path) {
-    return std::ifstream(path, std::fstream::in).is_open();
+  return std::ifstream(path, std::fstream::in).is_open();
 }
 
 } // namespace dalbench

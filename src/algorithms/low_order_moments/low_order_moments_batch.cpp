@@ -24,52 +24,52 @@ namespace daal_low_order_moments = daal::algorithms::low_order_moments;
 
 template <typename DeviceType, typename FPType>
 class LowOrderMomentsBatch
-        : public FixtureBatch<daal_low_order_moments::Batch<FPType>, DeviceType> {
+    : public FixtureBatch<daal_low_order_moments::Batch<FPType>, DeviceType> {
 public:
-    using AlgorithmType = typename daal_low_order_moments::Batch<FPType>;
+  using AlgorithmType = typename daal_low_order_moments::Batch<FPType>;
 
-    struct LowOrderMomentsParams : public CommonAlgorithmParams {
-        LowOrderMomentsParams(const DatasetName& dataset_name,
-                              const NumericTableType numeric_table_type)
-                : CommonAlgorithmParams(dataset_name, numeric_table_type) {}
-    };
+  struct LowOrderMomentsParams : public CommonAlgorithmParams {
+    LowOrderMomentsParams(const DatasetName& dataset_name,
+                          const NumericTableType numeric_table_type)
+        : CommonAlgorithmParams(dataset_name, numeric_table_type) {}
+  };
 
-    LowOrderMomentsBatch(const std::string& name, const LowOrderMomentsParams& params)
-            : params_(params),
-              FixtureBatch<AlgorithmType, DeviceType>(params_) {
-        this->SetName(name.c_str());
-    }
+  LowOrderMomentsBatch(const std::string& name, const LowOrderMomentsParams& params)
+      : params_(params),
+        FixtureBatch<AlgorithmType, DeviceType>(params_) {
+    this->SetName(name.c_str());
+  }
 
-    static DictionaryParams<LowOrderMomentsParams> get_params() {
-        return { { "Higgs:2M",
-                   LowOrderMomentsParams(DatasetName("higgs_2M"), TableType(SyclHomogen, FPType)) },
-                 { "Epsilon:80K",
-                   LowOrderMomentsParams(DatasetName("epsilon_80k"),
-                                         TableType(SyclHomogen, FPType)) } };
-    }
+  static DictionaryParams<LowOrderMomentsParams> get_params() {
+    return { { "Higgs:2M",
+               LowOrderMomentsParams(DatasetName("higgs_2M"), TableType(SyclHomogen, FPType)) },
+             { "Epsilon:80K",
+               LowOrderMomentsParams(DatasetName("epsilon_80k"),
+                                     TableType(SyclHomogen, FPType)) } };
+  }
 
 protected:
-    void set_algorithm() final {
-        this->algorithm_ = std::make_unique<AlgorithmType>(AlgorithmType());
-    }
+  void set_algorithm() final {
+    this->algorithm_ = std::make_unique<AlgorithmType>(AlgorithmType());
+  }
 
-    void set_input() final {
-        auto x = params_.dataset.full().x();
-        this->algorithm_->input.set(daal_low_order_moments::data, x);
-    }
+  void set_input() final {
+    auto x = params_.dataset.full().x();
+    this->algorithm_->input.set(daal_low_order_moments::data, x);
+  }
 
 private:
-    LowOrderMomentsParams params_;
+  LowOrderMomentsParams params_;
 };
 
 DAAL_BENCH_REGISTER(LowOrderMomentsBatch, CpuDevice, float);
 DAAL_BENCH_REGISTER(LowOrderMomentsBatch, CpuDevice, double);
 
 #if INTEL_DAAL_VERSION >= ONEDAL_VERSION_2021_U1_BETA_04
-    #ifdef DPCPP_INTERFACES
+  #ifdef DPCPP_INTERFACES
 DAAL_BENCH_REGISTER(LowOrderMomentsBatch, GpuDevice, float);
 DAAL_BENCH_REGISTER(LowOrderMomentsBatch, GpuDevice, double);
-    #endif // DPCPP_INTERFACES
+  #endif // DPCPP_INTERFACES
 #endif // INTEL_DAAL_VERSION >= ONEDAL_VERSION_2021_U1_BETA_04
 
 } // end namespace low_order_moments

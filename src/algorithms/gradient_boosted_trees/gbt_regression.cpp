@@ -25,72 +25,72 @@ namespace daal_gbt_reg_train = daal::algorithms::gbt::regression::training;
 template <typename DeviceType, typename FPType>
 class GBTRegBatch : public FixtureBatch<daal_gbt_reg_train::Batch<FPType>, DeviceType> {
 public:
-    using AlgorithmType      = typename daal_gbt_reg_train::Batch<FPType>;
-    using AlgorithmParamType = typename AlgorithmType::ParameterType;
-    using maxBins            = size_t;
-    using maxIterations      = size_t;
-    using maxTreeDepth       = size_t;
+  using AlgorithmType      = typename daal_gbt_reg_train::Batch<FPType>;
+  using AlgorithmParamType = typename AlgorithmType::ParameterType;
+  using maxBins            = size_t;
+  using maxIterations      = size_t;
+  using maxTreeDepth       = size_t;
 
-    struct GBTParams : public CommonAlgorithmParams {
-        GBTParams(const DatasetName& dataset_name,
-                  const NumericTableType numeric_table_type,
-                  const size_t maxBins,
-                  const size_t maxIterations,
-                  const size_t maxTreeDepth)
-                : CommonAlgorithmParams(dataset_name, numeric_table_type),
-                  maxBins(maxBins),
-                  maxIterations(maxIterations),
-                  maxTreeDepth(maxTreeDepth) {}
+  struct GBTParams : public CommonAlgorithmParams {
+    GBTParams(const DatasetName& dataset_name,
+              const NumericTableType numeric_table_type,
+              const size_t maxBins,
+              const size_t maxIterations,
+              const size_t maxTreeDepth)
+        : CommonAlgorithmParams(dataset_name, numeric_table_type),
+          maxBins(maxBins),
+          maxIterations(maxIterations),
+          maxTreeDepth(maxTreeDepth) {}
 
-        size_t maxBins;
-        size_t maxIterations;
-        size_t maxTreeDepth;
-    };
+    size_t maxBins;
+    size_t maxIterations;
+    size_t maxTreeDepth;
+  };
 
-    using DictionaryAlgParams = DictionaryParams<GBTParams>;
+  using DictionaryAlgParams = DictionaryParams<GBTParams>;
 
-    GBTRegBatch(const std::string& name, const GBTParams& params)
-            : params_(params),
-              FixtureBatch<AlgorithmType, DeviceType>(params_) {
-        this->SetName(name.c_str());
-    }
+  GBTRegBatch(const std::string& name, const GBTParams& params)
+      : params_(params),
+        FixtureBatch<AlgorithmType, DeviceType>(params_) {
+    this->SetName(name.c_str());
+  }
 
-    static DictionaryParams<GBTParams> get_params() {
-        return { { "YearMsdTrain",
-                   GBTParams(DatasetName("year_prediction_msd"),
-                             TableType(SyclHomogen, FPType),
-                             maxBins(256),
-                             maxIterations(20),
-                             maxTreeDepth(6)) },
-                 { "Higgs:1M",
-                   GBTParams(DatasetName("higgs_1M_reg"),
-                             TableType(SyclHomogen, FPType),
-                             maxBins(256),
-                             maxIterations(20),
-                             maxTreeDepth(6)) } };
-    }
+  static DictionaryParams<GBTParams> get_params() {
+    return { { "YearMsdTrain",
+               GBTParams(DatasetName("year_prediction_msd"),
+                         TableType(SyclHomogen, FPType),
+                         maxBins(256),
+                         maxIterations(20),
+                         maxTreeDepth(6)) },
+             { "Higgs:1M",
+               GBTParams(DatasetName("higgs_1M_reg"),
+                         TableType(SyclHomogen, FPType),
+                         maxBins(256),
+                         maxIterations(20),
+                         maxTreeDepth(6)) } };
+  }
 
 protected:
-    void set_algorithm() final {
-        this->algorithm_ = std::make_unique<AlgorithmType>(AlgorithmType());
-    }
+  void set_algorithm() final {
+    this->algorithm_ = std::make_unique<AlgorithmType>(AlgorithmType());
+  }
 
-    void set_input() final {
-        auto X = params_.dataset.train().x();
-        auto Y = params_.dataset.train().y();
+  void set_input() final {
+    auto X = params_.dataset.train().x();
+    auto Y = params_.dataset.train().y();
 
-        this->algorithm_->input.set(daal_gbt_reg_train::data, X);
-        this->algorithm_->input.set(daal_gbt_reg_train::dependentVariable, Y);
-    }
+    this->algorithm_->input.set(daal_gbt_reg_train::data, X);
+    this->algorithm_->input.set(daal_gbt_reg_train::dependentVariable, Y);
+  }
 
-    void set_parameters() final {
-        this->algorithm_->parameter().maxBins       = params_.maxBins;
-        this->algorithm_->parameter().maxIterations = params_.maxIterations;
-        this->algorithm_->parameter().maxTreeDepth  = params_.maxTreeDepth;
-    }
+  void set_parameters() final {
+    this->algorithm_->parameter().maxBins       = params_.maxBins;
+    this->algorithm_->parameter().maxIterations = params_.maxIterations;
+    this->algorithm_->parameter().maxTreeDepth  = params_.maxTreeDepth;
+  }
 
 private:
-    GBTParams params_;
+  GBTParams params_;
 };
 
 DAAL_BENCH_REGISTER(GBTRegBatch, CpuDevice, float);

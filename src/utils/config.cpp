@@ -22,25 +22,25 @@
 namespace dalbench {
 
 std::string get_env_var(const char* var_name) {
-    const char* value = std::getenv(var_name);
-    if (!value) {
-        throw NotDefinedEnvironmentVariable("Environment variable " + std::string(var_name) +
-                                            " undefined");
-    }
-    return std::string(value);
+  const char* value = std::getenv(var_name);
+  if (!value) {
+    throw NotDefinedEnvironmentVariable("Environment variable " + std::string(var_name) +
+                                        " undefined");
+  }
+  return std::string(value);
 }
 
 GlobalConfig::GlobalConfig() {
-    root_path_ = get_env_var("DATASETSROOT");
+  root_path_ = get_env_var("DATASETSROOT");
 }
 
 const GlobalConfig& GlobalConfig::instance() {
-    static const GlobalConfig config;
-    return config;
+  static const GlobalConfig config;
+  return config;
 }
 
 const std::string GlobalConfig::root_path() const {
-    return root_path_;
+  return root_path_;
 }
 
 } // namespace dalbench

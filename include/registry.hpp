@@ -30,94 +30,94 @@ namespace dalbench {
 template <typename T>
 class ObjectCreator {
 public:
-    virtual ~ObjectCreator()  = default;
-    virtual T* create() const = 0;
+  virtual ~ObjectCreator()  = default;
+  virtual T* create() const = 0;
 
-    std::shared_ptr<T> create_shared() const {
-        return std::shared_ptr<T>(create());
-    }
+  std::shared_ptr<T> create_shared() const {
+    return std::shared_ptr<T>(create());
+  }
 };
 
 template <typename T, typename U>
 class DefaultObjectCreator : public ObjectCreator<T> {
-    virtual U* create() const override {
-        return new U();
-    }
+  virtual U* create() const override {
+    return new U();
+  }
 };
 
 template <typename T>
 class ObjectRegistry {
 public:
-    ObjectRegistry(ObjectRegistry&) = delete;
+  ObjectRegistry(ObjectRegistry&) = delete;
 
-    virtual ~ObjectRegistry() {
-        for (const auto& pair : creators_) {
-            delete pair.second;
-        }
+  virtual ~ObjectRegistry() {
+    for (const auto& pair : creators_) {
+      delete pair.second;
+    }
+  }
+
+  std::vector<std::string> names() const {
+    std::vector<std::string> names;
+    names.reserve(creators_.size());
+
+    for (const auto& pair : creators_) {
+      names.push_back(pair.first);
     }
 
-    std::vector<std::string> names() const {
-        std::vector<std::string> names;
-        names.reserve(creators_.size());
+    return names;
+  }
 
-        for (const auto& pair : creators_) {
-            names.push_back(pair.first);
-        }
+  T* create(const std::string& name) {
+    return get_creator(name)->create();
+  }
 
-        return names;
-    }
-
-    T* create(const std::string& name) {
-        return get_creator(name)->create();
-    }
-
-    std::shared_ptr<T> create_shared(const std::string& name) {
-        return get_creator(name)->create_shared();
-    }
+  std::shared_ptr<T> create_shared(const std::string& name) {
+    return get_creator(name)->create_shared();
+  }
 
 protected:
-    ObjectRegistry() = default;
+  ObjectRegistry() = default;
 
-    int register_internal(const char* name, const ObjectCreator<T>* creator) {
-        auto result = creators_.emplace(name, creator);
-        return result.second ? 0 : -1;
-    }
+  int register_internal(const char* name, const ObjectCreator<T>* creator) {
+    auto result = creators_.emplace(name, creator);
+    return result.second ? 0 : -1;
+  }
 
-    const ObjectCreator<T>* get_creator(const std::string& name) {
-        const auto it = creators_.find(name);
-        if (it == creators_.end()) {
-            throw CannotFindObject("Cannot find object {" + name + "} in the registry");
-        }
-        return it->second;
+  const ObjectCreator<T>* get_creator(const std::string& name) {
+    const auto it = creators_.find(name);
+    if (it == creators_.end()) {
+      throw CannotFindObject("Cannot find object {" + name + "} in the registry");
     }
+    return it->second;
+  }
 
 private:
-    std::map<std::string, const ObjectCreator<T>*> creators_;
+  std::map<std::string, const ObjectCreator<T>*> creators_;
 };
 
 template <typename T>
 class DefaultObjectRegistry : public ObjectRegistry<T> {
 public:
-    static DefaultObjectRegistry<T>& instance() {
-        static DefaultObjectRegistry<T> registry;
-        return registry;
-    }
+  static DefaultObjectRegistry<T>& instance() {
+    static DefaultObjectRegistry<T> registry;
+    return registry;
+  }
 
-    template <typename U>
-    static int sign_up(const char* name) {
-        auto creator = new DefaultObjectCreator<T, U>();
-        return instance().register_internal(name, creator);
-    }
+  template <typename U>
+  static int sign_up(const char* name) {
+    auto creator = new DefaultObjectCreator<T, U>();
+    return instance().register_internal(name, creator);
+  }
 };
 
 template <typename T>
 inline std::shared_ptr<T> create_registered(const std::string& name) {
-    return DefaultObjectRegistry<T>::instance().create_shared(name);
+  return DefaultObjectRegistry<T>::instance().create_shared(name);
 }
 
-#define REGISTER_DATASET(name, type)                               \
-    static const volatile int __dataset_##type##_creator_dummy__ = \
-        DefaultObjectRegistry<DatasetLoader>::sign_up<type>(name);
+#define REGISTER_DATASET(name, type)                             \
+  static const volatile int __dataset_##type##_creator_dummy__ = \
+    DefaultObjectRegistry<DatasetLoader>::sign_up<type>(name);
 
 } // namespace dalbench
 
