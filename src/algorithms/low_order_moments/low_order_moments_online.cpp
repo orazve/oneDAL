@@ -27,46 +27,46 @@ const size_t epsilon_blocks = 4;
 
 template <typename DeviceType, typename FPType>
 class LowOrderMomentsOnline
-    : public FixtureOnline<daal_low_order_moments::Online<FPType>, DeviceType> {
+        : public FixtureOnline<daal_low_order_moments::Online<FPType>, DeviceType> {
 public:
-  using AlgorithmType = typename daal_low_order_moments::Online<FPType>;
+    using AlgorithmType = typename daal_low_order_moments::Online<FPType>;
 
-  struct LowOrderMomentsParams : public CommonAlgorithmParams {
-    LowOrderMomentsParams(const DatasetName& dataset_name,
-                          const NumericTableType numeric_table_type,
-                          const size_t num_blocks)
-        : CommonAlgorithmParams(dataset_name, numeric_table_type, num_blocks) {}
-  };
+    struct LowOrderMomentsParams : public CommonAlgorithmParams {
+        LowOrderMomentsParams(const DatasetName& dataset_name,
+                              const NumericTableType numeric_table_type,
+                              const size_t num_blocks)
+                : CommonAlgorithmParams(dataset_name, numeric_table_type, num_blocks) {}
+    };
 
-  LowOrderMomentsOnline(const std::string& name, const LowOrderMomentsParams& params)
-      : params_(params),
-        FixtureOnline<AlgorithmType, DeviceType>(params_) {
-    this->SetName(name.c_str());
-  }
+    LowOrderMomentsOnline(const std::string& name, const LowOrderMomentsParams& params)
+            : params_(params),
+              FixtureOnline<AlgorithmType, DeviceType>(params_) {
+        this->SetName(name.c_str());
+    }
 
-  static DictionaryParams<LowOrderMomentsParams> get_params() {
-    return { { "Higgs:2M",
-               LowOrderMomentsParams(DatasetName("higgs_2M"),
-                                     TableType(SyclHomogen, FPType),
-                                     higgs_blocks) },
-             { "Epsilon:80K",
-               LowOrderMomentsParams(DatasetName("epsilon_80k"),
-                                     TableType(SyclHomogen, FPType),
-                                     epsilon_blocks) } };
-  }
+    static DictionaryParams<LowOrderMomentsParams> get_params() {
+        return { { "Higgs:2M",
+                   LowOrderMomentsParams(DatasetName("higgs_2M"),
+                                         TableType(SyclHomogen, FPType),
+                                         higgs_blocks) },
+                 { "Epsilon:80K",
+                   LowOrderMomentsParams(DatasetName("epsilon_80k"),
+                                         TableType(SyclHomogen, FPType),
+                                         epsilon_blocks) } };
+    }
 
 protected:
-  void set_algorithm() final {
-    this->algorithm_ = std::make_unique<AlgorithmType>(AlgorithmType());
-  }
+    void set_algorithm() final {
+        this->algorithm_ = std::make_unique<AlgorithmType>(AlgorithmType());
+    }
 
-  void set_input_block(const size_t block_index) final {
-    auto x_block = params_.dataset.full().x_block(block_index);
-    this->algorithm_->input.set(daal_low_order_moments::data, x_block);
-  }
+    void set_input_block(const size_t block_index) final {
+        auto x_block = params_.dataset.full().x_block(block_index);
+        this->algorithm_->input.set(daal_low_order_moments::data, x_block);
+    }
 
 private:
-  LowOrderMomentsParams params_;
+    LowOrderMomentsParams params_;
 };
 
 DAAL_BENCH_REGISTER(LowOrderMomentsOnline, CpuDevice, float);

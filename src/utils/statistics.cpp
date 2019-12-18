@@ -23,37 +23,37 @@ namespace dalbench {
 namespace statistics {
 
 double box_filter(const std::vector<double>& times) {
-  const double left  = 0.25;
-  const double right = 0.75;
+    const double left  = 0.25;
+    const double right = 0.75;
 
-  const size_t n                   = times.size();
-  std::vector<double> sorted_times = times;
-  std::sort(sorted_times.begin(), sorted_times.end());
+    const size_t n                   = times.size();
+    std::vector<double> sorted_times = times;
+    std::sort(sorted_times.begin(), sorted_times.end());
 
-  const double Q1 = sorted_times[size_t(n * left)];
-  const double Q3 = sorted_times[size_t(n * right)];
+    const double Q1 = sorted_times[size_t(n * left)];
+    const double Q3 = sorted_times[size_t(n * right)];
 
-  const double IQ = Q3 - Q1;
+    const double IQ = Q3 - Q1;
 
-  const double lower = Q1 - 1.5 * IQ;
-  const double upper = Q3 + 1.5 * IQ;
+    const double lower = Q1 - 1.5 * IQ;
+    const double upper = Q3 + 1.5 * IQ;
 
-  double sum   = 0.0;
-  double count = 0.0;
+    double sum   = 0.0;
+    double count = 0.0;
 
-  for (int i = 0; i < n; i++) {
-    const double timei = sorted_times[i];
-    if ((lower <= timei) && (timei <= upper)) {
-      count++;
-      sum += timei;
+    for (int i = 0; i < n; i++) {
+        const double timei = sorted_times[i];
+        if ((lower <= timei) && (timei <= upper)) {
+            count++;
+            sum += timei;
+        }
     }
-  }
 
-  return sum / count;
+    return sum / count;
 }
 
 double first_iteration(const std::vector<double>& times) {
-  return times[0];
+    return times[0];
 }
 
 } // namespace statistics

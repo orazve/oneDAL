@@ -26,14 +26,14 @@ std::string get_env_var(const char* var_name);
 
 class GlobalConfig {
 public:
-  static const GlobalConfig& instance();
+    static const GlobalConfig& instance();
 
-  const std::string root_path() const;
+    const std::string root_path() const;
 
 private:
-  GlobalConfig();
+    GlobalConfig();
 
-  std::string root_path_;
+    std::string root_path_;
 };
 
 } // namespace dalbench

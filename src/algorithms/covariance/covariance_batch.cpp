@@ -25,38 +25,38 @@ namespace daal_covariance = daal::algorithms::covariance;
 template <typename DeviceType, typename FPType>
 class CovarianceBatch : public FixtureBatch<daal_covariance::Batch<FPType>, DeviceType> {
 public:
-  using AlgorithmType = typename daal_covariance::Batch<FPType>;
+    using AlgorithmType = typename daal_covariance::Batch<FPType>;
 
-  struct CovarianceParams : public CommonAlgorithmParams {
-    CovarianceParams(const DatasetName& dataset_name, const NumericTableType numeric_table_type)
-        : CommonAlgorithmParams(dataset_name, numeric_table_type) {}
-  };
+    struct CovarianceParams : public CommonAlgorithmParams {
+        CovarianceParams(const DatasetName& dataset_name, const NumericTableType numeric_table_type)
+                : CommonAlgorithmParams(dataset_name, numeric_table_type) {}
+    };
 
-  CovarianceBatch(const std::string& name, const CovarianceParams& params)
-      : params_(params),
-        FixtureBatch<AlgorithmType, DeviceType>(params_) {
-    this->SetName(name.c_str());
-  }
+    CovarianceBatch(const std::string& name, const CovarianceParams& params)
+            : params_(params),
+              FixtureBatch<AlgorithmType, DeviceType>(params_) {
+        this->SetName(name.c_str());
+    }
 
-  static DictionaryParams<CovarianceParams> get_params() {
-    return { { "Higgs:1M",
-               CovarianceParams(DatasetName("higgs_1M"), TableType(SyclHomogen, FPType)) },
-             { "Epsilon:30K",
-               CovarianceParams(DatasetName("epsilon_30k"), TableType(SyclHomogen, FPType)) } };
-  }
+    static DictionaryParams<CovarianceParams> get_params() {
+        return { { "Higgs:1M",
+                   CovarianceParams(DatasetName("higgs_1M"), TableType(SyclHomogen, FPType)) },
+                 { "Epsilon:30K",
+                   CovarianceParams(DatasetName("epsilon_30k"), TableType(SyclHomogen, FPType)) } };
+    }
 
 protected:
-  void set_algorithm() final {
-    this->algorithm_ = std::make_unique<AlgorithmType>(AlgorithmType());
-  }
+    void set_algorithm() final {
+        this->algorithm_ = std::make_unique<AlgorithmType>(AlgorithmType());
+    }
 
-  void set_input() final {
-    auto x = params_.dataset.full().x();
-    this->algorithm_->input.set(daal_covariance::data, x);
-  }
+    void set_input() final {
+        auto x = params_.dataset.full().x();
+        this->algorithm_->input.set(daal_covariance::data, x);
+    }
 
 private:
-  CovarianceParams params_;
+    CovarianceParams params_;
 };
 
 DAAL_BENCH_REGISTER(CovarianceBatch, CpuDevice, float);

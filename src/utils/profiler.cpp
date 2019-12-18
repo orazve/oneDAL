@@ -16,9 +16,9 @@
 *******************************************************************************/
 
 #ifdef DPCPP_INTERFACES
-  #include <CL/cl.h>
+    #include <CL/cl.h>
 
-  #include <CL/sycl.hpp>
+    #include <CL/sycl.hpp>
 #endif
 
 #include <cstring>
@@ -26,12 +26,12 @@
 #include <vector>
 
 #if defined(__linux__)
-  #include <sys/time.h>
-  #include <time.h>
+    #include <sys/time.h>
+    #include <time.h>
 #endif
 
 #ifdef TBB_USE
-  #include "tbb/enumerable_thread_specific.h"
+    #include "tbb/enumerable_thread_specific.h"
 #endif
 
 #include "profiler.hpp"
@@ -39,67 +39,67 @@
 namespace dalbench {
 
 task_tls& task_tls::local() {
-  return *this;
+    return *this;
 }
 
 task_tls::~task_tls() {
-  clear();
+    clear();
 }
 
 void task_tls::clear() {
-  current_kernel = 0;
-  kernels.clear();
+    current_kernel = 0;
+    kernels.clear();
 }
 
 Profiler* Profiler::get_instance() {
-  static Profiler instance;
-  return &instance;
+    static Profiler instance;
+    return &instance;
 }
 
 Profiler::Profiler() {}
 
 std::map<const char*, uint64_t> Profiler::combine() {
 #ifdef TBB_USE
-  auto res = task.combine([](task_tls x, task_tls y) {
-    task_tls res;
-    res.kernels = x.kernels;
-    auto ym     = y.kernels;
+    auto res = task.combine([](task_tls x, task_tls y) {
+        task_tls res;
+        res.kernels = x.kernels;
+        auto ym     = y.kernels;
 
-    for (auto y_i : ym) {
-      auto it = res.kernels.find(y_i.first);
+        for (auto y_i : ym) {
+            auto it = res.kernels.find(y_i.first);
 
-      if (it == res.kernels.end()) {
-        res.kernels.insert(y_i);
-      }
-      else {
-        it->second = std::max(it->second, y_i.second);
-      }
-    }
+            if (it == res.kernels.end()) {
+                res.kernels.insert(y_i);
+            }
+            else {
+                it->second = std::max(it->second, y_i.second);
+            }
+        }
 
-    return x;
-  });
-  return res.kernels;
+        return x;
+    });
+    return res.kernels;
 #else
-  return task.kernels;
+    return task.kernels;
 #endif
 }
 
 enumerate_type& Profiler::get_task() {
-  return task;
+    return task;
 }
 
 void Profiler::clear() {
-  task.clear();
-  task = enumerate_type(task_tls());
+    task.clear();
+    task = enumerate_type(task_tls());
 }
 
 uint64_t Profiler::get_time() {
 #if defined(__linux__)
-  struct timespec t;
-  clock_gettime(CLOCK_MONOTONIC, &t);
-  return t.tv_sec * 1000000000 + t.tv_nsec;
+    struct timespec t;
+    clock_gettime(CLOCK_MONOTONIC, &t);
+    return t.tv_sec * 1000000000 + t.tv_nsec;
 #else
-  #error OS other than Linux are not supported
+    #error OS other than Linux are not supported
 #endif
 }
 
@@ -112,46 +112,46 @@ namespace internal {
 
 class ProfilerTask {
 public:
-  ProfilerTask(const char* task_name);
-  ~ProfilerTask();
+    ProfilerTask(const char* task_name);
+    ~ProfilerTask();
 
 private:
-  const char* _task_name;
+    const char* _task_name;
 };
 
 class Profiler {
 public:
-  static ProfilerTask startTask(const char* task_name);
-  static void endTask(const char* task_name);
+    static ProfilerTask startTask(const char* task_name);
+    static void endTask(const char* task_name);
 };
 
 ProfilerTask Profiler::startTask(const char* task_name) {
-  const uint64_t ns_start = dalbench::Profiler::get_time();
-  auto& task_local        = dalbench::Profiler::get_instance()->get_task().local();
-  task_local.time_kernels[task_local.current_kernel] = ns_start;
-  task_local.current_kernel++;
-  return daal::internal::ProfilerTask(task_name);
+    const uint64_t ns_start = dalbench::Profiler::get_time();
+    auto& task_local        = dalbench::Profiler::get_instance()->get_task().local();
+    task_local.time_kernels[task_local.current_kernel] = ns_start;
+    task_local.current_kernel++;
+    return daal::internal::ProfilerTask(task_name);
 }
 
 void Profiler::endTask(const char* task_name) {
-  const uint64_t ns_end = dalbench::Profiler::get_time();
-  auto& task_local      = dalbench::Profiler::get_instance()->get_task().local();
-  task_local.current_kernel--;
-  const uint64_t times = ns_end - task_local.time_kernels[task_local.current_kernel];
+    const uint64_t ns_end = dalbench::Profiler::get_time();
+    auto& task_local      = dalbench::Profiler::get_instance()->get_task().local();
+    task_local.current_kernel--;
+    const uint64_t times = ns_end - task_local.time_kernels[task_local.current_kernel];
 
-  auto it = task_local.kernels.find(task_name);
-  if (it == task_local.kernels.end()) {
-    task_local.kernels.insert({ task_name, times });
-  }
-  else {
-    it->second += times;
-  }
+    auto it = task_local.kernels.find(task_name);
+    if (it == task_local.kernels.end()) {
+        task_local.kernels.insert({ task_name, times });
+    }
+    else {
+        it->second += times;
+    }
 }
 
 ProfilerTask::ProfilerTask(const char* task_name) : _task_name(task_name) {}
 
 ProfilerTask::~ProfilerTask() {
-  Profiler::endTask(_task_name);
+    Profiler::endTask(_task_name);
 }
 
 } // namespace internal

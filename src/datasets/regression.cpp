@@ -21,33 +21,35 @@ namespace dalbench {
 namespace datasets {
 
 class DATASET(year_prediction_msd) {
-  Dataset load(NumericTableType numeric_table_type, size_t num_blocks) override {
-    return DatasetFromCsv()
-      .path_to_train(
-        Workload("year_prediction_msd").path_to_dataset("year_prediction_msd_train.csv"))
-      .path_to_test(Workload("year_prediction_msd").path_to_dataset("year_prediction_msd_test.csv"))
-      .path_to_full(Workload("year_prediction_msd").path_to_dataset("year_prediction_msd_full.csv"))
-      .num_features(90)
-      .num_blocks(num_blocks)
-      .regression()
-      .on_error(
-        "Make sure that year_prediction_msd dataset is downloaded and extracted and DATASETSROOT variable is set correctly.")
-      .load(numeric_table_type);
-  }
+    Dataset load(NumericTableType numeric_table_type, size_t num_blocks) override {
+        return DatasetFromCsv()
+            .path_to_train(
+                Workload("year_prediction_msd").path_to_dataset("year_prediction_msd_train.csv"))
+            .path_to_test(
+                Workload("year_prediction_msd").path_to_dataset("year_prediction_msd_test.csv"))
+            .path_to_full(
+                Workload("year_prediction_msd").path_to_dataset("year_prediction_msd_full.csv"))
+            .num_features(90)
+            .num_blocks(num_blocks)
+            .regression()
+            .on_error(
+                "Make sure that year_prediction_msd dataset is downloaded and extracted and DATASETSROOT variable is set correctly.")
+            .load(numeric_table_type);
+    }
 };
 
 class DATASET(higgs_1M_reg) {
-  Dataset load(NumericTableType numeric_table_type, size_t num_blocks) override {
-    return DatasetFromCsv()
-      .path_to_train(Workload("higgs").path_to_dataset("higgs_1m_train.csv"))
-      .path_to_test(Workload("higgs").path_to_dataset("higgs_500t_test.csv"))
-      .num_features(28)
-      .num_blocks(num_blocks)
-      .regression()
-      .on_error(
-        "Make sure that higgs dataset is downloaded and extracted and DATASETSROOT variable is set correctly.")
-      .load(numeric_table_type);
-  }
+    Dataset load(NumericTableType numeric_table_type, size_t num_blocks) override {
+        return DatasetFromCsv()
+            .path_to_train(Workload("higgs").path_to_dataset("higgs_1m_train.csv"))
+            .path_to_test(Workload("higgs").path_to_dataset("higgs_500t_test.csv"))
+            .num_features(28)
+            .num_blocks(num_blocks)
+            .regression()
+            .on_error(
+                "Make sure that higgs dataset is downloaded and extracted and DATASETSROOT variable is set correctly.")
+            .load(numeric_table_type);
+    }
 };
 
 } // namespace datasets

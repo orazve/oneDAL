@@ -23,25 +23,25 @@
 #include <vector>
 
 #if defined(__linux__)
-  #include <sys/time.h>
-  #include <time.h>
+    #include <sys/time.h>
+    #include <time.h>
 #endif
 
 #ifdef TBB_USE
-  #include "tbb/enumerable_thread_specific.h"
+    #include "tbb/enumerable_thread_specific.h"
 #endif
 
 namespace dalbench {
 
 struct task_tls {
-  static const uint64_t MAX_KERNELS = 256;
-  std::map<const char*, uint64_t> kernels;
-  uint64_t current_kernel = 0;
-  uint64_t time_kernels[MAX_KERNELS];
+    static const uint64_t MAX_KERNELS = 256;
+    std::map<const char*, uint64_t> kernels;
+    uint64_t current_kernel = 0;
+    uint64_t time_kernels[MAX_KERNELS];
 
-  task_tls& local();
-  ~task_tls();
-  void clear();
+    task_tls& local();
+    ~task_tls();
+    void clear();
 };
 
 #ifdef TBB_USE
@@ -52,19 +52,19 @@ using enumerate_type = task_tls;
 
 class Profiler {
 public:
-  static Profiler* get_instance();
+    static Profiler* get_instance();
 
-  std::map<const char*, uint64_t> combine();
+    std::map<const char*, uint64_t> combine();
 
-  enumerate_type& get_task();
+    enumerate_type& get_task();
 
-  void clear();
+    void clear();
 
-  static uint64_t get_time();
+    static uint64_t get_time();
 
 private:
-  Profiler();
-  enumerate_type task;
+    Profiler();
+    enumerate_type task;
 };
 
 } // namespace dalbench

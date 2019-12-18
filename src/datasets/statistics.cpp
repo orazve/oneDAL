@@ -21,57 +21,57 @@ namespace dalbench {
 namespace datasets {
 
 class DATASET(higgs_1M) {
-  Dataset load(NumericTableType numeric_table_type, size_t num_blocks) override {
-    return DatasetFromCsv()
-      .path_to_full(Workload("higgs").path_to_dataset("higgs_1m_train.csv"))
-      .num_features(28)
-      .num_responses(100)
-      .num_blocks(num_blocks)
-      .unlabeled()
-      .on_error(
-        "Make sure that higgs dataset is downloaded and extracted and DATASETSROOT variable is set correctly.")
-      .load(numeric_table_type);
-  }
+    Dataset load(NumericTableType numeric_table_type, size_t num_blocks) override {
+        return DatasetFromCsv()
+            .path_to_full(Workload("higgs").path_to_dataset("higgs_1m_train.csv"))
+            .num_features(28)
+            .num_responses(100)
+            .num_blocks(num_blocks)
+            .unlabeled()
+            .on_error(
+                "Make sure that higgs dataset is downloaded and extracted and DATASETSROOT variable is set correctly.")
+            .load(numeric_table_type);
+    }
 };
 
 class DATASET(higgs_2M) {
-  Dataset load(NumericTableType numeric_table_type, size_t num_blocks) override {
-    return DatasetFromCsv()
-      .path_to_full(Workload("higgs").path_to_dataset("higgs_2m_train.csv"))
-      .num_features(28)
-      .num_responses(100)
-      .num_blocks(num_blocks)
-      .unlabeled()
-      .on_error(
-        "Make sure that higgs dataset is downloaded and extracted and DATASETSROOT variable is set correctly.")
-      .load(numeric_table_type);
-  }
+    Dataset load(NumericTableType numeric_table_type, size_t num_blocks) override {
+        return DatasetFromCsv()
+            .path_to_full(Workload("higgs").path_to_dataset("higgs_2m_train.csv"))
+            .num_features(28)
+            .num_responses(100)
+            .num_blocks(num_blocks)
+            .unlabeled()
+            .on_error(
+                "Make sure that higgs dataset is downloaded and extracted and DATASETSROOT variable is set correctly.")
+            .load(numeric_table_type);
+    }
 };
 
 class DATASET(epsilon_30k) {
-  Dataset load(NumericTableType numeric_table_type, size_t num_blocks) override {
-    return DatasetFromCsv()
-      .path_to_full(Workload("epsilon").path_to_dataset("epsilon_30k_train.csv"))
-      .num_features(2000)
-      .num_blocks(num_blocks)
-      .unlabeled()
-      .on_error(
-        "Make sure that epsilon dataset is downloaded and extracted and DATASETSROOT variable is set correctly.")
-      .load(numeric_table_type);
-  }
+    Dataset load(NumericTableType numeric_table_type, size_t num_blocks) override {
+        return DatasetFromCsv()
+            .path_to_full(Workload("epsilon").path_to_dataset("epsilon_30k_train.csv"))
+            .num_features(2000)
+            .num_blocks(num_blocks)
+            .unlabeled()
+            .on_error(
+                "Make sure that epsilon dataset is downloaded and extracted and DATASETSROOT variable is set correctly.")
+            .load(numeric_table_type);
+    }
 };
 
 class DATASET(epsilon_80k) {
-  Dataset load(NumericTableType numeric_table_type, size_t num_blocks) override {
-    return DatasetFromCsv()
-      .path_to_full(Workload("epsilon").path_to_dataset("epsilon_80k_train.csv"))
-      .num_features(2000)
-      .num_blocks(num_blocks)
-      .unlabeled()
-      .on_error(
-        "Make sure that epsilon dataset is downloaded and extracted and DATASETSROOT variable is set correctly.")
-      .load(numeric_table_type);
-  }
+    Dataset load(NumericTableType numeric_table_type, size_t num_blocks) override {
+        return DatasetFromCsv()
+            .path_to_full(Workload("epsilon").path_to_dataset("epsilon_80k_train.csv"))
+            .num_features(2000)
+            .num_blocks(num_blocks)
+            .unlabeled()
+            .on_error(
+                "Make sure that epsilon dataset is downloaded and extracted and DATASETSROOT variable is set correctly.")
+            .load(numeric_table_type);
+    }
 };
 } // namespace datasets
 } // namespace dalbench

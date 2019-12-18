@@ -26,13 +26,13 @@
 #include "benchmark/benchmark.h"
 
 #ifdef DPCPP_INTERFACES
-  #include <CL/cl.h>
+    #include <CL/cl.h>
 
-  #include <CL/sycl.hpp>
+    #include <CL/sycl.hpp>
 
-  #include "daal_sycl.h"
+    #include "daal_sycl.h"
 #else
-  #include "daal.h"
+    #include "daal.h"
 #endif
 
 #define ONEDAL_VERSION_2021_BETA_03        20191000
@@ -48,19 +48,19 @@ namespace dalbench {
 
 struct CpuDevice {
 #ifdef DPCPP_INTERFACES
-  static auto get_device() {
-    static auto selector = cl::sycl::cpu_selector();
-    return selector;
-  }
+    static auto get_device() {
+        static auto selector = cl::sycl::cpu_selector();
+        return selector;
+    }
 #endif
 };
 
 struct GpuDevice {
 #ifdef DPCPP_INTERFACES
-  static auto get_device() {
-    static auto selector = cl::sycl::gpu_selector();
-    return selector;
-  }
+    static auto get_device() {
+        static auto selector = cl::sycl::gpu_selector();
+        return selector;
+    }
 #endif
 };
 
@@ -70,180 +70,182 @@ using DatasetName            = std::string;
 const size_t MAX_NUM_OF_RUNS = 5; // TODO
 
 struct CommonAlgorithmParams {
-  CommonAlgorithmParams(const DatasetName& dataset_name,
-                        const NumericTableType numeric_table_type,
-                        const size_t num_blocks = 1)
-      : dataset_name(dataset_name),
-        numeric_table_type(numeric_table_type),
-        num_blocks(num_blocks) {}
+    CommonAlgorithmParams(const DatasetName& dataset_name,
+                          const NumericTableType numeric_table_type,
+                          const size_t num_blocks = 1)
+            : dataset_name(dataset_name),
+              numeric_table_type(numeric_table_type),
+              num_blocks(num_blocks) {}
 
-  void load_dataset() {
-    auto dataset_loader = create_registered<DatasetLoader>(dataset_name);
-    dataset             = dataset_loader->load(numeric_table_type, num_blocks);
-    num_responses       = dataset.num_responses();
-  }
+    void load_dataset() {
+        auto dataset_loader = create_registered<DatasetLoader>(dataset_name);
+        dataset             = dataset_loader->load(numeric_table_type, num_blocks);
+        num_responses       = dataset.num_responses();
+    }
 
-  void clear_dataset() {
-    dataset = Dataset();
-  }
+    void clear_dataset() {
+        dataset = Dataset();
+    }
 
-  DatasetName dataset_name;
-  NumericTableType numeric_table_type;
-  Dataset dataset;
-  size_t num_blocks;
-  size_t num_observations;
-  size_t num_features;
-  size_t num_responses;
+    DatasetName dataset_name;
+    NumericTableType numeric_table_type;
+    Dataset dataset;
+    size_t num_blocks;
+    size_t num_observations;
+    size_t num_features;
+    size_t num_responses;
 };
 
 template <typename AlgorithmType, typename DeviceType>
 class Fixture : public ::benchmark::Fixture {
 public:
-  Fixture(CommonAlgorithmParams& params)
-      : ::benchmark::Fixture(),
-        common_params_(params),
-        current_run_(0),
-        num_runs_(MAX_NUM_OF_RUNS) {}
+    Fixture(CommonAlgorithmParams& params)
+            : ::benchmark::Fixture(),
+              common_params_(params),
+              current_run_(0),
+              num_runs_(MAX_NUM_OF_RUNS) {}
 
-  void SetUp(benchmark::State& state) final {
-    try {
-      if (current_run_ == 0) {
-#ifdef DPCPP_INTERFACES
-        cl::sycl::device device;
+    void SetUp(benchmark::State& state) final {
         try {
-          device = cl::sycl::device(DeviceType::get_device());
-        }
-        catch (...) {
-          throw NotAvailableDevice("The device is not supported");
-        }
-        cl::sycl::queue queue(device);
-        auto ctx = daal::services::ExecutionContext(daal::services::SyclExecutionContext(queue));
+            if (current_run_ == 0) {
+#ifdef DPCPP_INTERFACES
+                cl::sycl::device device;
+                try {
+                    device = cl::sycl::device(DeviceType::get_device());
+                }
+                catch (...) {
+                    throw NotAvailableDevice("The device is not supported");
+                }
+                cl::sycl::queue queue(device);
+                auto ctx =
+                    daal::services::ExecutionContext(daal::services::SyclExecutionContext(queue));
 #else
-        auto ctx = daal::services::ExecutionContext(daal::services::CpuExecutionContext());
+                auto ctx = daal::services::ExecutionContext(daal::services::CpuExecutionContext());
 #endif
-        daal::services::Environment::getInstance()->setDefaultExecutionContext(ctx);
+                daal::services::Environment::getInstance()->setDefaultExecutionContext(ctx);
 
-        common_params_.load_dataset();
-      }
+                common_params_.load_dataset();
+            }
 
-      set_algorithm();
-      set_input();
-      set_parameters();
+            set_algorithm();
+            set_input();
+            set_parameters();
+        }
+        catch (std::exception const& e) {
+            state.SkipWithError(e.what());
+        }
     }
-    catch (std::exception const& e) {
-      state.SkipWithError(e.what());
-    }
-  }
 
-  void BenchmarkCase(benchmark::State& state) final {
-    current_run_++;
-    run_benchmark(state);
-    auto kernels_profiler = Profiler::get_instance()->combine();
-    for (auto& kernel_info : kernels_profiler) {
-      auto kernel_name     = kernel_info.first;
-      const double time_ms = double(kernel_info.second) / 1e6;
-      state.counters.insert({ kernel_name, { time_ms, benchmark::Counter::kDefaults } });
+    void BenchmarkCase(benchmark::State& state) final {
+        current_run_++;
+        run_benchmark(state);
+        auto kernels_profiler = Profiler::get_instance()->combine();
+        for (auto& kernel_info : kernels_profiler) {
+            auto kernel_name     = kernel_info.first;
+            const double time_ms = double(kernel_info.second) / 1e6;
+            state.counters.insert({ kernel_name, { time_ms, benchmark::Counter::kDefaults } });
 #ifdef __DEBUG__
-      std::cout << "kernel: " << kernel_name << " time_ms: " << time_ms << "\n";
+            std::cout << "kernel: " << kernel_name << " time_ms: " << time_ms << "\n";
 #endif
-    }
-    Profiler::get_instance()->clear();
-  }
-
-  void TearDown(benchmark::State& state) final {
-    if (current_run_ == num_runs_) {
-      common_params_.clear_dataset();
-      current_run_ = 0;
-      num_runs_    = 1;
+        }
+        Profiler::get_instance()->clear();
     }
 
-    algorithm_.reset();
-  }
+    void TearDown(benchmark::State& state) final {
+        if (current_run_ == num_runs_) {
+            common_params_.clear_dataset();
+            current_run_ = 0;
+            num_runs_    = 1;
+        }
+
+        algorithm_.reset();
+    }
 
 protected:
-  virtual void run_benchmark(benchmark::State& state) {}
+    virtual void run_benchmark(benchmark::State& state) {}
 
-  virtual void set_algorithm() {}
+    virtual void set_algorithm() {}
 
-  virtual void set_input() {}
+    virtual void set_input() {}
 
-  virtual void set_parameters() {}
+    virtual void set_parameters() {}
 
 protected:
-  CommonAlgorithmParams& common_params_;
-  std::unique_ptr<AlgorithmType> algorithm_;
-  std::unique_ptr<daal::services::ExecutionContext> ctx_;
+    CommonAlgorithmParams& common_params_;
+    std::unique_ptr<AlgorithmType> algorithm_;
+    std::unique_ptr<daal::services::ExecutionContext> ctx_;
 
 private:
-  size_t num_runs_;
-  size_t current_run_;
+    size_t num_runs_;
+    size_t current_run_;
 };
 
 template <typename AlgorithmType, typename DeviceType>
 class FixtureBatch : public Fixture<AlgorithmType, DeviceType> {
 public:
-  FixtureBatch(CommonAlgorithmParams& params) : Fixture<AlgorithmType, DeviceType>(params) {}
+    FixtureBatch(CommonAlgorithmParams& params) : Fixture<AlgorithmType, DeviceType>(params) {}
 
 protected:
-  void run_benchmark(benchmark::State& state) final {
-    for (auto _ : state) {
-      this->algorithm_->compute();
+    void run_benchmark(benchmark::State& state) final {
+        for (auto _ : state) {
+            this->algorithm_->compute();
+        }
     }
-  }
 };
 
 template <typename AlgorithmType, typename DeviceType>
 class FixtureOnline : public Fixture<AlgorithmType, DeviceType> {
 public:
-  FixtureOnline(CommonAlgorithmParams& params) : Fixture<AlgorithmType, DeviceType>(params) {}
+    FixtureOnline(CommonAlgorithmParams& params) : Fixture<AlgorithmType, DeviceType>(params) {}
 
 protected:
-  virtual void set_input_block(const size_t block_index) = 0;
+    virtual void set_input_block(const size_t block_index) = 0;
 
-  void run_benchmark(::benchmark::State& state) final {
-    for (auto _ : state) {
-      for (size_t block_index = 0; block_index < this->common_params_.num_blocks; ++block_index) {
-        state.PauseTiming();
-        try {
-          this->set_input_block(block_index);
-        }
-        catch (std::exception const& e) {
-          state.SkipWithError(e.what());
-          return;
-        }
-        state.ResumeTiming();
-        this->algorithm_->compute();
-      }
+    void run_benchmark(::benchmark::State& state) final {
+        for (auto _ : state) {
+            for (size_t block_index = 0; block_index < this->common_params_.num_blocks;
+                 ++block_index) {
+                state.PauseTiming();
+                try {
+                    this->set_input_block(block_index);
+                }
+                catch (std::exception const& e) {
+                    state.SkipWithError(e.what());
+                    return;
+                }
+                state.ResumeTiming();
+                this->algorithm_->compute();
+            }
 
-      this->algorithm_->finalizeCompute();
+            this->algorithm_->finalizeCompute();
+        }
     }
-  }
 };
 
 template <typename BenchAlg>
 struct BenchmarkRegistrator {
-  BenchmarkRegistrator(const std::string& name) {
-    const auto& params = BenchAlg::get_params();
-    for (const auto& pair_param : params) {
-      const auto& key   = pair_param.first;
-      const auto& param = pair_param.second;
-      auto* bench =
-        ::benchmark::internal::RegisterBenchmarkInternal(new BenchAlg(name + "/" + key, param));
-      bench->Unit(benchmark::kMillisecond);
-      bench->Iterations(1);
-      bench->Repetitions(MAX_NUM_OF_RUNS);
-      bench->ReportAggregatesOnly();
+    BenchmarkRegistrator(const std::string& name) {
+        const auto& params = BenchAlg::get_params();
+        for (const auto& pair_param : params) {
+            const auto& key   = pair_param.first;
+            const auto& param = pair_param.second;
+            auto* bench       = ::benchmark::internal::RegisterBenchmarkInternal(
+                new BenchAlg(name + "/" + key, param));
+            bench->Unit(benchmark::kMillisecond);
+            bench->Iterations(1);
+            bench->Repetitions(MAX_NUM_OF_RUNS);
+            bench->ReportAggregatesOnly();
 #ifndef __DEBUG__
-      bench->ComputeStatistics("box_filter", statistics::box_filter);
-      bench->ComputeStatistics("first_iteration", statistics::first_iteration);
+            bench->ComputeStatistics("box_filter", statistics::box_filter);
+            bench->ComputeStatistics("first_iteration", statistics::first_iteration);
 #endif
+        }
     }
-  }
 };
 
-#define DAAL_BENCH_REGISTER(BaseClass, DeviceType, FPType)                           \
-  static BenchmarkRegistrator<BaseClass<DeviceType, FPType>> BENCHMARK_PRIVATE_NAME( \
-    BenchmarkRegistrator)(#BaseClass "/" #DeviceType "/" #FPType)
+#define DAAL_BENCH_REGISTER(BaseClass, DeviceType, FPType)                             \
+    static BenchmarkRegistrator<BaseClass<DeviceType, FPType>> BENCHMARK_PRIVATE_NAME( \
+        BenchmarkRegistrator)(#BaseClass "/" #DeviceType "/" #FPType)
 
 } // namespace dalbench
 
