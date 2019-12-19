@@ -75,7 +75,10 @@ struct CommonAlgorithmParams {
                         const size_t num_blocks = 1)
       : dataset_name(dataset_name),
         numeric_table_type(numeric_table_type),
-        num_blocks(num_blocks) {}
+        num_blocks(num_blocks),
+        num_observations(0),
+        num_features(0),
+        num_responses(0) {}
 
   void load_dataset() {
     auto dataset_loader = create_registered<DatasetLoader>(dataset_name);

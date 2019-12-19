@@ -49,7 +49,7 @@ double box_filter(const std::vector<double>& times) {
     }
   }
 
-  return sum / count;
+  return count != 0.0 ? sum / count : count;
 }
 
 double first_iteration(const std::vector<double>& times) {

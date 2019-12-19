@@ -49,6 +49,7 @@ template <typename T>
 class ObjectRegistry {
 public:
   ObjectRegistry(ObjectRegistry&) = delete;
+  ObjectRegistry& operator=(ObjectRegistry&) = delete;
 
   virtual ~ObjectRegistry() {
     for (const auto& pair : creators_) {

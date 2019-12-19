@@ -24,19 +24,26 @@ NumericTablePtr NumericTableFactory::create_numeric_table(
   const size_t num_features,
   const size_t num_observations,
   const NumericTable::AllocationFlag memory_allocation_flag) {
+  NumericTablePtr table;
+
   switch (numeric_table_type) {
     case NumericTableType::SyclHomogenNumericTableFloat:
-      return HomogenNumericTable<float>::create(num_features,
-                                                num_observations,
-                                                memory_allocation_flag);
+      table =
+        HomogenNumericTable<float>::create(num_features, num_observations, memory_allocation_flag);
+      break;
     case NumericTableType::SyclHomogenNumericTableDouble:
-      return HomogenNumericTable<double>::create(num_features,
-                                                 num_observations,
-                                                 memory_allocation_flag);
+      table =
+        HomogenNumericTable<double>::create(num_features, num_observations, memory_allocation_flag);
+      break;
     default:
       throw NotAvailableNumericTable("The given numeric table type is not implemented");
       break;
   }
+
+  if (!table.get()) {
+    throw EmptyNumericTable("The numeric table is empty");
+  }
+  return table;
 }
 
 DataSlice::DataSlice(const NumericTablePtr& x,
@@ -76,14 +83,14 @@ NumericTablePtr DataSlice::y() const {
 }
 
 NumericTablePtr DataSlice::x_block(const size_t block_index) const {
-  if ((x_blocks_.empty()) || (!x_blocks_[block_index].get())) {
+  if (x_blocks_.empty() || !x_blocks_[block_index].get()) {
     throw EmptyNumericTable("Dataset does not contain X slice");
   }
   return x_blocks_[block_index];
 }
 
 NumericTablePtr DataSlice::y_block(const size_t block_index) const {
-  if ((y_blocks_.empty()) || (!y_blocks_[block_index].get())) {
+  if (y_blocks_.empty() || !y_blocks_[block_index].get()) {
     throw EmptyNumericTable("Dataset does not contain Y slice");
   }
   return y_blocks_[block_index];
@@ -92,45 +99,28 @@ NumericTablePtr DataSlice::y_block(const size_t block_index) const {
 NumericTablePtr DataSlice::xy() const {
   using namespace daal::data_management;
 
-  if ((x_blocks_.empty()) && (y_blocks_.empty())) {
-    throw EmptyNumericTable("Dataset does not contain neither X nor Y slices");
+  if (x_blocks_.empty() || y_blocks_.empty()) {
+    throw EmptyNumericTable("Dataset does not contain either X or Y slices");
   }
   else {
     return MergedNumericTable::create(x_blocks_.back(), y_blocks_.back());
-  }
-
-  if ((x_blocks_.empty()) && (!y_blocks_.empty())) {
-    throw EmptyNumericTable("Dataset does not contain X slice");
-  }
-
-  if ((!x_blocks_.empty()) && (y_blocks_.empty())) {
-    throw EmptyNumericTable("Dataset does not contain Y slice");
   }
 }
 
 NumericTablePtr DataSlice::xy_blocks(const size_t block_index) const {
   using namespace daal::data_management;
 
-  if (((x_blocks_.empty()) && (y_blocks_.empty())) ||
-      ((!x_blocks_[block_index].get()) && ((!y_blocks_[block_index].get())))) {
-    throw EmptyNumericTable("Dataset does not contain neither X nor Y slices");
+  if (!x_blocks_[block_index].get() || !y_blocks_[block_index].get()) {
+    throw EmptyNumericTable("Dataset does not contain either X or Y slices");
   }
   else {
     return MergedNumericTable::create(x_blocks_[block_index], y_blocks_[block_index]);
-  }
-
-  if ((x_blocks_.empty()) || (!x_blocks_[block_index].get())) {
-    throw EmptyNumericTable("Dataset does not contain X slice");
-  }
-
-  if ((y_blocks_.empty()) || (!y_blocks_[block_index].get())) {
-    throw EmptyNumericTable("Dataset does not contain Y slice");
   }
 }
 
 bool DataSlice::empty() const {
   if (labeled_) {
-    return (x_blocks_.empty()) || (y_blocks_.empty());
+    return x_blocks_.empty() || y_blocks_.empty();
   }
   else {
     return x_blocks_.empty();
