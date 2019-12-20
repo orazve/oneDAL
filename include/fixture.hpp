@@ -166,7 +166,6 @@ protected:
 protected:
   CommonAlgorithmParams& common_params_;
   std::unique_ptr<AlgorithmType> algorithm_;
-  std::unique_ptr<daal::services::ExecutionContext> ctx_;
 
 private:
   size_t num_runs_;
