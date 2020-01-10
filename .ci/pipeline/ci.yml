@@ -39,8 +39,17 @@ jobs:
         echo "deb https://apt.repos.intel.com/oneapi all main" | sudo tee /etc/apt/sources.list.d/oneAPI.list
         sudo add-apt-repository "deb https://apt.repos.intel.com/oneapi all main"
         sudo apt-get update
-        sudo apt-get install intel-oneapi-tbb-devel intel-oneapi-daal-devel intel-oneapi-dpcpp-compiler
-        sudo apt-get install cmake
+        sudo apt-get install              \
+            intel-oneapi-common-vars      \
+            intel-oneapi-ccl              \
+            intel-oneapi-common-licensing \
+            intel-oneapi-tbb-devel        \
+            intel-oneapi-daal-devel       \
+            intel-oneapi-dpcpp-compiler   \
+            intel-oneapi-dev-utilities    \
+            intel-oneapi-libdpstd-devel   \
+            cmake
+        sudo bash -c 'echo libintelocl.so > /etc/OpenCL/vendors/intel-cpu.icd'
       displayName: 'apt-get'
 
     - script: |
@@ -57,10 +66,10 @@ jobs:
 
     - script: |
         source /opt/intel/inteloneapi/setvars.sh
-        cd build-static-sequence
+        cd build-static-thread
         make
         make install
-      displayName: 'make static + sequence'
+      displayName: 'make static + thread'
 
     - script: |
         cd workloads
@@ -72,6 +81,13 @@ jobs:
         cd workloads
         python load_datasets.py -d mnist
       displayName: 'download mnist'
+
+    - script: |
+        source /opt/intel/inteloneapi/setvars.sh
+        export DATASETSROOT=`pwd`
+        cd build-static-thread
+        ./Benchmark --benchmark_filter=Logreg.*Cpu.*float.*Mnist:60K/
+      displayName: 'run logreg benchmark (static + thread) on cpu for mnist'
 
 - job: TRAD
   steps:
