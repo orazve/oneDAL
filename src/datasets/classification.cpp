@@ -78,8 +78,8 @@ class DATASET(hepmass_small_classifier) {
 class DATASET(epsilion_50k_classifier) {
   Dataset load(NumericTableType numeric_table_type, size_t num_blocks) override {
     return DatasetFromCsv()
-      .path_to_train(Workload("epsilon").path_to_dataset("epsilon_50k.csv"))
-      .path_to_test(Workload("epsilon").path_to_dataset("epsilon_50k.csv"))
+      .path_to_train(Workload("epsilon").path_to_dataset("epsilon_50k_train.csv"))
+      .path_to_test(Workload("epsilon").path_to_dataset("epsilon_50k_train.csv"))
       .num_features(2000)
       .num_responses(2)
       .num_blocks(num_blocks)

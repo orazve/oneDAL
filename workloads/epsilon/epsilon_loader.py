@@ -20,26 +20,29 @@ import pandas as pd
 import numpy as np
 import re
 from urllib.request import urlretrieve
+import io
 
-def patch_epsilon(filename):
-    f = open(filename, "r")
-    text = f.read()
-    f.close()
+def get_part_epsilon(filename, num_rows):
+    df = pd.read_csv(filename, nrows=num_rows, skiprows=0, header=None)
 
-    patched_text = re.sub(r' [0-9]*:', ',', text)
-    f = open(filename, "w")
-    f.write(patched_text)
-    f.close()
+    csv_data = df.to_csv(index=False, header=False)
+    patched_text = re.sub(r' [0-9]*:', ',', csv_data)
+    df = pd.read_csv(io.StringIO(patched_text), header=None)
+
+    X = df.iloc[:,1:]
+    y = df[0]
+
+    df = pd.concat([X, y], axis=1)
+    return df
 
 def epsilon(root_dir=None):
     """
     Epsilon dataset from LIBSVM Datasets (
     https://www.csie.ntu.edu.tw/~cjlin/libsvmtools/datasets/binary.html#epsilon)
 
-    TaskType: Binary classification
+    TaskType: Regression
     Number of features:  2000
     Number of instances: 400000
-    Number of classes:   2
     :param root_dir:
     """
 
@@ -60,51 +63,26 @@ def epsilon(root_dir=None):
     print('epsilon dataset is downloaded')
     print('reading CSV file...')
 
-    df_raw = pd.read_csv(filename)
-
     num_train = 30000
-    csv_file = os.path.join(dataset_dir, 'epsilon_30k_train.csv')
-    data_full = df_raw.iloc[:num_train, :].values
-    df_train = pd.DataFrame(data_full)
-    df_train.to_csv(csv_file, header=False, index=False)
-    patch_epsilon(csv_file)
-
-    df_patched = pd.read_csv(csv_file)
-    X_train = df_patched.iloc[:num_train, 1:].values
-    y_train = df_patched.iloc[:num_train, 0].values
-
-    df_train = pd.DataFrame(np.concatenate((X_train, y_train[:, None]), axis=1))
-    df_train.to_csv(csv_file, header=False, index=False)
+    df_train = get_part_epsilon(filename, num_train)
+    csv_file_path = os.path.join(dataset_dir, 'epsilon_30k_train.csv')
+    df_train.to_csv(csv_file_path, header=False, index=False)
+    del df_train
+    print('epsilon_30k_train dataset is ready to be used')
 
     num_train = 50000
-    csv_file = os.path.join(dataset_dir, 'epsilon_50k.csv')
-    data_full = df_raw.iloc[:num_train, :].values
-    df_train = pd.DataFrame(data_full)
-    df_train.to_csv(csv_file, header=False, index=False)
-    patch_epsilon(csv_file)
-
-    df_patched = pd.read_csv(csv_file)
-    X_train = df_patched.iloc[:num_train, 1:].values
-    y_train = df_patched.iloc[:num_train, 0].values
-
-    df_train = pd.DataFrame(np.concatenate((X_train, y_train[:, None]), axis=1))
-    df_train.to_csv(csv_file, header=False, index=False)
+    df_train = get_part_epsilon(filename, num_train)
+    csv_file_path = os.path.join(dataset_dir, 'epsilon_50k_train.csv')
+    df_train.to_csv(csv_file_path, header=False, index=False)
+    del df_train
+    print('epsilon_50k_train dataset is ready to be used')
 
     num_train = 80000
-    csv_file = os.path.join(dataset_dir, 'epsilon_80k_train.csv')
-    data_full = df_raw.iloc[:num_train, :].values
-    df_train = pd.DataFrame(data_full)
-    df_train.to_csv(csv_file, header=False, index=False)
-    patch_epsilon(csv_file)
-
-    df_patched = pd.read_csv(csv_file)
-    X_train = df_patched.iloc[:num_train, 1:].values
-    y_train = df_patched.iloc[:num_train, 0].values
-
-    df_train = pd.DataFrame(np.concatenate((X_train, y_train[:, None]), axis=1))
-    df_train.to_csv(csv_file, header=False, index=False)
-
-    print('epsion dataset is ready to be used')
+    df_train = get_part_epsilon(filename, num_train)
+    csv_file_path = os.path.join(dataset_dir, 'epsilon_80k_train.csv')
+    df_train.to_csv(csv_file_path, header=False, index=False)
+    del df_train
+    print('epsilon_80k_train dataset is ready to be used')
 
 if __name__ == '__main__':
     root_dir = os.environ['DATASETSROOT']
