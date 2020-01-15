@@ -18,24 +18,28 @@
 #include "fixture.hpp"
 
 namespace dalbench {
-namespace logreg {
+namespace log_reg {
 
-namespace daal_logreg_train     = daal::algorithms::logistic_regression::training;
-namespace daal_opt              = daal::algorithms::optimization_solver;
-namespace daal_classifier_train = daal::algorithms::classifier::training;
+namespace daal_log_reg_train         = daal::algorithms::logistic_regression::training;
+namespace daal_log_reg_prediction    = daal::algorithms::logistic_regression::prediction;
+namespace daal_optimization_solver   = daal::algorithms::optimization_solver;
+namespace daal_classifier            = daal::algorithms::classifier;
+namespace daal_classifier_train      = daal::algorithms::classifier::training;
+namespace daal_classifier_prediction = daal::algorithms::classifier::prediction;
 
 template <typename DeviceType, typename FPType>
-class LogregTrainSGD : public FixtureBatch<daal_logreg_train::Batch<FPType>, DeviceType> {
+class LogRegTrainSGDBatch : public FixtureBatch<daal_log_reg_train::Batch<FPType>, DeviceType> {
 public:
-  using AlgorithmType = typename daal_logreg_train::Batch<FPType>;
-  using SolverType    = typename daal_opt::sgd::Batch<FPType, daal_opt::sgd::miniBatch>;
+  using AlgorithmType = typename daal_log_reg_train::Batch<FPType>;
+  using SolverType =
+    typename daal_optimization_solver::sgd::Batch<FPType, daal_optimization_solver::sgd::miniBatch>;
   using nIterations   = size_t;
   using InterceptFlag = bool;
   using PenaltyL2     = FPType;
   using nBatch        = FPType;
 
-  struct LogregParams : public CommonAlgorithmParams {
-    LogregParams(const DatasetName& dataset_name,
+  struct LogRegParams : public CommonAlgorithmParams {
+    LogRegParams(const DatasetName& dataset_name,
                  const NumericTableType numeric_table_type,
                  const size_t num_iterations,
                  const bool intercept_flag,
@@ -55,38 +59,38 @@ public:
     const double accuracy_threshold;
   };
 
-  using DictionaryAlgParams = DictionaryParams<LogregParams>;
+  using DictionaryAlgParams = DictionaryParams<LogRegParams>;
 
-  LogregTrainSGD(const std::string& name, const LogregParams& params)
+  LogRegTrainSGDBatch(const std::string& name, const LogRegParams& params)
       : params_(params),
         FixtureBatch<AlgorithmType, DeviceType>(params_) {
     this->SetName(name.c_str());
   }
 
-  static DictionaryParams<LogregParams> get_params() {
+  static DictionaryParams<LogRegParams> get_params() {
     return { { "Susy:4.5M",
-               LogregParams(DatasetName("SUSY"),
+               LogRegParams(DatasetName("SUSY"),
                             TableType(SyclHomogen, FPType),
                             nIterations(10),
                             InterceptFlag(false),
                             PenaltyL2(0.0),
                             nBatch(1.0)) },
              { "Susy:4.5M;Batch:8192",
-               LogregParams(DatasetName("SUSY"),
+               LogRegParams(DatasetName("SUSY"),
                             TableType(SyclHomogen, FPType),
                             nIterations(200),
                             InterceptFlag(true),
                             PenaltyL2(0.0),
                             nBatch(8192)) },
              { "Mnist:60K",
-               LogregParams(DatasetName("mnist"),
+               LogRegParams(DatasetName("mnist"),
                             TableType(SyclHomogen, FPType),
                             nIterations(100u),
                             InterceptFlag(false),
                             PenaltyL2(1.0),
                             nBatch(1.0)) },
              { "Mnist:60K;Batch:8192",
-               LogregParams(DatasetName("mnist"),
+               LogRegParams(DatasetName("mnist"),
                             TableType(SyclHomogen, FPType),
                             nIterations(500u),
                             InterceptFlag(true),
@@ -99,7 +103,7 @@ public:
 protected:
   void set_algorithm() final {
     this->algorithm_ =
-      std::make_unique<AlgorithmType>(daal_logreg_train::Batch<FPType>(params_.num_responses));
+      std::make_unique<AlgorithmType>(daal_log_reg_train::Batch<FPType>(params_.num_responses));
   }
 
   void set_input() final {
@@ -127,17 +131,38 @@ protected:
     this->algorithm_->parameter().interceptFlag      = params_.intercept_flag;
   }
 
+  MetricParams check_result() final {
+    auto x = params_.dataset.test().x();
+    auto y = params_.dataset.test().y();
+
+    daal_log_reg_prediction::interface1::Batch<FPType> predict_algorithm(params_.num_responses);
+    predict_algorithm.parameter().resultsToCompute |=
+      daal_log_reg_prediction::computeClassesProbabilities;
+
+    auto train_model = this->algorithm_->getResult()->get(daal_classifier_train::model);
+    predict_algorithm.input.set(daal_classifier_prediction::data, x);
+    predict_algorithm.input.set(daal_classifier_prediction::model, train_model);
+
+    predict_algorithm.compute();
+
+    daal_log_reg_prediction::interface1::ResultPtr prediction_result =
+      predict_algorithm.getResult();
+    auto y_predict = prediction_result->get(daal_classifier::prediction::prediction);
+
+    return Metric<MetricType::Accuracy>::compute_metric(y, y_predict);
+  }
+
 private:
-  LogregParams params_;
+  LogRegParams params_;
 };
 
-DAAL_BENCH_REGISTER(LogregTrainSGD, CpuDevice, float);
-DAAL_BENCH_REGISTER(LogregTrainSGD, CpuDevice, double);
+DAAL_BENCH_REGISTER(LogRegTrainSGDBatch, CpuDevice, float);
+DAAL_BENCH_REGISTER(LogRegTrainSGDBatch, CpuDevice, double);
 
 #ifdef DPCPP_INTERFACES
-DAAL_BENCH_REGISTER(LogregTrainSGD, GpuDevice, float);
-DAAL_BENCH_REGISTER(LogregTrainSGD, GpuDevice, double);
+DAAL_BENCH_REGISTER(LogRegTrainSGDBatch, GpuDevice, float);
+DAAL_BENCH_REGISTER(LogRegTrainSGDBatch, GpuDevice, double);
 #endif
 
-} // end namespace logreg
-} // end namespace dalbench
+} // namespace log_reg
+} // namespace dalbench

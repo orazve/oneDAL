@@ -72,5 +72,5 @@ DAAL_BENCH_REGISTER(LowOrderMomentsBatch, GpuDevice, double);
   #endif // DPCPP_INTERFACES
 #endif // INTEL_DAAL_VERSION >= ONEDAL_VERSION_2021_U1_BETA_04
 
-} // end namespace low_order_moments
-} // end namespace dalbench
+} // namespace low_order_moments
+} // namespace dalbench

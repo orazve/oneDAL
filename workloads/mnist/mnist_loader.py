@@ -58,13 +58,13 @@ def mnist(root_dir=None):
     y_train = df_mnist_train.iloc[:, 0].values
     df_train = pd.DataFrame(np.concatenate((X_train, y_train[:, None]), axis=1))
     df_train.to_csv(os.path.join(dataset_dir, 'mnist_train.csv'), header=False, index=False)
+    print('mnist_train dataset is ready to be used')
 
     X_test = df_mnist_test.iloc[:, 1:].values
     y_test = df_mnist_test.iloc[:, 0].values
     df_test = pd.DataFrame(np.concatenate((X_test, y_test[:, None]), axis=1))
     df_test.to_csv(os.path.join(dataset_dir, 'mnist_test.csv'), header=False, index=False)
-
-    print('mnist dataset is ready to be used')
+    print('mnist_test dataset is ready to be used')
 
 if __name__ == '__main__':
     root_dir = os.environ['DATASETSROOT']

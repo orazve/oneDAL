@@ -92,5 +92,5 @@ DAAL_BENCH_REGISTER(PCABatch, GpuDevice, float);
 DAAL_BENCH_REGISTER(PCABatch, GpuDevice, double);
 #endif
 
-} // end namespace pca
-} // end namespace dalbench
+} // namespace pca
+} // namespace dalbench

@@ -23,7 +23,7 @@ namespace kmeans {
 namespace daal_kmeans = daal::algorithms::kmeans;
 
 template <typename DeviceType, typename FPType>
-class KMeans : public FixtureBatch<daal_kmeans::Batch<FPType>, DeviceType> {
+class KMeansBatch : public FixtureBatch<daal_kmeans::Batch<FPType>, DeviceType> {
 public:
   using AlgorithmType = typename daal_kmeans::Batch<FPType>;
   using AlgorithmInitType =
@@ -47,7 +47,7 @@ public:
 
   using DictionaryAlgParams = DictionaryParams<KMeansParams>;
 
-  KMeans(const std::string& name, const KMeansParams& params)
+  KMeansBatch(const std::string& name, const KMeansParams& params)
       : params_(params),
         FixtureBatch<AlgorithmType, DeviceType>(params_) {
     this->SetName(name.c_str());
@@ -116,26 +116,34 @@ protected:
 
     AlgorithmInitType init(params_.num_clusters);
 
-    init.input.set(daal::algorithms::kmeans::init::data, x);
+    init.input.set(daal_kmeans::init::data, x);
     init.compute();
 
-    NumericTablePtr centroids = init.getResult()->get(daal::algorithms::kmeans::init::centroids);
+    NumericTablePtr centroids = init.getResult()->get(daal_kmeans::init::centroids);
 
-    this->algorithm_->input.set(daal::algorithms::kmeans::data, x);
-    this->algorithm_->input.set(daal::algorithms::kmeans::inputCentroids, centroids);
+    this->algorithm_->input.set(daal_kmeans::data, x);
+    this->algorithm_->input.set(daal_kmeans::inputCentroids, centroids);
+  }
+
+  MetricParams check_result() final {
+    auto x = params_.dataset.full().x();
+
+    auto assignments = this->algorithm_->getResult()->get(daal_kmeans::assignments);
+
+    return Metric<MetricType::DaviesBouldinIndex>::compute_metric(x, assignments);
   }
 
 private:
   KMeansParams params_;
 };
 
-DAAL_BENCH_REGISTER(KMeans, CpuDevice, float);
-DAAL_BENCH_REGISTER(KMeans, CpuDevice, double);
+DAAL_BENCH_REGISTER(KMeansBatch, CpuDevice, float);
+DAAL_BENCH_REGISTER(KMeansBatch, CpuDevice, double);
 
 #ifdef DPCPP_INTERFACES
-DAAL_BENCH_REGISTER(KMeans, GpuDevice, float);
-DAAL_BENCH_REGISTER(KMeans, GpuDevice, double);
+DAAL_BENCH_REGISTER(KMeansBatch, GpuDevice, float);
+DAAL_BENCH_REGISTER(KMeansBatch, GpuDevice, double);
 #endif
 
 } // namespace kmeans
-} // end namespace dalbench
+} // namespace dalbench

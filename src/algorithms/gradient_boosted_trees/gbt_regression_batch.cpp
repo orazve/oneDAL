@@ -20,7 +20,8 @@
 namespace dalbench {
 namespace gbt_regression {
 
-namespace daal_gbt_reg_train = daal::algorithms::gbt::regression::training;
+namespace daal_gbt_reg_train      = daal::algorithms::gbt::regression::training;
+namespace daal_gbt_reg_prediction = daal::algorithms::gbt::regression::prediction;
 
 template <typename DeviceType, typename FPType>
 class GBTRegBatch : public FixtureBatch<daal_gbt_reg_train::Batch<FPType>, DeviceType> {
@@ -89,6 +90,24 @@ protected:
     this->algorithm_->parameter().maxTreeDepth  = params_.maxTreeDepth;
   }
 
+  MetricParams check_result() final {
+    auto x = params_.dataset.test().x();
+    auto y = params_.dataset.test().y();
+
+    daal_gbt_reg_prediction::Batch<FPType> predict_algorithm;
+
+    auto train_model = this->algorithm_->getResult()->get(daal_gbt_reg_train::model);
+    predict_algorithm.input.set(daal_gbt_reg_prediction::data, x);
+    predict_algorithm.input.set(daal_gbt_reg_prediction::model, train_model);
+
+    predict_algorithm.compute();
+
+    daal_gbt_reg_prediction::ResultPtr prediction_result = predict_algorithm.getResult();
+    auto y_predict = prediction_result->get(daal_gbt_reg_prediction::prediction);
+
+    return Metric<MetricType::Mse>::compute_metric(y, y_predict);
+  }
+
 private:
   GBTParams params_;
 };
@@ -102,4 +121,4 @@ DAAL_BENCH_REGISTER(GBTRegBatch, GpuDevice, double);
 #endif
 
 } // namespace gbt_regression
-} // end namespace dalbench
+} // namespace dalbench

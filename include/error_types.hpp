@@ -63,6 +63,11 @@ public:
   explicit NotDefinedEnvironmentVariable(const std::string& error_message);
 };
 
+class NotAvailableMetric : public std::runtime_error {
+public:
+  explicit NotAvailableMetric(const std::string& error_message);
+};
+
 } // namespace dalbench
 
 #endif // DALBENCH_INCLUDE_ERROR_TYPES_HPP_

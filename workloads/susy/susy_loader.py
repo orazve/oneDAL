@@ -54,6 +54,7 @@ def susy(root_dir=None):
     y_train = df.iloc[:-num_train + 1, 0].values
     df_train = pd.DataFrame(np.concatenate((x_train, y_train[:, None]), axis=1))
     df_train.to_csv(os.path.join(dataset_dir, 'susy_train.csv'),  header=False, index=False)
+    print('susy_train dataset is ready to be used')
 
     num_test = num_train
 
@@ -61,8 +62,7 @@ def susy(root_dir=None):
     y_test = df.iloc[-num_test:, 0].values
     df_test = pd.DataFrame(np.concatenate((x_test, y_test[:, None]), axis=1))
     df_test.to_csv(os.path.join(dataset_dir, 'susy_test.csv'), header=False, index=False)
-
-    print('susy dataset is ready to be used')
+    print('susy_test dataset is ready to be used')
 
 if __name__ == '__main__':
     root_dir = os.environ['DATASETSROOT']

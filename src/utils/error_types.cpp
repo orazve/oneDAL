@@ -43,4 +43,7 @@ CannotReadCsv::CannotReadCsv(const std::string& error_message)
 NotDefinedEnvironmentVariable::NotDefinedEnvironmentVariable(const std::string& error_message)
     : std::runtime_error(error_message) {}
 
+NotAvailableMetric::NotAvailableMetric(const std::string& error_message)
+    : std::runtime_error(error_message) {}
+
 } // namespace dalbench

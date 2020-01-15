@@ -6,15 +6,15 @@ The repo contains benchmarks for oneDAL algorithms. This software use Google Ben
 ## Benchmarks List
 
 | **Category**                 | **Algorithm**                       | **CPU Batch** | **CPU Online** | **GPU Batch** | **GPU Online** |
-| :---                         | :---                                | :---:         | :---:          | :---:         | :---:          |
-| **Classification**           | Logistic Regression SGD             | &#x2611;      | **-**          | &#x2611;      | **-**          |
-|                              | kNN Brute Force                     | **-**         | **-**          | &#x2611;      | **-**          |
-| **Clustering**               | K-Means                             | &#x2611;      | **-**          | &#x2611;      | **-**          |
-| **Dimensionality reduction** | Principal Components Analysis (PCA) | &#x2611;      | **-**          | &#x2611;      | **-**          |
-| **Regression**               | Linear Regression                   | &#x2611;      | **-**          | &#x2611;      | **-**          |
-|                              | Gradient Boosted Trees              | &#x2611;      | **-**          | &#x2611;      | **-**          |
-| **Statistics**               | Covariance                          | &#x2611;      | &#x2611;       | &#x2611;      | &#x2611;       |
-|                              | Moments of Low Order                | &#x2611;      | &#x2611;       | &#x2611;      | &#x2611;       |
+| :--------------------------- | :---------------------------------- | :-----------: | :------------: | :-----------: | :------------: |
+| **Classification**           | Logistic Regression SGD             |   &#x2611;    |     **-**      |   &#x2611;    |     **-**      |
+|                              | kNN Brute Force                     |     **-**     |     **-**      |   &#x2611;    |     **-**      |
+| **Clustering**               | K-Means                             |   &#x2611;    |     **-**      |   &#x2611;    |     **-**      |
+| **Dimensionality reduction** | Principal Components Analysis (PCA) |   &#x2611;    |     **-**      |   &#x2611;    |     **-**      |
+| **Regression**               | Linear Regression                   |   &#x2611;    |     **-**      |   &#x2611;    |     **-**      |
+|                              | Gradient Boosted Trees              |   &#x2611;    |     **-**      |   &#x2611;    |     **-**      |
+| **Statistics**               | Covariance                          |   &#x2611;    |    &#x2611;    |   &#x2611;    |    &#x2611;    |
+|                              | Moments of Low Order                |   &#x2611;    |    &#x2611;    |   &#x2611;    |    &#x2611;    |
 
 ## How to Build and Run oneDAL Benchmarks
 
@@ -123,14 +123,14 @@ Below benchmark output is presented for `Logistic Regression SGD` algorithm with
 - dataset: Susy with observations count is equal to 4.5 M
 
 ```bash
--------------------------------------------------------------------------------------------------------------------------------
-Benchmark                                                                           Time        CPU  Iterations UserCounters...
--------------------------------------------------------------------------------------------------------------------------------
-LogregTrainSGD/GpuDevice/float/Susy:4.5M/iterations:1/repeats:5_mean            29133 ms   20809 ms           5 applyBeta=4.03009k applyGradient=24.1492k buildProgram=140.492 makeStep=104.176 sigmoids=137.736 subVectors=363.964
-LogregTrainSGD/GpuDevice/float/Susy:4.5M/iterations:1/repeats:5_median          28631 ms   20419 ms           5 applyBeta=3.81528k applyGradient=24.0848k buildProgram=0.502345 makeStep=36.5954 sigmoids=65.0416 subVectors=295.365
-LogregTrainSGD/GpuDevice/float/Susy:4.5M/iterations:1/repeats:5_stddev           1129 ms     903 ms           5 applyBeta=502.621 applyGradient=143.781 buildProgram=313.049 makeStep=150.985 sigmoids=162.632 subVectors=159.857
-LogregTrainSGD/GpuDevice/float/Susy:4.5M/iterations:1/repeats:5_box_filter      28628 ms   20406 ms           5 applyBeta=3.8054k applyGradient=24.0854k buildProgram=0.492648 makeStep=36.654 sigmoids=65.0047 subVectors=292.531
-LogregTrainSGD/GpuDevice/float/Susy:4.5M/iterations:1/repeats:5_first_iteration 31152 ms   22423 ms           5 applyBeta=4.92885k applyGradient=24.4044k buildProgram=700.492 makeStep=374.263 sigmoids=428.661 subVectors=649.693
+-------------------------------------------------------------------------------------------------------------------------------------
+Benchmark                                                                                Time        CPU  Iterations  UserCounters...
+-------------------------------------------------------------------------------------------------------------------------------------
+LogRegTrainSGDBatch/GpuDevice/float/Susy:4.5M/iterations:1/repeats:5_mean            29133 ms   20809 ms           5  applyBeta=4.03009k applyGradient=24.1492k buildProgram=140.492 makeStep=104.176 sigmoids=137.736 subVectors=363.964
+LogRegTrainSGDBatch/GpuDevice/float/Susy:4.5M/iterations:1/repeats:5_median          28631 ms   20419 ms           5  applyBeta=3.81528k applyGradient=24.0848k buildProgram=0.502345 makeStep=36.5954 sigmoids=65.0416 subVectors=295.365
+LogRegTrainSGDBatch/GpuDevice/float/Susy:4.5M/iterations:1/repeats:5_stddev           1129 ms     903 ms           5  applyBeta=502.621 applyGradient=143.781 buildProgram=313.049 makeStep=150.985 sigmoids=162.632 subVectors=159.857
+LogRegTrainSGDBatch/GpuDevice/float/Susy:4.5M/iterations:1/repeats:5_box_filter      28628 ms   20406 ms           5  applyBeta=3.8054k applyGradient=24.0854k buildProgram=0.492648 makeStep=36.654 sigmoids=65.0047 subVectors=292.531
+LogRegTrainSGDBatch/GpuDevice/float/Susy:4.5M/iterations:1/repeats:5_first_iteration 31152 ms   22423 ms           5  applyBeta=4.92885k applyGradient=24.4044k buildProgram=700.492 makeStep=374.263 sigmoids=428.661 subVectors=649.693
 ```
 
 where:
@@ -163,12 +163,12 @@ $ ./Benchmark --benchmark_out=result.json --benchmark_out_format=json
 
 `onedal-benchmarks` cmake has the following configurable flags available:
 
-| **Flag**                      | **Possible Values**  | **Default Value** | **Behavior**                      |
-| :---                          | :---:                | :---:             | :---                              |
-| KERNEL_PROFILER<sup>[1]</sup> | [ON, OFF]            | OFF               | Enable/disable kernels profiling. |
-| DAL_USE_DPCPP_INTERFACES      | [ON, OFF]            | ON                | Enable/disable DPCPP interfaces of oneDAL. Traditional interfaces of oneDAL will be used when flag is set to [OFF]. |
-| DAL_USE_PARALLEL              | [ON, OFF]            | ON                | Enable/disable parallel version of oneDAL. Sequential version of oneDAL will be used when flag is set to [OFF]. |
-| DAL_USE_STATIC                | [ON, OFF]            | ON                | Enable/disable static linking of oneDAL. Dynamic linking of oneDAL will be used when flag is set to [OFF]. |
+| **Flag**                      | **Possible Values** | **Default Value** | **Behavior**                                                                                                        |
+| :---------------------------- | :-----------------: | :---------------: | :------------------------------------------------------------------------------------------------------------------ |
+| KERNEL_PROFILER<sup>[1]</sup> |      [ON, OFF]      |        OFF        | Enable/disable kernels profiling.                                                                                   |
+| DAL_USE_DPCPP_INTERFACES      |      [ON, OFF]      |        ON         | Enable/disable DPCPP interfaces of oneDAL. Traditional interfaces of oneDAL will be used when flag is set to [OFF]. |
+| DAL_USE_PARALLEL              |      [ON, OFF]      |        ON         | Enable/disable parallel version of oneDAL. Sequential version of oneDAL will be used when flag is set to [OFF].     |
+| DAL_USE_STATIC                |      [ON, OFF]      |        ON         | Enable/disable static linking of oneDAL. Dynamic linking of oneDAL will be used when flag is set to [OFF].          |
 
 <sup>[1]</sup> Kernels profiling for algorithms is available starting from oneDAL beta04 version.
 
@@ -176,16 +176,16 @@ $ ./Benchmark --benchmark_out=result.json --benchmark_out_format=json
 
 The most useful options for us are:
 
-| **Option**                           | **Parameter**              | **Description**                                   |
-| :------                              | :-------                   | :-----------                                      |
-| `--help`                             |                            | Show help message.                                |
-| `--benchmark_list_tests`             |                            | Display the names of all the registered benchmarks and abort (one line per tuple of parameters). |
-| `--benchmark_filter`                 | regex                      | Run only the benchmark which name contains a substring that matches the given regex. |
-| `--benchmark_repetitions`            | repetitions count          | This option doesn't supported at the moment. By default, repetitions count is equal to 5 for `onedal-benchmarks` |
-| `--benchmark_format`                 | [console, json, csv]       | Specify the format of the standard output.        |
-| `--benchmark_out`                    | file path                  | Specify a file where to write the report.         |
-| `--benchmark_out_format`             | [console, json, csv]       | Specify the format of the file output.            |
-| `--v`                                | verbosity                  | Verbose level of the benchmark library.           |
+| **Option**                | **Parameter**        | **Description**                                                                                                  |
+| :------------------------ | :------------------- | :--------------------------------------------------------------------------------------------------------------- |
+| `--help`                  |                      | Show help message.                                                                                               |
+| `--benchmark_list_tests`  |                      | Display the names of all the registered benchmarks and abort (one line per tuple of parameters).                 |
+| `--benchmark_filter`      | regex                | Run only the benchmark which name contains a substring that matches the given regex.                             |
+| `--benchmark_repetitions` | repetitions count    | This option doesn't supported at the moment. By default, repetitions count is equal to 5 for `onedal-benchmarks` |
+| `--benchmark_format`      | [console, json, csv] | Specify the format of the standard output.                                                                       |
+| `--benchmark_out`         | file path            | Specify a file where to write the report.                                                                        |
+| `--benchmark_out_format`  | [console, json, csv] | Specify the format of the file output.                                                                           |
+| `--v`                     | verbosity            | Verbose level of the benchmark library.                                                                          |
 
 ## Licence
 

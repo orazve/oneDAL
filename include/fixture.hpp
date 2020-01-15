@@ -40,29 +40,13 @@
 #define ONEDAL_VERSION_2021_BETA_04        20200100
 
 #include "dataset.hpp"
+#include "devices.hpp"
 #include "error_types.hpp"
+#include "metrics.hpp"
 #include "profiler.hpp"
 #include "statistics.hpp"
 
 namespace dalbench {
-
-struct CpuDevice {
-#ifdef DPCPP_INTERFACES
-  static auto get_device() {
-    static auto selector = cl::sycl::cpu_selector();
-    return selector;
-  }
-#endif
-};
-
-struct GpuDevice {
-#ifdef DPCPP_INTERFACES
-  static auto get_device() {
-    static auto selector = cl::sycl::gpu_selector();
-    return selector;
-  }
-#endif
-};
 
 template <typename ParamsType>
 using DictionaryParams       = std::list<std::pair<std::string, ParamsType>>;
@@ -146,6 +130,9 @@ public:
 
   void TearDown(benchmark::State& state) final {
     if (current_run_ == num_runs_) {
+      auto metric = check_result();
+      state.counters.insert({ metric.name, { metric.value, benchmark::Counter::kDefaults } });
+
       common_params_.clear_dataset();
       current_run_ = 0;
       num_runs_    = 1;
@@ -162,6 +149,10 @@ protected:
   virtual void set_input() {}
 
   virtual void set_parameters() {}
+
+  virtual MetricParams check_result() {
+    return MetricParams{ "NoMetric", 0.0 };
+  }
 
 protected:
   CommonAlgorithmParams& common_params_;

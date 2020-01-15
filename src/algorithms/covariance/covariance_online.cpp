@@ -72,5 +72,5 @@ DAAL_BENCH_REGISTER(CovarianceOnline, GpuDevice, float);
 DAAL_BENCH_REGISTER(CovarianceOnline, GpuDevice, double);
 #endif // defined(DPCPP_INTERFACES) && (__INTEL_DAAL_BUILD_DATE >= ONEDAL_VERSION_2021_BETA_03_UPDATE)
 
-} // end namespace covariance
-} // end namespace dalbench
+} // namespace covariance
+} // namespace dalbench

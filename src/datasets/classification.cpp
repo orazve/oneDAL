@@ -24,6 +24,7 @@ class DATASET(SUSY) {
   Dataset load(NumericTableType numeric_table_type, size_t num_blocks) override {
     return DatasetFromCsv()
       .path_to_train(Workload("susy").path_to_dataset("susy_train.csv"))
+      .path_to_test(Workload("susy").path_to_dataset("susy_test.csv"))
       .num_features(18)
       .num_responses(2)
       .num_blocks(num_blocks)

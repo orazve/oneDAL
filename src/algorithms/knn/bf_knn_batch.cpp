@@ -29,7 +29,7 @@ namespace daal_classifier_train   = daal::algorithms::classifier::training;
 namespace daal_classifier_predict = daal::algorithms::classifier::prediction;
 
 template <typename DeviceType, typename FPType>
-class KnnPredict : public FixtureBatch<daal_bf_knn_predict::Batch<FPType>, DeviceType> {
+class KnnPredictBatch : public FixtureBatch<daal_bf_knn_predict::Batch<FPType>, DeviceType> {
 public:
   using AlgorithmType = typename daal_bf_knn_predict::Batch<FPType>;
   using kNeighbors    = size_t;
@@ -46,7 +46,7 @@ public:
 
   using DictionaryAlgParams = DictionaryParams<KnnParams>;
 
-  KnnPredict(const std::string& name, const KnnParams& params)
+  KnnPredictBatch(const std::string& name, const KnnParams& params)
       : params_(params),
         FixtureBatch<AlgorithmType, DeviceType>(params_) {
     this->SetName(name.c_str());
@@ -93,13 +93,22 @@ protected:
     this->algorithm_->parameter().k = params_.num_k;
   }
 
+  MetricParams check_result() final {
+    auto prediction_result = this->algorithm_->getResult();
+    auto y_predict         = prediction_result->get(daal_classifier_predict::prediction);
+
+    auto y = params_.dataset.test().y();
+
+    return Metric<MetricType::Accuracy>::compute_metric(y, y_predict);
+  }
+
 private:
   KnnParams params_;
 };
 
   #ifdef DPCPP_INTERFACES
-DAAL_BENCH_REGISTER(KnnPredict, GpuDevice, float);
-DAAL_BENCH_REGISTER(KnnPredict, GpuDevice, double);
+DAAL_BENCH_REGISTER(KnnPredictBatch, GpuDevice, float);
+DAAL_BENCH_REGISTER(KnnPredictBatch, GpuDevice, double);
   #endif
 
 } // namespace bf_knn

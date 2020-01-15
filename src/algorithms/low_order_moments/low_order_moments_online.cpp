@@ -77,5 +77,5 @@ DAAL_BENCH_REGISTER(LowOrderMomentsOnline, GpuDevice, float);
 DAAL_BENCH_REGISTER(LowOrderMomentsOnline, GpuDevice, double);
 #endif // defined(DPCPP_INTERFACES) && (__INTEL_DAAL_BUILD_DATE >= ONEDAL_VERSION_2021_BETA_03_UPDATE)
 
-} // end namespace low_order_moments
-} // end namespace dalbench
+} // namespace low_order_moments
+} // namespace dalbench

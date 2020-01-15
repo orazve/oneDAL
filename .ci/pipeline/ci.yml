@@ -86,7 +86,7 @@ jobs:
         source /opt/intel/inteloneapi/setvars.sh
         export DATASETSROOT=`pwd`
         cd build-static-thread
-        ./Benchmark --benchmark_filter=Logreg.*Cpu.*float.*Mnist:60K/
+        ./Benchmark --benchmark_filter=LogReg.*Cpu.*float.*Mnist:60K/
       displayName: 'run logreg benchmark (static + thread) on cpu for mnist'
 
 - job: TRAD
@@ -175,26 +175,26 @@ jobs:
         source /opt/intel/inteloneapi/setvars.sh
         export DATASETSROOT=`pwd`
         cd build-static-sequence
-        ./Benchmark --benchmark_filter=Logreg.*Cpu.*float.*Mnist:60K/
+        ./Benchmark --benchmark_filter=LogReg.*Cpu.*float.*Mnist:60K/
       displayName: 'run logreg benchmark (sequence + thread) on cpu for mnist'
 
     - script: |
         source /opt/intel/inteloneapi/setvars.sh
         export DATASETSROOT=`pwd`
         cd build-static-thread
-        ./Benchmark --benchmark_filter=Logreg.*Cpu.*float.*Mnist:60K/
+        ./Benchmark --benchmark_filter=LogReg.*Cpu.*float.*Mnist:60K/
       displayName: 'run logreg benchmark (static + thread) on cpu for mnist'
 
     - script: |
         source /opt/intel/inteloneapi/setvars.sh
         export DATASETSROOT=`pwd`
         cd build-dynamic-sequence
-        ./Benchmark --benchmark_filter=Logreg.*Cpu.*float.*Mnist:60K/
+        ./Benchmark --benchmark_filter=LogReg.*Cpu.*float.*Mnist:60K/
       displayName: 'run logreg benchmark (dynamic + sequence) on cpu for mnist'
 
     - script: |
         source /opt/intel/inteloneapi/setvars.sh
         export DATASETSROOT=`pwd`
         cd build-dynamic-thread
-        ./Benchmark --benchmark_filter=Logreg.*Cpu.*float.*Mnist:60K/
+        ./Benchmark --benchmark_filter=LogReg.*Cpu.*float.*Mnist:60K/
       displayName: 'run logreg benchmark (dynamic + thread) on cpu for mnist'

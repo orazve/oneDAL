@@ -53,32 +53,35 @@ def higgs(root_dir=None):
     y_train = df.iloc[:num_train, 0].values
     df_train = pd.DataFrame(np.concatenate((X_train, y_train[:, None]), axis=1))
     df_train.to_csv(os.path.join(dataset_dir, 'higgs_2m_train.csv'), header=False, index=False)
+    print('higgs_2m_train dataset is ready to be used')
 
     num_train = 1000000
     X_train = df.iloc[:num_train, 1:].values
     y_train = df.iloc[:num_train, 0].values
     df_train = pd.DataFrame(np.concatenate((X_train, y_train[:, None]), axis=1))
     df_train.to_csv(os.path.join(dataset_dir, 'higgs_1m_train.csv'), header=False, index=False)
+    print('higgs_1m_train dataset is ready to be used')
 
     num_test = 1500000
     X_test = df.iloc[num_train:num_test, 1:].values
     y_test = df.iloc[num_train:num_test, 0].values
     df_test = pd.DataFrame(np.concatenate((X_test, y_test[:, None]), axis=1))
     df_test.to_csv(os.path.join(dataset_dir, 'higgs_500t_test.csv'), header=False, index=False)
+    print('higgs_500t_test dataset is ready to be used')
 
     num_train = 100000
     X_train = df.iloc[:num_train, 1:].values
     y_train = df.iloc[:num_train, 0].values
     df_train = pd.DataFrame(np.concatenate((X_train, y_train[:, None]), axis=1))
     df_train.to_csv(os.path.join(dataset_dir,'higgs_100t_train.csv'), header=False, index=False)
+    print('higgs_100t_train dataset is ready to be used')
 
     num_test = 150000
     X_test = df.iloc[num_train:num_test, 1:].values
     y_test = df.iloc[num_train:num_test, 0].values
     df_test = pd.DataFrame(np.concatenate((X_test, y_test[:, None]), axis=1))
     df_test.to_csv(os.path.join(dataset_dir, 'higgs_50t_test.csv'), header=False, index=False)
-
-    print('higgs dataset is ready to be used')
+    print('higgs_50t_test dataset is ready to be used')
 
 if __name__ == '__main__':
     root_dir = os.environ['DATASETSROOT']
