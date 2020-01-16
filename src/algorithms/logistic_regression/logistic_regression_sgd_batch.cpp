@@ -23,7 +23,6 @@ namespace log_reg {
 namespace daal_log_reg_train         = daal::algorithms::logistic_regression::training;
 namespace daal_log_reg_prediction    = daal::algorithms::logistic_regression::prediction;
 namespace daal_optimization_solver   = daal::algorithms::optimization_solver;
-namespace daal_classifier            = daal::algorithms::classifier;
 namespace daal_classifier_train      = daal::algorithms::classifier::training;
 namespace daal_classifier_prediction = daal::algorithms::classifier::prediction;
 
@@ -135,9 +134,7 @@ protected:
     auto x = params_.dataset.test().x();
     auto y = params_.dataset.test().y();
 
-    daal_log_reg_prediction::interface1::Batch<FPType> predict_algorithm(params_.num_responses);
-    predict_algorithm.parameter().resultsToCompute |=
-      daal_log_reg_prediction::computeClassesProbabilities;
+    daal_log_reg_prediction::Batch<FPType> predict_algorithm(params_.num_responses);
 
     auto train_model = this->algorithm_->getResult()->get(daal_classifier_train::model);
     predict_algorithm.input.set(daal_classifier_prediction::data, x);
@@ -145,9 +142,8 @@ protected:
 
     predict_algorithm.compute();
 
-    daal_log_reg_prediction::interface1::ResultPtr prediction_result =
-      predict_algorithm.getResult();
-    auto y_predict = prediction_result->get(daal_classifier::prediction::prediction);
+    daal_log_reg_prediction::ResultPtr prediction_result = predict_algorithm.getResult();
+    auto y_predict = prediction_result->get(daal_classifier_prediction::prediction);
 
     return Metric<MetricType::Accuracy>::compute_metric(y, y_predict);
   }

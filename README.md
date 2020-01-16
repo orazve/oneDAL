@@ -126,11 +126,11 @@ Below benchmark output is presented for `Logistic Regression SGD` algorithm with
 -------------------------------------------------------------------------------------------------------------------------------------
 Benchmark                                                                                Time        CPU  Iterations  UserCounters...
 -------------------------------------------------------------------------------------------------------------------------------------
-LogRegTrainSGDBatch/GpuDevice/float/Susy:4.5M/iterations:1/repeats:5_mean            29133 ms   20809 ms           5  applyBeta=4.03009k applyGradient=24.1492k buildProgram=140.492 makeStep=104.176 sigmoids=137.736 subVectors=363.964
-LogRegTrainSGDBatch/GpuDevice/float/Susy:4.5M/iterations:1/repeats:5_median          28631 ms   20419 ms           5  applyBeta=3.81528k applyGradient=24.0848k buildProgram=0.502345 makeStep=36.5954 sigmoids=65.0416 subVectors=295.365
-LogRegTrainSGDBatch/GpuDevice/float/Susy:4.5M/iterations:1/repeats:5_stddev           1129 ms     903 ms           5  applyBeta=502.621 applyGradient=143.781 buildProgram=313.049 makeStep=150.985 sigmoids=162.632 subVectors=159.857
-LogRegTrainSGDBatch/GpuDevice/float/Susy:4.5M/iterations:1/repeats:5_box_filter      28628 ms   20406 ms           5  applyBeta=3.8054k applyGradient=24.0854k buildProgram=0.492648 makeStep=36.654 sigmoids=65.0047 subVectors=292.531
-LogRegTrainSGDBatch/GpuDevice/float/Susy:4.5M/iterations:1/repeats:5_first_iteration 31152 ms   22423 ms           5  applyBeta=4.92885k applyGradient=24.4044k buildProgram=700.492 makeStep=374.263 sigmoids=428.661 subVectors=649.693
+LogRegTrainSGDBatch/GpuDevice/float/Mnist:60K/iterations:1/repeats:5_mean             2956 ms    2927 ms           5  Accuracy=0.831983 applyBeta=1.48245k applyGradient=1.11036k buildProgram=141.074 makeStep=87.8763 softmaxAndUpdateProba=201.745
+LogRegTrainSGDBatch/GpuDevice/float/Mnist:60K/iterations:1/repeats:5_median           2399 ms    2386 ms           5  Accuracy=0.831983 applyBeta=1.18902k applyGradient=1051.96 buildProgram=1.0136 makeStep=29.0241 softmaxAndUpdateProba=120.462
+LogRegTrainSGDBatch/GpuDevice/float/Mnist:60K/iterations:1/repeats:5_stddev           1243 ms    1209 ms           5  Accuracy=0 applyBeta=654.434 applyGradient=130.364 buildProgram=313.185 makeStep=131.842 softmaxAndUpdateProba=182.041
+LogRegTrainSGDBatch/GpuDevice/float/Mnist:60K/iterations:1/repeats:5_box_filter       2400 ms    2386 ms           5  Accuracy=0.831983 applyBeta=1.18978k applyGradient=1052.06 buildProgram=1.0137 makeStep=29.05 softmaxAndUpdateProba=120.334
+LogRegTrainSGDBatch/GpuDevice/float/Mnist:60K/iterations:1/repeats:5_first_iteration  5179 ms    5090 ms           5  Accuracy=0.831983 applyBeta=2.65312k applyGradient=1.34356k buildProgram=701.316 makeStep=323.722 softmaxAndUpdateProba=527.39
 ```
 
 where:
@@ -138,7 +138,7 @@ where:
 - `Time` column devotes wall clock time
 - `CPU` column devotes CPU time
 - `Iterations` column devotes repetitions count of the benchmark (algorithm)
-- `UserCounters` column devotes time of the algorithm kernels
+- `UserCounters` column devotes time of the algorithm kernels and evaluation metric of result computation of the algorithms. By now, available metrics are `mean squared error (MSE)`, `accuracy` and `Davies-Bouldin index`
 
 Currently, the following time statistics are supported: `mean`, `median`, `stddev`, `box filter` and `first iteration`.
 
