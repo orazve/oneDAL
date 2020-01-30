@@ -1,6 +1,6 @@
 /** file dataset.cpp */
 /*******************************************************************************
-* Copyright 2019 Intel Corporation
+* Copyright 2019-2020 Intel Corporation
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -28,12 +28,10 @@ NumericTablePtr NumericTableFactory::create_numeric_table(
 
   switch (numeric_table_type) {
     case NumericTableType::SyclHomogenNumericTableFloat:
-      table =
-        HomogenNumericTable<float>::create(num_features, num_observations, memory_allocation_flag);
+      table = SyclHomogenNT<float>::create(num_features, num_observations, memory_allocation_flag);
       break;
     case NumericTableType::SyclHomogenNumericTableDouble:
-      table =
-        HomogenNumericTable<double>::create(num_features, num_observations, memory_allocation_flag);
+      table = SyclHomogenNT<double>::create(num_features, num_observations, memory_allocation_flag);
       break;
     default:
       throw NotAvailableNumericTable("The given numeric table type is not implemented");
@@ -62,6 +60,19 @@ DataSlice::DataSlice(const NumericTablePtr& x,
       y_blocks_(num_blocks),
       labeled_(true) {
   initialize(numeric_table_type, num_blocks, x, y);
+}
+
+void DataSlice::clear() {
+  for (auto& nt : x_blocks_) {
+    nt.reset();
+  }
+  for (auto& nt : y_blocks_) {
+    nt.reset();
+  }
+}
+
+DataSlice::~DataSlice() {
+  clear();
 }
 
 DataSlice DataSlice::make_empty() {
@@ -219,6 +230,13 @@ Dataset::Dataset(const DataSlice& train_slice, const DataSlice& test_slice)
 
 Dataset::Dataset(const DataSlice& full_slice) : full_slice_(full_slice) {}
 
+void Dataset::clear() {
+  train_slice_.clear();
+  test_slice_.clear();
+  full_slice_.clear();
+  index_slice_.clear();
+}
+
 DataSlice Dataset::full() const {
   if (full_slice_.empty()) {
     throw EmptyNumericTable("Full slice of the dataset is empty");
@@ -283,12 +301,21 @@ Dataset& Dataset::num_tries(size_t num_tries) {
   return *this;
 }
 
+Dataset& Dataset::num_features(size_t num_features) {
+  num_features_ = num_features;
+  return *this;
+}
+
 size_t Dataset::num_responses() const {
   return num_responses_;
 }
 
 size_t Dataset::num_tries() const {
   return num_tries_;
+}
+
+size_t Dataset::num_features() const {
+  return num_features_;
 }
 
 bool Dataset::has_full() const {
@@ -377,7 +404,8 @@ Dataset DatasetFromCsv::load(NumericTableType numeric_table_type) {
   const auto index_slice = load_slice(path_to_index_, numeric_table_type);
   return Dataset(train_slice, test_slice, full_slice, index_slice)
     .num_responses(num_responses_)
-    .num_tries(num_tries_);
+    .num_tries(num_tries_)
+    .num_features(num_features_);
 }
 
 DataSlice DatasetFromCsv::load_slice(const std::string& path, NumericTableType numeric_table_type) {

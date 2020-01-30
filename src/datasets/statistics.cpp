@@ -1,6 +1,6 @@
 /** file statistics.cpp */
 /*******************************************************************************
-* Copyright 2019 Intel Corporation
+* Copyright 2019-2020 Intel Corporation
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@ class DATASET(higgs_1M) {
   Dataset load(NumericTableType numeric_table_type, size_t num_blocks) override {
     return DatasetFromCsv()
       .path_to_full(Workload("higgs").path_to_dataset("higgs_1m_train.csv"))
-      .num_features(28)
+      .num_features(29)
       .num_responses(100)
       .num_blocks(num_blocks)
       .unlabeled()
@@ -38,7 +38,7 @@ class DATASET(higgs_2M) {
   Dataset load(NumericTableType numeric_table_type, size_t num_blocks) override {
     return DatasetFromCsv()
       .path_to_full(Workload("higgs").path_to_dataset("higgs_2m_train.csv"))
-      .num_features(28)
+      .num_features(29)
       .num_responses(100)
       .num_blocks(num_blocks)
       .unlabeled()
@@ -52,7 +52,7 @@ class DATASET(epsilon_30k) {
   Dataset load(NumericTableType numeric_table_type, size_t num_blocks) override {
     return DatasetFromCsv()
       .path_to_full(Workload("epsilon").path_to_dataset("epsilon_30k_train.csv"))
-      .num_features(2000)
+      .num_features(2001)
       .num_blocks(num_blocks)
       .unlabeled()
       .on_error(
@@ -65,7 +65,7 @@ class DATASET(epsilon_80k) {
   Dataset load(NumericTableType numeric_table_type, size_t num_blocks) override {
     return DatasetFromCsv()
       .path_to_full(Workload("epsilon").path_to_dataset("epsilon_80k_train.csv"))
-      .num_features(2000)
+      .num_features(2001)
       .num_blocks(num_blocks)
       .unlabeled()
       .on_error(

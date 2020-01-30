@@ -1,5 +1,5 @@
 #===============================================================================
-# Copyright 2019 Intel Corporation
+# Copyright 2019-2020 Intel Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -72,9 +72,10 @@ message(STATUS "DAL_USE_STATIC ........................ " ${DAL_USE_STATIC})
 
 find_package(DAL REQUIRED)
 
-include_directories(include)
-
 set(THIRDPARTY_INSTALL_DIR ${CMAKE_BINARY_DIR}/third-party)
+
+
+include_directories(include)
 
 add_subdirectory(third-party)
 add_subdirectory(src)

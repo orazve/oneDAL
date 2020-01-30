@@ -1,6 +1,6 @@
 /** file dataset.hpp */
 /*******************************************************************************
-* Copyright 2019 Intel Corporation
+* Copyright 2019-2020 Intel Corporation
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -59,11 +59,10 @@ public:
 
   template <typename FPType>
 #ifdef DPCPP_INTERFACES
-  using HomogenNumericTable = typename daal::data_management::SyclHomogenNumericTable<FPType>;
+  using SyclHomogenNT = typename daal::data_management::SyclHomogenNumericTable<FPType>;
 #else
-  using HomogenNumericTable = typename daal::data_management::HomogenNumericTable<FPType>;
+  using SyclHomogenNT = typename daal::data_management::HomogenNumericTable<FPType>;
 #endif
-
   NumericTablePtr create_numeric_table(
     const NumericTableType numeric_table_type,
     const size_t num_features,
@@ -75,6 +74,8 @@ class DataSlice {
 public:
   DataSlice() = default;
 
+  ~DataSlice();
+
   explicit DataSlice(const NumericTablePtr& x,
                      const size_t num_blocks,
                      NumericTableType numeric_table_type);
@@ -83,6 +84,8 @@ public:
                      const NumericTablePtr& y,
                      const size_t num_blocks,
                      NumericTableType numeric_table_type);
+
+  void clear();
 
   static DataSlice make_empty();
 
@@ -128,6 +131,8 @@ public:
   Dataset()  = default;
   ~Dataset() = default;
 
+  void clear();
+
   explicit Dataset(const DataSlice& train_slice,
                    const DataSlice& test_slice,
                    const DataSlice& full_slice,
@@ -157,9 +162,13 @@ public:
 
   Dataset& num_tries(size_t num_tries);
 
+  Dataset& num_features(size_t num_features);
+
   size_t num_responses() const;
 
   size_t num_tries() const;
+
+  size_t num_features() const;
 
   bool has_full() const;
 
@@ -174,6 +183,7 @@ private:
   DataSlice index_slice_;
   size_t num_responses_ = 0;
   size_t num_tries_     = 1;
+  size_t num_features_  = 0;
 };
 
 class Workload {

@@ -1,6 +1,6 @@
 /** file fixture.hpp */
 /*******************************************************************************
-* Copyright 2019 Intel Corporation
+* Copyright 2019-2020 Intel Corporation
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -49,9 +49,11 @@
 namespace dalbench {
 
 template <typename ParamsType>
-using DictionaryParams       = std::list<std::pair<std::string, ParamsType>>;
-using DatasetName            = std::string;
+using DictionaryParams = std::list<std::pair<std::string, ParamsType>>;
+using DatasetName      = std::string;
+
 const size_t MAX_NUM_OF_RUNS = 5; // TODO
+const size_t NUMBER_OF_BLOCK = 4; // TODO
 
 struct CommonAlgorithmParams {
   CommonAlgorithmParams(const DatasetName& dataset_name,
@@ -68,10 +70,11 @@ struct CommonAlgorithmParams {
     auto dataset_loader = create_registered<DatasetLoader>(dataset_name);
     dataset             = dataset_loader->load(numeric_table_type, num_blocks);
     num_responses       = dataset.num_responses();
+    num_features        = dataset.num_features();
   }
 
   void clear_dataset() {
-    dataset = Dataset();
+    dataset.clear();
   }
 
   DatasetName dataset_name;
@@ -83,33 +86,25 @@ struct CommonAlgorithmParams {
   size_t num_responses;
 };
 
-template <typename AlgorithmType, typename DeviceType>
-class Fixture : public ::benchmark::Fixture {
+class FixtureCommon : public ::benchmark::Fixture {
 public:
-  Fixture(CommonAlgorithmParams& params)
+  FixtureCommon(const std::string& name, CommonAlgorithmParams& params)
       : ::benchmark::Fixture(),
         common_params_(params),
         current_run_(0),
-        num_runs_(MAX_NUM_OF_RUNS) {}
+        num_runs_(MAX_NUM_OF_RUNS) {
+    this->SetName(name.c_str());
+  }
 
   void SetUp(benchmark::State& state) final {
     try {
       if (current_run_ == 0) {
-#ifdef DPCPP_INTERFACES
-        cl::sycl::device device = cl::sycl::device(DeviceType::get_device());
-        cl::sycl::queue queue(device);
-        auto ctx = daal::services::ExecutionContext(daal::services::SyclExecutionContext(queue));
-#else
-        auto ctx = daal::services::ExecutionContext(daal::services::CpuExecutionContext());
-#endif
-        daal::services::Environment::getInstance()->setDefaultExecutionContext(ctx);
-
+        set_library_params(state);
         common_params_.load_dataset();
+        set_algorithm();
+        set_input(state);
+        set_parameters();
       }
-
-      set_algorithm();
-      set_input();
-      set_parameters();
     }
     catch (std::exception const& e) {
       state.SkipWithError(e.what());
@@ -130,33 +125,28 @@ public:
 
   void TearDown(benchmark::State& state) final {
     if (current_run_ == num_runs_) {
-      auto metric = check_result();
+      auto metric = check_result(state);
       state.counters.insert({ metric.name, { metric.value, benchmark::Counter::kDefaults } });
-
+      free_input(state);
       common_params_.clear_dataset();
-      current_run_ = 0;
-      num_runs_    = 1;
     }
-
-    algorithm_.reset();
   }
 
 protected:
   virtual void run_benchmark(benchmark::State& state) {}
 
+  virtual void set_library_params(benchmark::State& state) {}
   virtual void set_algorithm() {}
-
-  virtual void set_input() {}
-
+  virtual void set_input(benchmark::State& state) {}
+  virtual void free_input(benchmark::State& state) {}
   virtual void set_parameters() {}
 
-  virtual MetricParams check_result() {
-    return MetricParams{ "NoMetric", 0.0 };
+  virtual MetricParams check_result(benchmark::State& state) {
+    return MetricParams{ "NoMetric", std::nan("0") };
   }
 
 protected:
   CommonAlgorithmParams& common_params_;
-  std::unique_ptr<AlgorithmType> algorithm_;
 
 private:
   size_t num_runs_;
@@ -164,9 +154,36 @@ private:
 };
 
 template <typename AlgorithmType, typename DeviceType>
-class FixtureBatch : public Fixture<AlgorithmType, DeviceType> {
+class FixtureOneDAL : public FixtureCommon {
 public:
-  FixtureBatch(CommonAlgorithmParams& params) : Fixture<AlgorithmType, DeviceType>(params) {}
+  FixtureOneDAL(const std::string& name, CommonAlgorithmParams& params)
+      : FixtureCommon(name, params) {}
+
+protected:
+  void set_library_params(benchmark::State& state) final {
+#ifdef DPCPP_INTERFACES
+    cl::sycl::device device = cl::sycl::device(DeviceType::get_device());
+    cl::sycl::queue queue(device);
+    auto ctx = daal::services::ExecutionContext(daal::services::SyclExecutionContext(queue));
+#else
+    auto ctx = daal::services::ExecutionContext(daal::services::CpuExecutionContext());
+#endif
+    daal::services::Environment::getInstance()->setDefaultExecutionContext(ctx);
+  }
+
+  void free_input(benchmark::State& state) override {
+    algorithm_.reset();
+  }
+
+protected:
+  std::unique_ptr<AlgorithmType> algorithm_;
+};
+
+template <typename AlgorithmType, typename DeviceType>
+class FixtureBatch : public FixtureOneDAL<AlgorithmType, DeviceType> {
+public:
+  FixtureBatch(const std::string& name, CommonAlgorithmParams& params)
+      : FixtureOneDAL<AlgorithmType, DeviceType>(name, params) {}
 
 protected:
   void run_benchmark(benchmark::State& state) final {
@@ -177,19 +194,22 @@ protected:
 };
 
 template <typename AlgorithmType, typename DeviceType>
-class FixtureOnline : public Fixture<AlgorithmType, DeviceType> {
+class FixtureOnline : public FixtureOneDAL<AlgorithmType, DeviceType> {
 public:
-  FixtureOnline(CommonAlgorithmParams& params) : Fixture<AlgorithmType, DeviceType>(params) {}
+  FixtureOnline(const std::string& name, CommonAlgorithmParams& params)
+      : FixtureOneDAL<AlgorithmType, DeviceType>(name, params) {
+    this->common_params_.num_blocks = NUMBER_OF_BLOCK;
+  }
 
 protected:
-  virtual void set_input_block(const size_t block_index) = 0;
+  virtual void set_input_block(benchmark::State& state, const size_t block_index) = 0;
 
   void run_benchmark(::benchmark::State& state) final {
     for (auto _ : state) {
       for (size_t block_index = 0; block_index < this->common_params_.num_blocks; ++block_index) {
         state.PauseTiming();
         try {
-          this->set_input_block(block_index);
+          this->set_input_block(state, block_index);
         }
         catch (std::exception const& e) {
           state.SkipWithError(e.what());
@@ -223,9 +243,9 @@ struct BenchmarkRegistrator {
   }
 };
 
-#define DAAL_BENCH_REGISTER(BaseClass, DeviceType, FPType)                           \
+#define DAL_BENCH_REGISTER(BaseClass, DeviceType, FPType)                            \
   static BenchmarkRegistrator<BaseClass<DeviceType, FPType>> BENCHMARK_PRIVATE_NAME( \
-    BenchmarkRegistrator)(#BaseClass "/" #DeviceType "/" #FPType)
+    BenchmarkRegistrator)(#BaseClass "/" #DeviceType "/Intel/" #FPType)
 
 } // namespace dalbench
 

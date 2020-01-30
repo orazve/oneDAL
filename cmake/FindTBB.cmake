@@ -1,5 +1,5 @@
 #===============================================================================
-# Copyright 2019 Intel Corporation
+# Copyright 2019-2020 Intel Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@
 find_path(
   TBB_ROOT_DIR
   NAMES include/tbb/tbb.h
+  NO_DEFAULT_PATH
   PATHS $ENV{TBBROOT})
 
 get_filename_component(TBB_ROOT_DIR ${TBB_ROOT_DIR} DIRECTORY REALPATH)
@@ -34,12 +35,13 @@ endif()
 find_path(
   TBB_INCLUDE_DIR
   NAMES tbb/tbb.h
+  NO_DEFAULT_PATH
   PATH_SUFFIXES include
   PATHS ${TBB_ROOT_DIR} $ENV{TBBROOT})
 
 foreach(TBB_LIB tbb tbbmalloc)
   find_library(
-    TBB_LIBRARY
+    TBB_LIBRARY NO_DEFAULT_PATH
     NAMES ${TBB_LIB}
     PATH_SUFFIXES lib/intel64/gcc4.4 latest/lib/intel64/gcc4.8
     PATHS ${TBB_ROOT_DIR} $ENV{LIBRARY_PATH})
@@ -57,10 +59,6 @@ if(NOT TBB_INCLUDE_DIR MATCHES NOTFOUND)
     set(TBB_FOUND TRUE)
   endif()
 endif()
-
-message(STATUS "TBB_ROOT_DIR .......................... " ${TBB_ROOT_DIR})
-message(STATUS "TBB_LIBRARIES ......................... " ${TBB_LIBRARIES})
-message(STATUS "TBB_INCLUDE_DIR ....................... " ${TBB_INCLUDE_DIR})
 
 if(NOT DEFINED TBB_FOUND)
   message(

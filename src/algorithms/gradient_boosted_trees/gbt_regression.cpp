@@ -1,6 +1,6 @@
 /** file gbt_regression.cpp */
 /*******************************************************************************
-* Copyright 2019 Intel Corporation
+* Copyright 2019-2020 Intel Corporation
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@ namespace daal_gbt_reg_train      = daal::algorithms::gbt::regression::training;
 namespace daal_gbt_reg_prediction = daal::algorithms::gbt::regression::prediction;
 
 template <typename DeviceType, typename FPType>
-class GBTRegBatch : public FixtureBatch<daal_gbt_reg_train::Batch<FPType>, DeviceType> {
+class GBTReg : public FixtureBatch<daal_gbt_reg_train::Batch<FPType>, DeviceType> {
 public:
   using AlgorithmType      = typename daal_gbt_reg_train::Batch<FPType>;
   using AlgorithmParamType = typename AlgorithmType::ParameterType;
@@ -48,13 +48,9 @@ public:
     size_t maxTreeDepth;
   };
 
-  using DictionaryAlgParams = DictionaryParams<GBTParams>;
-
-  GBTRegBatch(const std::string& name, const GBTParams& params)
+  GBTReg(const std::string& name, const GBTParams& params)
       : params_(params),
-        FixtureBatch<AlgorithmType, DeviceType>(params_) {
-    this->SetName(name.c_str());
-  }
+        FixtureBatch<AlgorithmType, DeviceType>(name, params_) {}
 
   static DictionaryParams<GBTParams> get_params() {
     return { { "YearMsdTrain",
@@ -76,7 +72,7 @@ protected:
     this->algorithm_ = std::make_unique<AlgorithmType>(AlgorithmType());
   }
 
-  void set_input() final {
+  void set_input(benchmark::State& state) final {
     auto X = params_.dataset.train().x();
     auto Y = params_.dataset.train().y();
 
@@ -90,7 +86,7 @@ protected:
     this->algorithm_->parameter().maxTreeDepth  = params_.maxTreeDepth;
   }
 
-  MetricParams check_result() final {
+  MetricParams check_result(benchmark::State& state) final {
     auto x = params_.dataset.test().x();
     auto y = params_.dataset.test().y();
 
@@ -112,12 +108,12 @@ private:
   GBTParams params_;
 };
 
-DAAL_BENCH_REGISTER(GBTRegBatch, CpuDevice, float);
-DAAL_BENCH_REGISTER(GBTRegBatch, CpuDevice, double);
+DAL_BENCH_REGISTER(GBTReg, CpuDevice, float);
+DAL_BENCH_REGISTER(GBTReg, CpuDevice, double);
 
 #if defined(DPCPP_INTERFACES) && (__INTEL_DAAL_BUILD_DATE >= ONEDAL_VERSION_2021_BETA_03_UPDATE)
-DAAL_BENCH_REGISTER(GBTRegBatch, GpuDevice, float);
-DAAL_BENCH_REGISTER(GBTRegBatch, GpuDevice, double);
+DAL_BENCH_REGISTER(GBTReg, GpuDevice, float);
+DAL_BENCH_REGISTER(GBTReg, GpuDevice, double);
 #endif
 
 } // namespace gbt_regression

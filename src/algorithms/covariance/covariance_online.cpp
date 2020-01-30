@@ -1,6 +1,6 @@
 /** file covariance_online.cpp */
 /*******************************************************************************
-* Copyright 2019 Intel Corporation
+* Copyright 2019-2020 Intel Corporation
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -17,59 +17,41 @@
 
 #include "fixture.hpp"
 
+#include "covariance_params.hpp"
+
 namespace dalbench {
 namespace covariance {
 
 namespace daal_covariance = daal::algorithms::covariance;
 
 template <typename DeviceType, typename FPType>
-class CovarianceOnline : public FixtureOnline<daal_covariance::Online<FPType>, DeviceType> {
+class CovOnline : public GetterParamsCov<FPType>,
+                  public FixtureOnline<daal_covariance::Online<FPType>, DeviceType> {
 public:
+  using GetterParamsCov<FPType>::params;
   using AlgorithmType = typename daal_covariance::Online<FPType>;
-  using nBlock        = size_t;
 
-  struct CovarianceParams : public CommonAlgorithmParams {
-    CovarianceParams(const DatasetName& dataset_name,
-                     const NumericTableType numeric_table_type,
-                     const size_t num_blocks)
-        : CommonAlgorithmParams(dataset_name, numeric_table_type, num_blocks) {}
-  };
-
-  CovarianceOnline(const std::string& name, const CovarianceParams& params)
-      : params_(params),
-        FixtureOnline<AlgorithmType, DeviceType>(params_) {
-    this->SetName(name.c_str());
-  }
-
-  static DictionaryParams<CovarianceParams> get_params() {
-    return {
-      { "Higgs:1M",
-        CovarianceParams(DatasetName("higgs_1M"), TableType(SyclHomogen, FPType), nBlock(4)) },
-      { "Epsilon:30K",
-        CovarianceParams(DatasetName("epsilon_30k"), TableType(SyclHomogen, FPType), nBlock(4)) }
-    };
-  }
+  CovOnline(const std::string& name, const typename GetterParamsCov<FPType>::Params& params_in)
+      : GetterParamsCov<FPType>(params_in),
+        FixtureOnline<AlgorithmType, DeviceType>(name, params) {}
 
 protected:
   void set_algorithm() final {
     this->algorithm_ = std::make_unique<AlgorithmType>(AlgorithmType());
   }
 
-  void set_input_block(const size_t block_index) final {
-    auto x_block = params_.dataset.full().x_block(block_index);
+  void set_input_block(benchmark::State& state, const size_t block_index) final {
+    auto x_block = params.dataset.full().x_block(block_index);
     this->algorithm_->input.set(daal_covariance::data, x_block);
   }
-
-private:
-  CovarianceParams params_;
 };
 
-DAAL_BENCH_REGISTER(CovarianceOnline, CpuDevice, float);
-DAAL_BENCH_REGISTER(CovarianceOnline, CpuDevice, double);
+DAL_BENCH_REGISTER(CovOnline, CpuDevice, float);
+DAL_BENCH_REGISTER(CovOnline, CpuDevice, double);
 
 #if defined(DPCPP_INTERFACES) && (__INTEL_DAAL_BUILD_DATE >= ONEDAL_VERSION_2021_BETA_03_UPDATE)
-DAAL_BENCH_REGISTER(CovarianceOnline, GpuDevice, float);
-DAAL_BENCH_REGISTER(CovarianceOnline, GpuDevice, double);
+DAL_BENCH_REGISTER(CovOnline, GpuDevice, float);
+DAL_BENCH_REGISTER(CovOnline, GpuDevice, double);
 #endif // defined(DPCPP_INTERFACES) && (__INTEL_DAAL_BUILD_DATE >= ONEDAL_VERSION_2021_BETA_03_UPDATE)
 
 } // namespace covariance

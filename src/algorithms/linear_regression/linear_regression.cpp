@@ -1,6 +1,6 @@
 /** file linear_regression.cpp */
 /*******************************************************************************
-* Copyright 2019 Intel Corporation
+* Copyright 2019-2020 Intel Corporation
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -17,6 +17,8 @@
 
 #include "fixture.hpp"
 
+#include "linear_regression_params.hpp"
+
 namespace dalbench {
 namespace lin_reg {
 
@@ -24,60 +26,38 @@ namespace daal_lin_reg_train   = daal::algorithms::linear_regression::training;
 namespace daal_lin_reg_predict = daal::algorithms::linear_regression::prediction;
 
 template <typename DeviceType, typename FPType>
-class LinRegTrainBatch : public FixtureBatch<daal_lin_reg_train::Batch<FPType>, DeviceType> {
+class LinRegTrain : public GetterParamsLinRegTrain<FPType>,
+                    public FixtureBatch<daal_lin_reg_train::Batch<FPType>, DeviceType> {
 public:
+  using GetterParamsLinRegTrain<FPType>::params;
+
   using AlgorithmType = typename daal_lin_reg_train::Batch<FPType>;
-  using InterceptFlag = bool;
 
-  struct LinRegParams : public CommonAlgorithmParams {
-    LinRegParams(const DatasetName& dataset_name,
-                 const NumericTableType numeric_table_type,
-                 const bool intercept_flag)
-        : CommonAlgorithmParams(dataset_name, numeric_table_type),
-          intercept_flag(intercept_flag) {}
-
-    const bool intercept_flag;
-  };
-
-  using DictionaryAlgParams = DictionaryParams<LinRegParams>;
-
-  LinRegTrainBatch(const std::string& name, const LinRegParams& params)
-      : params_(params),
-        FixtureBatch<AlgorithmType, DeviceType>(params_) {
-    this->SetName(name.c_str());
-  }
-
-  static DictionaryParams<LinRegParams> get_params() {
-    return { { "YearMsdTrain",
-               LinRegParams(DatasetName("year_prediction_msd"),
-                            TableType(SyclHomogen, FPType),
-                            InterceptFlag(false)) },
-             { "Higgs:1M",
-               LinRegParams(DatasetName("higgs_1M_reg"),
-                            TableType(SyclHomogen, FPType),
-                            InterceptFlag(true)) } };
-  }
+  LinRegTrain(const std::string& name,
+              const typename GetterParamsLinRegTrain<FPType>::Params& paramsin)
+      : GetterParamsLinRegTrain<FPType>(paramsin),
+        FixtureBatch<AlgorithmType, DeviceType>(name, params) {}
 
 protected:
   void set_algorithm() final {
     this->algorithm_ = std::make_unique<AlgorithmType>(daal_lin_reg_train::Batch<FPType>());
   }
 
-  void set_input() final {
-    auto x = params_.dataset.train().x();
-    auto y = params_.dataset.train().y();
+  void set_input(benchmark::State& state) final {
+    auto x = params.dataset.train().x();
+    auto y = params.dataset.train().y();
 
     this->algorithm_->input.set(daal_lin_reg_train::data, x);
     this->algorithm_->input.set(daal_lin_reg_train::dependentVariables, y);
   }
 
   void set_parameters() final {
-    this->algorithm_->parameter.interceptFlag = params_.intercept_flag;
+    this->algorithm_->parameter.interceptFlag = params.intercept_flag;
   }
 
-  MetricParams check_result() final {
-    auto x = params_.dataset.test().x();
-    auto y = params_.dataset.test().y();
+  MetricParams check_result(benchmark::State& state) final {
+    auto x = params.dataset.test().x();
+    auto y = params.dataset.test().y();
 
     daal_lin_reg_predict::Batch<FPType> predict_algorithm;
 
@@ -92,17 +72,14 @@ protected:
 
     return Metric<MetricType::Mse>::compute_metric(y, y_predict);
   }
-
-private:
-  LinRegParams params_;
 };
 
-DAAL_BENCH_REGISTER(LinRegTrainBatch, CpuDevice, float);
-DAAL_BENCH_REGISTER(LinRegTrainBatch, CpuDevice, double);
+DAL_BENCH_REGISTER(LinRegTrain, CpuDevice, float);
+DAL_BENCH_REGISTER(LinRegTrain, CpuDevice, double);
 
 #if defined(DPCPP_INTERFACES) && (__INTEL_DAAL_BUILD_DATE >= ONEDAL_VERSION_2021_BETA_03_UPDATE)
-DAAL_BENCH_REGISTER(LinRegTrainBatch, GpuDevice, float);
-DAAL_BENCH_REGISTER(LinRegTrainBatch, GpuDevice, double);
+DAL_BENCH_REGISTER(LinRegTrain, GpuDevice, float);
+DAL_BENCH_REGISTER(LinRegTrain, GpuDevice, double);
 #endif // defined(DPCPP_INTERFACES) && (__INTEL_DAAL_BUILD_DATE >= ONEDAL_VERSION_2021_BETA_03_UPDATE)
 
 } // namespace lin_reg
