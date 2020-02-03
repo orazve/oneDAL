@@ -11,7 +11,7 @@ The repo contains benchmarks for oneDAL algorithms. This software use Google Ben
 |                              | kNN Brute Force                     |     **-**     |     **-**      |   &#x2611;    |     **-**      |
 | **Clustering**               | K-Means                             |   &#x2611;    |     **-**      |   &#x2611;    |     **-**      |
 | **Dimensionality reduction** | Principal Components Analysis (PCA) |   &#x2611;    |     **-**      |   &#x2611;    |     **-**      |
-| **Regression**               | Linear Regression                   |   &#x2611;    |     **-**      |   &#x2611;    |     **-**      |
+| **Regression**               | Linear Regression                   |   &#x2611;    |    &#x2611;    |   &#x2611;    |    &#x2611;    |
 |                              | Gradient Boosted Trees              |   &#x2611;    |     **-**      |   &#x2611;    |     **-**      |
 | **Statistics**               | Covariance                          |   &#x2611;    |    &#x2611;    |   &#x2611;    |    &#x2611;    |
 |                              | Moments of Low Order                |   &#x2611;    |    &#x2611;    |   &#x2611;    |    &#x2611;    |
