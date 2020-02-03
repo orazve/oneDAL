@@ -38,6 +38,7 @@
 #define ONEDAL_VERSION_2021_BETA_03        20191000
 #define ONEDAL_VERSION_2021_BETA_03_UPDATE 20191200
 #define ONEDAL_VERSION_2021_BETA_04        20200100
+#define ONEDAL_VERSION_2021_BETA_05        20200200
 
 #include "dataset.hpp"
 #include "devices.hpp"

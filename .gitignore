@@ -7,3 +7,4 @@ bin
 *.txt.zip
 *.zip
 *.pyc
+.vscode/
