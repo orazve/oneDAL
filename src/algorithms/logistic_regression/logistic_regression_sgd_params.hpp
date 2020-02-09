@@ -23,7 +23,7 @@
 namespace dalbench {
 
 template <typename FPType>
-class GetterParamsLogRegTrainSGD {
+class GetterParamsLogRegSGD {
 public:
   using nIterations   = size_t;
   using InterceptFlag = bool;
@@ -55,7 +55,7 @@ public:
     const FPType accuracy_threshold;
   };
 
-  GetterParamsLogRegTrainSGD(const Params& params) : params(params) {}
+  GetterParamsLogRegSGD(const Params& params) : params(params) {}
 
   static DictionaryParams<Params> get_params() {
     return { { "Susy:4.5M;Iter:20",

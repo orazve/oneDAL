@@ -26,16 +26,15 @@ namespace daal_lin_reg_train   = daal::algorithms::linear_regression::training;
 namespace daal_lin_reg_predict = daal::algorithms::linear_regression::prediction;
 
 template <typename DeviceType, typename FPType>
-class LinRegTrain : public GetterParamsLinRegTrain<FPType>,
-                    public FixtureBatch<daal_lin_reg_train::Batch<FPType>, DeviceType> {
+class LinReg : public GetterParamsLinReg<FPType>,
+               public FixtureBatch<daal_lin_reg_train::Batch<FPType>, DeviceType> {
 public:
-  using GetterParamsLinRegTrain<FPType>::params;
+  using GetterParamsLinReg<FPType>::params;
 
   using AlgorithmType = typename daal_lin_reg_train::Batch<FPType>;
 
-  LinRegTrain(const std::string& name,
-              const typename GetterParamsLinRegTrain<FPType>::Params& paramsin)
-      : GetterParamsLinRegTrain<FPType>(paramsin),
+  LinReg(const std::string& name, const typename GetterParamsLinReg<FPType>::Params& paramsin)
+      : GetterParamsLinReg<FPType>(paramsin),
         FixtureBatch<AlgorithmType, DeviceType>(name, params) {}
 
 protected:
@@ -74,12 +73,12 @@ protected:
   }
 };
 
-DAL_BENCH_REGISTER(LinRegTrain, CpuDevice, float);
-DAL_BENCH_REGISTER(LinRegTrain, CpuDevice, double);
+DAL_BENCH_REGISTER(LinReg, CpuDevice, float);
+DAL_BENCH_REGISTER(LinReg, CpuDevice, double);
 
 #if defined(DPCPP_INTERFACES) && (__INTEL_DAAL_BUILD_DATE >= ONEDAL_VERSION_2021_BETA_03_UPDATE)
-DAL_BENCH_REGISTER(LinRegTrain, GpuDevice, float);
-DAL_BENCH_REGISTER(LinRegTrain, GpuDevice, double);
+DAL_BENCH_REGISTER(LinReg, GpuDevice, float);
+DAL_BENCH_REGISTER(LinReg, GpuDevice, double);
 #endif // defined(DPCPP_INTERFACES) && (__INTEL_DAAL_BUILD_DATE >= ONEDAL_VERSION_2021_BETA_03_UPDATE)
 
 } // namespace lin_reg

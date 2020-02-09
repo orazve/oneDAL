@@ -21,6 +21,7 @@
 #include <list>
 #include <memory>
 #include <sstream>
+#include <string>
 #include <vector>
 
 #include "benchmark/benchmark.h"
@@ -117,7 +118,7 @@ public:
     run_benchmark(state);
     auto kernels_profiler = Profiler::get_instance()->combine();
     for (auto& kernel_info : kernels_profiler) {
-      auto kernel_name     = kernel_info.first;
+      auto kernel_name     = std::string("kernel:") + kernel_info.first;
       const double time_ms = double(kernel_info.second) / 1e6;
       state.counters.insert({ kernel_name, { time_ms, benchmark::Counter::kDefaults } });
     }
@@ -246,7 +247,7 @@ struct BenchmarkRegistrator {
 
 #define DAL_BENCH_REGISTER(BaseClass, DeviceType, FPType)                            \
   static BenchmarkRegistrator<BaseClass<DeviceType, FPType>> BENCHMARK_PRIVATE_NAME( \
-    BenchmarkRegistrator)(#BaseClass "/" #DeviceType "/Intel/" #FPType)
+    BenchmarkRegistrator)(#BaseClass "/Intel/" #DeviceType "/" #FPType)
 
 } // namespace dalbench
 

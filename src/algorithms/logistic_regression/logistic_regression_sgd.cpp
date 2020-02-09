@@ -29,18 +29,18 @@ namespace daal_classifier_prediction = daal::algorithms::classifier::prediction;
 namespace daal_dm                    = daal::data_management;
 
 template <typename DeviceType, typename FPType>
-class LogRegTrainSGD : public GetterParamsLogRegTrainSGD<FPType>,
-                       public FixtureBatch<daal_log_reg_train::Batch<FPType>, DeviceType> {
+class LogRegSGD : public GetterParamsLogRegSGD<FPType>,
+                  public FixtureBatch<daal_log_reg_train::Batch<FPType>, DeviceType> {
 public:
-  using GetterParamsLogRegTrainSGD<FPType>::params;
+  using GetterParamsLogRegSGD<FPType>::params;
 
   using AlgorithmType = typename daal_log_reg_train::Batch<FPType>;
   using SolverType =
     typename daal_optimization_solver::sgd::Batch<FPType, daal_optimization_solver::sgd::miniBatch>;
 
-  LogRegTrainSGD(const std::string& name,
-                 const typename GetterParamsLogRegTrainSGD<FPType>::Params& params_in)
-      : GetterParamsLogRegTrainSGD<FPType>(params_in),
+  LogRegSGD(const std::string& name,
+            const typename GetterParamsLogRegSGD<FPType>::Params& params_in)
+      : GetterParamsLogRegSGD<FPType>(params_in),
         FixtureBatch<AlgorithmType, DeviceType>(name, params) {}
 
 protected:
@@ -100,12 +100,12 @@ protected:
   }
 };
 
-DAL_BENCH_REGISTER(LogRegTrainSGD, CpuDevice, float);
-DAL_BENCH_REGISTER(LogRegTrainSGD, CpuDevice, double);
+DAL_BENCH_REGISTER(LogRegSGD, CpuDevice, float);
+DAL_BENCH_REGISTER(LogRegSGD, CpuDevice, double);
 
 #ifdef DPCPP_INTERFACES
-DAL_BENCH_REGISTER(LogRegTrainSGD, GpuDevice, float);
-DAL_BENCH_REGISTER(LogRegTrainSGD, GpuDevice, double);
+DAL_BENCH_REGISTER(LogRegSGD, GpuDevice, float);
+DAL_BENCH_REGISTER(LogRegSGD, GpuDevice, double);
 #endif
 
 } // namespace log_reg

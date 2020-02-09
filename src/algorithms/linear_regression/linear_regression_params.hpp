@@ -23,7 +23,7 @@
 namespace dalbench {
 
 template <typename FPType>
-class GetterParamsLinRegTrain {
+class GetterParamsLinReg {
 public:
   using InterceptFlag = bool;
 
@@ -39,7 +39,7 @@ public:
     const bool normalize_flag;
   };
 
-  GetterParamsLinRegTrain(const Params& params) : params(params) {}
+  GetterParamsLinReg(const Params& params) : params(params) {}
 
   static DictionaryParams<Params> get_params() {
     return {

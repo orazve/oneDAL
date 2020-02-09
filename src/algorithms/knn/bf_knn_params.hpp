@@ -38,15 +38,15 @@ public:
   GetterParamsKnnBF(const Params& params) : params(params) {}
 
   static DictionaryParams<Params> get_params() {
-    return { { "epsilon",
+    return { { "Epsilon:100K;K:2",
                Params(DatasetName("epsilion_50k_classifier"),
                       TableType(SyclHomogen, FPType),
                       kNeighbors(2u)) },
-             { "higgs",
+             { "Higgs:150K;K:5",
                Params(DatasetName("higgs_small_classifier"),
                       TableType(SyclHomogen, FPType),
                       kNeighbors(5u)) },
-             { "hepmass",
+             { "Hepmass:150K;K:5",
                Params(DatasetName("hepmass_small_classifier"),
                       TableType(SyclHomogen, FPType),
                       kNeighbors(5u)) } };
