@@ -115,6 +115,8 @@ public:
 
   void BenchmarkCase(benchmark::State& state) final {
     current_run_++;
+    Profiler::get_instance()->clear();
+
     run_benchmark(state);
     auto kernels_profiler = Profiler::get_instance()->combine();
     for (auto& kernel_info : kernels_profiler) {

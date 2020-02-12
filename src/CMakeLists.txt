@@ -23,6 +23,7 @@ set(ALGORITHMS_LIST
     logistic_regression
     kmeans
     pca
+    pca_transform
     linear_regression
     low_order_moments
     knn
