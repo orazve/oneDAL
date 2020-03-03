@@ -48,6 +48,13 @@ def higgs(root_dir=None):
 
     df = pd.read_csv(filename)
 
+    num_train = 6000000
+    X_train = df.iloc[:num_train, 1:].values
+    y_train = df.iloc[:num_train, 0].values
+    df_train = pd.DataFrame(np.concatenate((X_train, y_train[:, None]), axis=1))
+    df_train.to_csv(os.path.join(dataset_dir, 'higgs_6m_train.csv'), header=False, index=False)
+    print('higgs_8m_train dataset is ready to be used')
+
     num_train = 2000000
     X_train = df.iloc[:num_train, 1:].values
     y_train = df.iloc[:num_train, 0].values

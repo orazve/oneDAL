@@ -1,4 +1,4 @@
-/** file kmeans_params.cpp */
+/** file kmeans_params.hpp */
 /*******************************************************************************
 * Copyright 2020 Intel Corporation
 *

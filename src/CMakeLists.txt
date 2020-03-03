@@ -20,19 +20,20 @@ set(BENCHMARK_TARGET "Benchmark")
 
 set(ALGORITHMS_LIST
     covariance
-    logistic_regression
     kmeans
     pca
-    pca_transform
+    logistic_regression
     linear_regression
     low_order_moments
     knn
-    gradient_boosted_trees)
+    gradient_boosted_trees
+    decision_forests)
 
 list(SORT ALGORITHMS_LIST)
 
 foreach(ALGORITHM ${ALGORITHMS_LIST})
-  file(GLOB ALGORITHM_CPP "algorithms/${ALGORITHM}/*.cpp")
+  file(GLOB ALGORITHM_CPP "algorithms/${ALGORITHM}/**/*.cpp"
+       "algorithms/${ALGORITHM}/*.cpp")
   list(APPEND ALGORITHMS_LIST_SRC ${ALGORITHM_CPP})
 endforeach()
 

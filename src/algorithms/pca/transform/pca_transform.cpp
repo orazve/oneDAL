@@ -19,8 +19,7 @@
 #include "pca_transform_params.hpp"
 
 namespace dalbench {
-namespace pca {
-namespace transform {
+namespace pca_transform {
 
 template <typename DeviceType, typename FPType>
 class PcaTransform : public GetterParamsPcaTransform<FPType>,
@@ -69,6 +68,5 @@ DAL_BENCH_REGISTER(PcaTransform, GpuDevice, float);
 DAL_BENCH_REGISTER(PcaTransform, GpuDevice, double);
 #endif // defined(DPCPP_INTERFACES) && (__INTEL_DAAL_BUILD_DATE >= ONEDAL_VERSION_2021_BETA_04)
 
-} // namespace transform
-} // namespace pca
+} // namespace pca_transform
 } // namespace dalbench

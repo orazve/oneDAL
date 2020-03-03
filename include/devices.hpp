@@ -15,6 +15,9 @@
 * limitations under the License.
 *******************************************************************************/
 
+#ifndef DALBENCH_INCLUDE_DEVICES_HPP_
+#define DALBENCH_INCLUDE_DEVICES_HPP_
+
 #ifdef DPCPP_INTERFACES
   #include <CL/sycl.hpp>
 #endif
@@ -36,3 +39,5 @@ struct GpuDevice {
   }
 #endif
 };
+
+#endif // DALBENCH_INCLUDE_DEVICES_HPP_

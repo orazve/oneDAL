@@ -56,7 +56,22 @@ class DATASET(higgs_small_classifier) {
       .num_features(28)
       .num_responses(2)
       .num_blocks(num_blocks)
-      .on_error("Make sure that HIGGS dataset is downloaded and extracted.")
+      .on_error(
+        "Make sure that higgs dataset is downloaded and extracted and DATASETSROOT variable is set correctly.")
+      .load(numeric_table_type);
+  }
+};
+
+class DATASET(higgs_big_classifier) {
+  Dataset load(NumericTableType numeric_table_type, size_t num_blocks) override {
+    return DatasetFromCsv()
+      .path_to_train(Workload("higgs").path_to_dataset("higgs_6m_train.csv"))
+      .path_to_test(Workload("higgs").path_to_dataset("higgs_6m_train.csv"))
+      .num_features(28)
+      .num_responses(2)
+      .num_blocks(num_blocks)
+      .on_error(
+        "Make sure that higgs dataset is downloaded and extracted and DATASETSROOT variable is set correctly.")
       .load(numeric_table_type);
   }
 };

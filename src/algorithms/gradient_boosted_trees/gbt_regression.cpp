@@ -112,8 +112,9 @@ DAL_BENCH_REGISTER(GBTReg, CpuDevice, float);
 DAL_BENCH_REGISTER(GBTReg, CpuDevice, double);
 
 #if defined(DPCPP_INTERFACES) && (__INTEL_DAAL_BUILD_DATE >= ONEDAL_VERSION_2021_BETA_03_UPDATE)
-DAL_BENCH_REGISTER(GBTReg, GpuDevice, float);
-DAL_BENCH_REGISTER(GBTReg, GpuDevice, double);
+// FAILED FOR BETA05
+// DAL_BENCH_REGISTER(GBTReg, GpuDevice, float);
+// DAL_BENCH_REGISTER(GBTReg, GpuDevice, double);
 #endif
 
 } // namespace gbt_regression

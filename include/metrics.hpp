@@ -15,6 +15,9 @@
 * limitations under the License.
 *******************************************************************************/
 
+#ifndef DALBENCH_INCLUDE_METRICS_HPP_
+#define DALBENCH_INCLUDE_METRICS_HPP_
+
 #include <cmath>
 #include <set>
 #include <string>
@@ -109,3 +112,5 @@ public:
 };
 
 } // namespace dalbench
+
+#endif // DALBENCH_INCLUDE_METRICS_HPP_
