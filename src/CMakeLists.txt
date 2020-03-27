@@ -27,7 +27,8 @@ set(ALGORITHMS_LIST
     low_order_moments
     knn
     gradient_boosted_trees
-    decision_forests)
+    decision_forests
+    svm)
 
 list(SORT ALGORITHMS_LIST)
 
