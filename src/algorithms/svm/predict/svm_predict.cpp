@@ -55,7 +55,7 @@ protected:
     auto y = params.dataset.train().y();
     convert_dataset(y);
 
-    daal_kernel_function::KernelIfacePtr kernel_func;
+    daal_kernel_function::KernelIfacePtr kernel_func();
     switch (params.kernel_type) {
       case KernelType::rbf:
         kernel_func =
@@ -69,7 +69,7 @@ protected:
     const size_t num_cache_size                 = std::min(x->getNumberOfRows(), 60000ul);
     train_algorithm.parameter.cacheSize         = num_cache_size * num_cache_size * sizeof(FPType);
     train_algorithm.parameter.accuracyThreshold = 0.1;
-    train_algorithm.parameter.C                 = 10;
+    train_algorithm.parameter.C                 = 10000;
     train_algorithm.parameter.maxIterations     = 200;
     train_algorithm.parameter.kernel            = kernel_func;
 
@@ -79,8 +79,6 @@ protected:
     train_algorithm.compute();
 
     auto train_model = train_algorithm.getResult()->get(daal_classifier_train::model);
-    auto sv          = train_model->getSupportVectors();
-    check_sv(sv);
 
     this->algorithm_->input.set(daal_classifier_prediction::data, x);
     this->algorithm_->input.set(daal_classifier_prediction::model, train_model);
@@ -96,6 +94,7 @@ protected:
     return Metric<MetricType::Accuracy>::compute_metric(y, y_predict);
   }
 
+private:
   void convert_dataset(const NumericTablePtr& _dataset) {
     daal::data_management::BlockDescriptor<FPType> svm_block;
     _dataset->getBlockOfRows(0,
@@ -120,14 +119,10 @@ protected:
       block[i] = block[i] >= 0 ? 1 : -1;
     _predict->releaseBlockOfRows(predict_block);
   }
-
-  void check_sv(const NumericTablePtr& sv) {
-    std::cout << sv->getNumberOfRows() << std::endl;
-  }
 };
 
 DAL_BENCH_REGISTER(SvmPredict, CpuDevice, float);
-// DAL_BENCH_REGISTER(SvmPredict, CpuDevice, double);
+DAL_BENCH_REGISTER(SvmPredict, CpuDevice, double);
 
 } // namespace svm
 } // namespace dalbench

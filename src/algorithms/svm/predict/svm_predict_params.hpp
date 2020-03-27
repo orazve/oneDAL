@@ -56,7 +56,7 @@ public:
         Params(DatasetName("epsilion_50k_classifier"),
                TableType(SyclHomogen, FPType),
                KernelType(KernelType::linear)) },
-      { "Epsilon:Linear:50k;",
+      { "Epsilon:RBF:50k;",
         Params(DatasetName("epsilion_50k_classifier"),
                TableType(SyclHomogen, FPType),
                KernelType(KernelType::rbf)) },
