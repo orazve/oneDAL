@@ -21,14 +21,15 @@
 #include "fixture.hpp"
 
 namespace dalbench {
+
+template <typename FPType>
+class GetterParamsSvmPredict {
+public:
   enum class KernelType {
     linear,
     rbf,
   };
 
-template <typename FPType>
-class GetterParamsSvmPredict {
-public:
   struct Params : public CommonAlgorithmParams {
     Params(const DatasetName& dataset_name,
            const NumericTableType numeric_table_type,
@@ -42,22 +43,23 @@ public:
   GetterParamsSvmPredict(const Params& params) : params(params) {}
 
   static DictionaryParams<Params> get_params() {
-    return { { "Higgs:Linear:100k",
-               Params(DatasetName("higgs_small_classifier"),
-                      TableType(SyclHomogen, FPType),
-                      KernelType(KernelType::linear)) },
-             { "Higgs:RBF:100k",
-               Params(DatasetName("higgs_small_classifier"),
-                      TableType(SyclHomogen, FPType),
-                      KernelType(KernelType::rbf)) },
-             { "Epsilon:Linear:50k;",
-               Params(DatasetName("epsilion_50k_classifier"),
-                      TableType(SyclHomogen, FPType),
-                      KernelType(KernelType::linear)) },
-             { "Epsilon:Linear:50k;",
-               Params(DatasetName("epsilion_50k_classifier"),
-                      TableType(SyclHomogen, FPType),
-                      KernelType(KernelType::rbf)) },
+    return {
+      { "Higgs:Linear:100k",
+        Params(DatasetName("higgs_small_classifier"),
+               TableType(SyclHomogen, FPType),
+               KernelType(KernelType::linear)) },
+      { "Higgs:RBF:100k",
+        Params(DatasetName("higgs_small_classifier"),
+               TableType(SyclHomogen, FPType),
+               KernelType(KernelType::rbf)) },
+      { "Epsilon:Linear:50k;",
+        Params(DatasetName("epsilion_50k_classifier"),
+               TableType(SyclHomogen, FPType),
+               KernelType(KernelType::linear)) },
+      { "Epsilon:Linear:50k;",
+        Params(DatasetName("epsilion_50k_classifier"),
+               TableType(SyclHomogen, FPType),
+               KernelType(KernelType::rbf)) },
     };
   }
 
