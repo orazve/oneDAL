@@ -96,6 +96,7 @@ DAAL_EXPORT void daal_memmove_s(void * dest, size_t destSize, const void * src, 
 DAAL_EXPORT float daal_string_to_float(const char * nptr, char ** endptr);
 
 DAAL_EXPORT double daal_string_to_double(const char * nptr, char ** endptr);
+
 DAAL_EXPORT int daal_string_to_int(const char * nptr, char ** endptr);
 
 DAAL_EXPORT int daal_int_to_string(char * buffer, size_t n, int value);
