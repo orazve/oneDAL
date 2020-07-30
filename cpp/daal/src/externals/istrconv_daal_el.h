@@ -49,19 +49,11 @@
 #define _ISTRCONV_EL_H_
 
 #if defined(__cplusplus)
-#define _ISTRCONV_EXTERN_C extern "C"
+    #define _ISTRCONV_EXTERN_C extern "C"
 #else
-#define _ISTRCONV_EXTERN_C extern
+    #define _ISTRCONV_EXTERN_C extern
 #endif
 
-// _ISTRCONV_EXTERN_C float __FPK_string_to_float(const char * nptr, char ** endptr);
-
-// _ISTRCONV_EXTERN_C double __FPK_string_to_double(const char * nptr, char ** endptr);
 _ISTRCONV_EXTERN_C int __FPK_string_to_int_generic(const char * nptr, char ** endptr);
-
-// _ISTRCONV_EXTERN_C int __FPK_double_to_string_f(char * str, size_t n, double x);
-
-// _ISTRCONV_EXTERN_C int __FPK_int_to_string(char * str, size_t n, int x);
-
 
 #endif /*_ISTRCONV_H_*/
