@@ -61,11 +61,6 @@ struct graph_matching_ops {
         ONEDAL_ASSERT(result.get_labels().has_data());
         ONEDAL_ASSERT(result.get_labels().get_column_count() == 1);
         ONEDAL_ASSERT(result.get_iteration_count() <= params.get_max_iteration_count());
-        ONEDAL_ASSERT(result.get_model().get_centroids().has_data());
-        ONEDAL_ASSERT(result.get_model().get_centroids().get_row_count() ==
-                      params.get_cluster_count());
-        ONEDAL_ASSERT(result.get_model().get_centroids().get_column_count() ==
-                      input.get_data().get_column_count());
         ONEDAL_ASSERT(result.get_labels().get_row_count() == input.get_data().get_row_count());
     }
 

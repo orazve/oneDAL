@@ -24,15 +24,7 @@ namespace v1 {
 template <typename Task>
 class descriptor_impl : public base {
 public:
-    std::int64_t cluster_count = 2;
-    std::int64_t max_iteration_count = 100;
-    double accuracy_threshold = 0;
-};
-
-template <typename Task>
-class model_impl : public base {
-public:
-    table centroids;
+    bool search_induced_subgraph_mode = true;
 };
 
 template <typename Task>
@@ -77,34 +69,9 @@ void descriptor_base<Task>::set_accuracy_threshold_impl(double value) {
     impl_->accuracy_threshold = value;
 }
 
-template class ONEDAL_EXPORT descriptor_base<task::clustering>;
+template class ONEDAL_EXPORT descriptor_base<task::compute>;
 
 } // namespace v1
 } // namespace detail
 
-namespace v1 {
-
-using detail::v1::model_impl;
-
-template <typename Task>
-model<Task>::model() : impl_(new model_impl<Task>{}) {}
-
-template <typename Task>
-const table& model<Task>::get_centroids() const {
-    return impl_->centroids;
-}
-
-template <typename Task>
-std::int64_t model<Task>::get_cluster_count() const {
-    return impl_->centroids.get_row_count();
-}
-
-template <typename Task>
-void model<Task>::set_centroids_impl(const table& value) {
-    impl_->centroids = value;
-}
-
-template class ONEDAL_EXPORT model<task::clustering>;
-
-} // namespace v1
 } // namespace oneapi::dal::preview::subgraph_isomorphism

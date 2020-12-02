@@ -37,8 +37,8 @@ struct graph_matching_ops_dispatcher<host_policy, Float, Method, Task> {
 #define INSTANTIATE(F, M, T) \
     template struct ONEDAL_EXPORT graph_matching_ops_dispatcher<host_policy, F, M, T>;
 
-INSTANTIATE(float, method::lloyd_dense, task::clustering)
-INSTANTIATE(double, method::lloyd_dense, task::clustering)
+INSTANTIATE(float, method::vf3lp_dense, task::compute)
+INSTANTIATE(double, method::vf3lp_dense, task::compute)
 
 } // namespace v1
 } // namespace oneapi::dal::preview::subgraph_isomorphism::detail

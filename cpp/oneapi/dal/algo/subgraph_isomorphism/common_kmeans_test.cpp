@@ -22,7 +22,7 @@
 using namespace oneapi;
 namespace kmn = oneapi::dal::preview::subgraph_isomorphism;
 
-using kmn_desc = kmn::descriptor<float, kmn::method::lloyd_dense, kmn::task::clustering>;
+using kmn_desc = kmn::descriptor<float, kmn::method::vf3lp_dense, kmn::task::compute>;
 
 TEST(subgraph_isomorphism_bad_arg_tests, set_cluster_count) {
     ASSERT_THROW((kmn_desc{}.set_cluster_count(0)), dal::domain_error);

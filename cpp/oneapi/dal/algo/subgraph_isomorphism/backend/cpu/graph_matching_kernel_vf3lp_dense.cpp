@@ -14,8 +14,7 @@
 * limitations under the License.
 *******************************************************************************/
 
-#include <daal/src/algorithms/subgraph_isomorphism/subgraph_isomorphism_init_kernel.h>
-#include <daal/src/algorithms/subgraph_isomorphism/subgraph_isomorphism_lloyd_kernel.h>
+#include <daal/src/algorithms/subgraph_isomorphism/subgraph_isomorphism_vf3lp_kernel.h>
 
 #include "oneapi/dal/algo/subgraph_isomorphism/backend/cpu/graph_matching_kernel.hpp"
 #include "oneapi/dal/backend/interop/common.hpp"
@@ -29,20 +28,14 @@ namespace oneapi::dal::preview::subgraph_isomorphism::backend {
 
 using std::int64_t;
 using dal::backend::context_cpu;
-using descriptor_t = detail::descriptor_base<task::clustering>;
+using descriptor_t = detail::descriptor_base<task::compute>;
 
 namespace daal_subgraph_isomorphism = daal::algorithms::preview::subgraph_isomorphism;
-namespace daal_subgraph_isomorphism_init = daal::algorithms::preview::subgraph_isomorphism::init;
 namespace interop = dal::backend::interop;
 
 template <typename Float, daal::CpuType Cpu>
-using daal_subgraph_isomorphism_lloyd_dense_kernel_t = daal_subgraph_isomorphism::internal::
-    preview::subgraph_isomorphismBatchKernel<daal_subgraph_isomorphism::lloydDense, Float, Cpu>;
-
-template <typename Float, daal::CpuType Cpu>
-using daal_subgraph_isomorphism_init_plus_plus_dense_kernel_t =
-    daal_subgraph_isomorphism_init::internal::preview::
-        subgraph_isomorphismInitKernel<daal_subgraph_isomorphism_init::plusPlusDense, Float, Cpu>;
+using daal_subgraph_isomorphism_vf3lp_dense_kernel_t = daal_subgraph_isomorphism::internal::
+    preview::subgraph_isomorphismBatchKernel<daal_subgraph_isomorphism::vf3lpDense, Float, Cpu>;
 
 template <typename Float, typename Task>
 static graph_matching_result<Task> call_daal_kernel(const context_cpu& ctx,
@@ -123,7 +116,7 @@ static graph_matching_result<Task> call_daal_kernel(const context_cpu& ctx,
                                                        daal_iteration_count.get() };
 
     interop::status_to_exception(
-        interop::call_daal_kernel<Float, daal_subgraph_isomorphism_lloyd_dense_kernel_t>(ctx,
+        interop::call_daal_kernel<Float, daal_subgraph_isomorphism_vf3lp_dense_kernel_t>(ctx,
                                                                                          input,
                                                                                          output,
                                                                                          &par));
@@ -131,11 +124,7 @@ static graph_matching_result<Task> call_daal_kernel(const context_cpu& ctx,
     return graph_matching_result<Task>()
         .set_labels(dal::detail::homogen_table_builder{}.reset(arr_labels, row_count, 1).build())
         .set_iteration_count(static_cast<std::int64_t>(arr_iteration_count[0]))
-        .set_objective_function_value(static_cast<double>(arr_objective_function_value[0]))
-        .set_model(
-            model<Task>().set_centroids(dal::detail::homogen_table_builder{}
-                                            .reset(arr_centroids, cluster_count, column_count)
-                                            .build()));
+        .set_objective_function_value(static_cast<double>(arr_objective_function_value[0]));
 }
 
 template <typename Float, typename Task>
@@ -149,16 +138,16 @@ static graph_matching_result<Task> graph_matching(const context_cpu& ctx,
 }
 
 template <typename Float>
-struct graph_matching_kernel_cpu<Float, method::lloyd_dense, task::clustering> {
-    graph_matching_result<task::clustering> operator()(
+struct graph_matching_kernel_cpu<Float, method::vf3lp_dense, task::compute> {
+    graph_matching_result<task::compute> operator()(
         const context_cpu& ctx,
         const descriptor_t& desc,
-        const graph_matching_input<task::clustering>& input) const {
-        return graph_matching<Float, task::clustering>(ctx, desc, input);
+        const graph_matching_input<task::compute>& input) const {
+        return graph_matching<Float, task::compute>(ctx, desc, input);
     }
 };
 
-template struct graph_matching_kernel_cpu<float, method::lloyd_dense, task::clustering>;
-template struct graph_matching_kernel_cpu<double, method::lloyd_dense, task::clustering>;
+template struct graph_matching_kernel_cpu<float, method::vf3lp_dense, task::compute>;
+template struct graph_matching_kernel_cpu<double, method::vf3lp_dense, task::compute>;
 
 } // namespace oneapi::dal::preview::subgraph_isomorphism::backend

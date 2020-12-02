@@ -21,7 +21,7 @@
 
 using namespace oneapi::dal;
 
-TEST(subgraph_isomorphism_lloyd_dense_cpu, graph_matching_results) {
+TEST(subgraph_isomorphism_vf3lp_dense_cpu, graph_matching_results) {
     constexpr std::int64_t row_count = 8;
     constexpr std::int64_t column_count = 2;
     constexpr std::int64_t cluster_count = 2;
@@ -57,7 +57,7 @@ TEST(subgraph_isomorphism_lloyd_dense_cpu, graph_matching_results) {
     }
 }
 
-TEST(subgraph_isomorphism_lloyd_dense_cpu, infer_results) {
+TEST(subgraph_isomorphism_vf3lp_dense_cpu, infer_results) {
     constexpr std::int64_t row_count = 8;
     constexpr std::int64_t column_count = 2;
     constexpr std::int64_t cluster_count = 2;

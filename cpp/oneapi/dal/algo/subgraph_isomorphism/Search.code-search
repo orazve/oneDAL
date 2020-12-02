@@ -1,0 +1,29 @@
+# Query: lloyd
+# Flags: RegExp
+# Including: ./oneDAL/cpp/oneapi/dal/algo/subgraph_isomorphism
+
+14 results - 5 files
+
+oneDAL/cpp/oneapi/dal/algo/subgraph_isomorphism/common_kmeans_test.cpp:
+  25: using kmn_desc = kmn::descriptor<float, kmn::method::lloyd_dense, kmn::task::compute>;
+
+oneDAL/cpp/oneapi/dal/algo/subgraph_isomorphism/backend/cpu/graph_matching_kernel_lloyd_dense_test.cpp:
+  24: TEST(subgraph_isomorphism_lloyd_dense_cpu, graph_matching_results) {
+  60: TEST(subgraph_isomorphism_lloyd_dense_cpu, infer_results) {
+
+oneDAL/cpp/oneapi/dal/algo/subgraph_isomorphism/backend/cpu/graph_matching_kernel_lloyd_dense.cpp:
+   18: #include <daal/src/algorithms/subgraph_isomorphism/subgraph_isomorphism_lloyd_kernel.h>
+   39: using daal_subgraph_isomorphism_lloyd_dense_kernel_t = daal_subgraph_isomorphism::internal::
+   40:     preview::subgraph_isomorphismBatchKernel<daal_subgraph_isomorphism::lloydDense, Float, Cpu>;
+  126:         interop::call_daal_kernel<Float, daal_subgraph_isomorphism_lloyd_dense_kernel_t>(ctx,
+  152: struct graph_matching_kernel_cpu<Float, method::lloyd_dense, task::compute> {
+  161: template struct graph_matching_kernel_cpu<float, method::lloyd_dense, task::compute>;
+  162: template struct graph_matching_kernel_cpu<double, method::lloyd_dense, task::compute>;
+
+oneDAL/cpp/oneapi/dal/algo/subgraph_isomorphism/detail/graph_matching_ops_dpc.cpp:
+  42: INSTANTIATE(float, method::lloyd_dense, task::compute)
+  43: INSTANTIATE(double, method::lloyd_dense, task::compute)
+
+oneDAL/cpp/oneapi/dal/algo/subgraph_isomorphism/detail/graph_matching_ops.cpp:
+  40: INSTANTIATE(float, method::lloyd_dense, task::compute)
+  41: INSTANTIATE(double, method::lloyd_dense, task::compute)

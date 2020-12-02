@@ -22,10 +22,10 @@ namespace oneapi::dal::preview::subgraph_isomorphism {
 
 namespace detail {
 namespace v1 {
-template <typename Task>
+template <typename Graph, typename Task = task::by_default>
 class graph_matching_input_impl;
 
-template <typename Task>
+template <typename Graph, typename Task = task::by_default>
 class graph_matching_result_impl;
 } // namespace v1
 
@@ -36,36 +36,34 @@ using v1::graph_matching_result_impl;
 
 namespace v1 {
 
-template <typename Task = task::by_default>
+template <typename Graph, typename Task = task::by_default>
 class graph_matching_input : public base {
     static_assert(detail::is_valid_task_v<Task>);
 
 public:
     using task_t = Task;
 
-    graph_matching_input(const table& data);
-    graph_matching_input(const table& data, const table& initial_centroids);
+    graph_matching_input(const Graph& target, const Graph& pattern);
 
-    const table& get_data() const;
+    const Graph& get_target() const;
+    const Graph& get_pattern() const;
 
-    auto& set_data(const table& data) {
-        set_data_impl(data);
+    auto& set_target(const Graph& target) {
+        set_target_impl(data);
         return *this;
     }
 
-    const table& get_initial_centroids() const;
-
-    auto& set_initial_centroids(const table& data) {
-        set_initial_centroids_impl(data);
+    auto& set_pattern(const Graph& pattern) {
+        set_pattern_impl(data);
         return *this;
     }
 
 protected:
-    void set_data_impl(const table& data);
-    void set_initial_centroids_impl(const table& data);
+    void set_target_impl(const Graph& data);
+    void set_pattern_impl(const Graph& data);
 
 private:
-    dal::detail::pimpl<detail::graph_matching_input_impl<Task>> impl_;
+    dal::detail::pimpl<detail::graph_matching_input_impl<Graph, Task>> impl_;
 };
 
 template <typename Task = task::by_default>
@@ -76,40 +74,13 @@ public:
     using task_t = Task;
 
     graph_matching_result();
+    graph_matching_result(const table& vertex_mapping, std::int64_t match_count);
 
-    const model<Task>& get_model() const;
+    table get_vertex_mapping() const;
+    std::int64_t get_match_count() const;
 
-    auto& set_model(const model<Task>& value) {
-        set_model_impl(value);
-        return *this;
-    }
-
-    const table& get_labels() const;
-
-    auto& set_labels(const table& value) {
-        set_labels_impl(value);
-        return *this;
-    }
-
-    int64_t get_iteration_count() const;
-
-    auto& set_iteration_count(std::int64_t value) {
-        set_iteration_count_impl(value);
-        return *this;
-    }
-
-    double get_objective_function_value() const;
-
-    auto& set_objective_function_value(double value) {
-        set_objective_function_value_impl(value);
-        return *this;
-    }
-
-protected:
-    void set_model_impl(const model<Task>&);
-    void set_labels_impl(const table&);
-    void set_iteration_count_impl(std::int64_t);
-    void set_objective_function_value_impl(double);
+    auto& set_vertex_mapping(const table& value);
+    auto& set_match_count(std::int64_t value);
 
 private:
     dal::detail::pimpl<detail::graph_matching_result_impl<Task>> impl_;

@@ -23,22 +23,22 @@ namespace oneapi::dal::preview::subgraph_isomorphism {
 
 namespace task {
 namespace v1 {
-struct clustering {};
-using by_default = clustering;
+struct compute {};
+using by_default = compute;
 } // namespace v1
 
-using v1::clustering;
+using v1::compute;
 using v1::by_default;
 
 } // namespace task
 
 namespace method {
 namespace v1 {
-struct lloyd_dense {};
-using by_default = lloyd_dense;
+struct vf3lp {};
+using by_default = vf3lp;
 } // namespace v1
 
-using v1::lloyd_dense;
+using v1::vf3lp;
 using v1::by_default;
 
 } // namespace method
@@ -50,17 +50,14 @@ struct descriptor_tag {};
 template <typename Task>
 class descriptor_impl;
 
-template <typename Task>
-class model_impl;
-
 template <typename Float>
 constexpr bool is_valid_float_v = dal::detail::is_one_of_v<Float, float, double>;
 
 template <typename Method>
-constexpr bool is_valid_method_v = dal::detail::is_one_of_v<Method, method::lloyd_dense>;
+constexpr bool is_valid_method_v = dal::detail::is_one_of_v<Method, method::vf3lp>;
 
 template <typename Task>
-constexpr bool is_valid_task_v = dal::detail::is_one_of_v<Task, task::clustering>;
+constexpr bool is_valid_task_v = dal::detail::is_one_of_v<Task, task::compute>;
 
 template <typename Task = task::by_default>
 class descriptor_base : public base {
@@ -74,14 +71,10 @@ public:
 
     descriptor_base();
 
-    std::int64_t get_cluster_count() const;
-    std::int64_t get_max_iteration_count() const;
-    double get_accuracy_threshold() const;
+    bool get_search_induced_subgraph_mode() const;
 
 protected:
-    void set_cluster_count_impl(std::int64_t);
-    void set_max_iteration_count_impl(std::int64_t);
-    void set_accuracy_threshold_impl(double);
+    void set_search_induced_subgraph_mode_impl(bool);
 
 private:
     dal::detail::pimpl<descriptor_impl<Task>> impl_;
@@ -91,7 +84,6 @@ private:
 
 using v1::descriptor_tag;
 using v1::descriptor_impl;
-using v1::model_impl;
 using v1::descriptor_base;
 
 using v1::is_valid_float_v;
@@ -117,55 +109,17 @@ public:
     using method_t = Method;
     using task_t = Task;
 
-    explicit descriptor(std::int64_t cluster_count = 2) {
-        set_cluster_count(cluster_count);
+    explicit descriptor(bool search_induced_subgraph_mode = true) {
+        set_search_induced_subgraph_mode(search_induced_subgraph_mode);
     }
 
-    auto& set_cluster_count(int64_t value) {
-        base_t::set_cluster_count_impl(value);
-        return *this;
-    }
-
-    auto& set_max_iteration_count(int64_t value) {
-        base_t::set_max_iteration_count_impl(value);
-        return *this;
-    }
-
-    auto& set_accuracy_threshold(double value) {
-        base_t::set_accuracy_threshold_impl(value);
+    auto& set_search_induced_subgraph_mode(bool value) {
+        base_t::set_search_induced_subgraph_mode_impl(value);
         return *this;
     }
 };
-
-template <typename Task = task::by_default>
-class model : public base {
-    static_assert(detail::is_valid_task_v<Task>);
-    friend dal::detail::pimpl_accessor;
-
-public:
-    using task_t = Task;
-
-    model();
-
-    const table& get_centroids() const;
-
-    auto& set_centroids(const table& value) {
-        set_centroids_impl(value);
-        return *this;
-    }
-
-    std::int64_t get_cluster_count() const;
-
-protected:
-    void set_centroids_impl(const table&);
-
-private:
-    dal::detail::pimpl<detail::model_impl<Task>> impl_;
-};
-
 } // namespace v1
 
 using v1::descriptor;
-using v1::model;
 
 } // namespace oneapi::dal::preview::subgraph_isomorphism
