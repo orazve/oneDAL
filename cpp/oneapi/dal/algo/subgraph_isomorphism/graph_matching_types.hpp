@@ -77,9 +77,11 @@ public:
     graph_matching_result(const table& vertex_mapping, std::int64_t match_count);
 
     table get_vertex_mapping() const;
+    table get_edge_mapping() const;
     std::int64_t get_match_count() const;
 
     auto& set_vertex_mapping(const table& value);
+    auto& set_edge_mapping(const table& value);
     auto& set_match_count(std::int64_t value);
 
 private:

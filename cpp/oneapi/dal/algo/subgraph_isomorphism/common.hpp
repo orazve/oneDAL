@@ -71,10 +71,12 @@ public:
 
     descriptor_base();
 
-    bool get_search_induced_subgraph_mode() const;
+    bool get_induced_mode() const;
+    bool get_semantical_mode() const;
 
 protected:
-    void set_search_induced_subgraph_mode_impl(bool);
+    void set_induced_mode_impl(bool);
+    void set_semantical_mode_impl(bool);
 
 private:
     dal::detail::pimpl<descriptor_impl<Task>> impl_;
@@ -109,12 +111,12 @@ public:
     using method_t = Method;
     using task_t = Task;
 
-    explicit descriptor(bool search_induced_subgraph_mode = true) {
-        set_search_induced_subgraph_mode(search_induced_subgraph_mode);
+    explicit descriptor(bool induced_mode = true) {
+        set_induced_mode(induced_mode);
     }
 
-    auto& set_search_induced_subgraph_mode(bool value) {
-        base_t::set_search_induced_subgraph_mode_impl(value);
+    auto& set_induced_mode(bool value) {
+        base_t::set_induced_mode_impl(value);
         return *this;
     }
 };

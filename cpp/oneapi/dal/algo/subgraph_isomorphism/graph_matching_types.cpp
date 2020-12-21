@@ -34,8 +34,9 @@ public:
 template <typename Task>
 class detail::v1::graph_matching_result_impl : public base {
 public:
-    table vertex_mapping;
     std::int64_t match_count = 0;
+    table vertex_mapping;
+    table edge_mapping;
 };
 
 using detail::v1::graph_matching_input_impl;

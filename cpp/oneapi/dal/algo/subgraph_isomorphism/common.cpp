@@ -24,7 +24,8 @@ namespace v1 {
 template <typename Task>
 class descriptor_impl : public base {
 public:
-    bool search_induced_subgraph_mode = true;
+    bool induced_mode = true;
+    bool semantical_mode = false;
 };
 
 template <typename Task>
