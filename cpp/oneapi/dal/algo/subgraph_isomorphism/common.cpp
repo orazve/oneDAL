@@ -24,16 +24,17 @@ namespace v1 {
 template <typename Task>
 class descriptor_impl : public base {
 public:
-    bool induced_mode = true;
-    bool semantical_mode = false;
+    Enum1 induced_mode = induced / non_induced;
+    Enum2 semantical_mode = sintactical / sintactical_and_semantical (???);
+    std::int64_t max_match_count = 0;
 };
 
 template <typename Task>
 descriptor_base<Task>::descriptor_base() : impl_(new descriptor_impl<Task>{}) {}
 
 template <typename Task>
-std::int64_t descriptor_base<Task>::get_cluster_count() const {
-    return impl_->cluster_count;
+std::int64_t descriptor_base<Task>::get_max_match_count() const {
+    return impl_->max_match_count;
 }
 
 template <typename Task>
@@ -47,9 +48,9 @@ double descriptor_base<Task>::get_accuracy_threshold() const {
 }
 
 template <typename Task>
-void descriptor_base<Task>::set_cluster_count_impl(std::int64_t value) {
-    if (value <= 0) {
-        throw domain_error(dal::detail::error_messages::cluster_count_leq_zero());
+void descriptor_base<Task>::set_max_match_count_impl(std::int64_t value) {
+    if (value < 0) {
+        throw domain_error(dal::detail::error_messages::max_match_count_zero_le());
     }
     impl_->cluster_count = value;
 }

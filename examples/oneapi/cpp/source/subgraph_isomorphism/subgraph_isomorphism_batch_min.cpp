@@ -51,25 +51,10 @@ int main(int argc, char** argv) {
     // extract the result
     const auto match_count = result.get_match_count(); // k
 
-    // 2 <= match_count <= 20
-    // 0 <= m <= ~10^7 (theoretically, can be even greater)
-
     // table [(match_count + 1) x m]
-    table vertex_match_table = result.get_vertex_match(is_sorted = false);
+    const auto vertex_match_table = result.get_vertex_match();
 
-    // array [m]
-    array<vertex_t> vertex_match = result.get_vertex_match(match_idx, is_sorted = true);
-
-    // direct access to value
-    vertex_t vertex_match = result.get_vertex_match(match_idx, pattern_vertex_idx);
-
-    // table of size [match_count x (2*m)]
-    table edge_match = result.get_edge_match();
-
-    // array of size [2*m]
-    array<vertex_t> edge_match = result.get_edge_match(match_idx);
-
-    dal::row_accessor<const std::int32_t> v_acc{ vertex_mapping };
+    dal::row_accessor<const std::int32_t> v_acc{ vertex_match };
 
     for (std::int64_t match_idx = 0; match_idx <= match_count; match_idx++) {
         if (match_idx == 0)
@@ -78,23 +63,6 @@ int main(int argc, char** argv) {
             std::cout << "match #" << match_idx << ": ";
 
         const auto match_values = v_acc.pull(match_idx);
-        for (std::int64_t i = 0; i < match_values.get_count(); i++) {
-            std::cout << match_values[i] << ", ";
-        }
-        std::cout << std::endl;
-    }
-
-    // table of size [(k + 1) x 2m] stored in row-major format
-    const auto edge_mapping = result.get_edge_mapping();
-    dal::row_accessor<const std::int32_t> e_acc{ edge_mapping };
-
-    for (std::int64_t match_idx = 0; match_idx <= match_count; match_idx++) {
-        if (match_idx == 0)
-            std::cout << "pattern edges: ";
-        else
-            std::cout << "match #" << match_idx << ": ";
-
-        const auto match_values = e_acc.pull(match_idx);
         for (std::int64_t i = 0; i < match_values.get_count(); i++) {
             std::cout << match_values[i] << ", ";
         }
