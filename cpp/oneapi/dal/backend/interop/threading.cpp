@@ -121,6 +121,19 @@ ONEDAL_EXPORT void _onedal_del_tls_ptr(void *tlsPtr) {
     _daal_del_tls_ptr(tlsPtr);
 }
 
+ONEDAL_EXPORT void *_onedal_new_task_group() {
+    return _daal_new_task_group();
+}
+ONEDAL_EXPORT void _onedal_del_task_group(void *task_group_ptr) {
+    return _daal_del_task_group(task_group_ptr);
+}
+ONEDAL_EXPORT void _onedal_run_task_group(void *task_group_ptr, oneapi::dal::preview::task *t) {
+    return _daal_run_task_group(task_group_ptr, (daal::task *)t);
+}
+ONEDAL_EXPORT void _onedal_wait_task_group(void *task_group_ptr) {
+    return _daal_wait_task_group(task_group_ptr);
+}
+
 namespace oneapi::dal::detail {
 
 typedef std::pair<std::int32_t, size_t> pair_int32_t_size_t;

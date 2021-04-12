@@ -27,22 +27,15 @@ public:
                     sconsistent_conditions const* pcconditions,
                     kind isomorphism_kind);
     matching_engine(const matching_engine& _matching_engine, stack& _local_stack);
+    matching_engine(const matching_engine& _matching_engine);
     virtual ~matching_engine();
 
-    solution run(bool main_engine = false);
-    void run_and_wait(bool main_engine = false);
+    std::int64_t run_and_wait(bool main_engine = false);
     solution get_solution();
-
-    std::int64_t state_exploration_bit(state* current_state, bool check_solution = true);
-    std::int64_t state_exploration_list(state* current_state, bool check_solution = true);
 
     std::int64_t state_exploration_bit(bool check_solution = true);
     std::int64_t state_exploration_list(bool check_solution = true);
 
-    std::int64_t first_states_generator(stack& stack);
-    std::int64_t first_states_generator(dfs_stack& stack);
-
-    void push_into_stack(state* _state);
     void push_into_stack(const std::int64_t vertex_id);
     bool match_vertex(const std::int64_t pattern_vertex, const std::int64_t target_vertex) const;
     bool check_vertex_candidate(const std::int64_t pattern_vertex,

@@ -33,6 +33,9 @@ public:
     graph_status add(solution& _solution);
     graph_status add(solution&& _solution);
     oneapi::dal::homogen_table export_as_table();
+    std::int64_t** get_data() {
+        return data;
+    };
 
 private:
     std::int64_t** data;
@@ -43,6 +46,7 @@ private:
     std::int64_t max_solution_cout;
 
     graph_status increase_solutions_size();
+    void reallocate_data();
     void delete_data();
 };
 } // namespace oneapi::dal::preview::subgraph_isomorphism::detail

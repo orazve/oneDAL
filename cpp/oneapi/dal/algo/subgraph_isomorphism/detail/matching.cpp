@@ -1,4 +1,7 @@
 #include "oneapi/dal/algo/subgraph_isomorphism/detail/matching.hpp"
+#include "oneapi/dal/algo/subgraph_isomorphism/detail/debug.hpp"
+#include "tbb/enumerable_thread_specific.h"
+#include "tbb/spin_mutex.h"
 #include "oneapi/dal/detail/threading.hpp"
 
 namespace oneapi::dal::preview::subgraph_isomorphism::detail {
@@ -73,35 +76,14 @@ matching_engine::matching_engine(const matching_engine& _matching_engine, stack&
     local_stack = std::move(_local_stack);
 }
 
-std::int64_t matching_engine::state_exploration_bit(state* current_state, bool check_solution) {
-    const std::int64_t i_cc = current_state->core_length - 1;
-    const std::int64_t divider = pconsistent_conditions[i_cc].divider;
-
-    if (isomorphism_kind_ != kind::non_induced) {
-#pragma ivdep
-        for (std::int64_t j = 0; j < divider; j++) {
-            or_equal(
-                vertex_candidates.get_vector_pointer(),
-                target->p_edges_bit[current_state->core[pconsistent_conditions[i_cc].array[j]]],
-                vertex_candidates.size());
-        }
-    }
-
-    ~vertex_candidates; // inversion?
-
-#pragma ivdep
-    for (std::int64_t j = i_cc; j >= divider; j--) { // > divider - 1
-        and_equal(vertex_candidates.get_vector_pointer(),
-                  target->p_edges_bit[current_state->core[pconsistent_conditions[i_cc].array[j]]],
-                  vertex_candidates.size());
-    }
-
-    for (std::int64_t i = 0; i < current_state->core_length; i++) {
-        vertex_candidates.get_vector_pointer()[bit_vector::byte(current_state->core[i])] &=
-            ~bit_vector::bit(current_state->core[i]);
-    }
-    return extract_candidates(current_state, check_solution);
-}
+matching_engine::matching_engine(const matching_engine& _matching_engine)
+        : matching_engine(_matching_engine.pattern,
+                          _matching_engine.target,
+                          _matching_engine.sorted_pattern_vertex,
+                          _matching_engine.predecessor,
+                          _matching_engine.direction,
+                          _matching_engine.pconsistent_conditions,
+                          _matching_engine.isomorphism_kind_) {}
 
 std::int64_t matching_engine::state_exploration_bit(bool check_solution) {
     std::uint64_t current_level_index = hlocal_stack.get_current_level_index();
@@ -182,42 +164,6 @@ bool matching_engine::check_vertex_candidate(bool check_solution) {
     return false;
 }
 
-std::int64_t matching_engine::state_exploration_list(state* current_state, bool check_solution) {
-    std::int64_t divider = pconsistent_conditions[current_state->core_length - 1].divider;
-
-#pragma ivdep
-    for (std::int64_t j = 0; j < divider; j++) {
-        or_equal(vertex_candidates.get_vector_pointer(),
-                 target->p_edges_list
-                     [current_state
-                          ->core[pconsistent_conditions[current_state->core_length - 1].array[j]]],
-                 target->p_degree
-                     [current_state
-                          ->core[pconsistent_conditions[current_state->core_length - 1].array[j]]]);
-    }
-
-    ~vertex_candidates;
-
-#pragma ivdep
-    for (std::int64_t j = current_state->core_length - 1; j >= divider; j--) { // j> divider - 1
-        and_equal(
-            vertex_candidates.get_vector_pointer(),
-            target->p_edges_list
-                [current_state
-                     ->core[pconsistent_conditions[current_state->core_length - 1].array[j]]],
-            vertex_candidates.size(),
-            target->p_degree[current_state->core
-                                 [pconsistent_conditions[current_state->core_length - 1].array[j]]],
-            temporary_list);
-    }
-
-    for (std::int64_t i = 0; i < current_state->core_length; i++) {
-        vertex_candidates.get_vector_pointer()[bit_vector::byte(current_state->core[i])] &=
-            ~bit_vector::bit(current_state->core[i]);
-    }
-    return extract_candidates(current_state, check_solution);
-}
-
 std::int64_t matching_engine::state_exploration_list(bool check_solution) {
     std::uint64_t current_level_index = hlocal_stack.get_current_level_index();
     std::int64_t divider = pconsistent_conditions[current_level_index].divider;
@@ -253,43 +199,8 @@ std::int64_t matching_engine::state_exploration_list(bool check_solution) {
     return extract_candidates(check_solution);
 }
 
-void matching_engine::push_into_stack(state* _state) {
-    local_stack.push(_state);
-}
-
 void matching_engine::push_into_stack(const std::int64_t vertex_id) {
     hlocal_stack.push_into_current_level(vertex_id);
-}
-
-std::int64_t matching_engine::first_states_generator(stack& stack) {
-    state null_state;
-    std::int64_t candidates_count = 0;
-    std::int64_t degree = pattern->get_vertex_degree(sorted_pattern_vertex[0]);
-    for (std::int64_t i = 0; i < target->get_vertex_count(); i++) {
-        if (degree <= target->get_vertex_degree(i) &&
-            pattern->get_vertex_attribute(sorted_pattern_vertex[0]) ==
-                target->get_vertex_attribute(i)) {
-            void* place = _mm_malloc(sizeof(state), 64);
-            state* new_state = new (place) state(&null_state, i);
-            stack.push(new_state);
-            candidates_count++;
-        }
-    }
-
-    return candidates_count;
-}
-
-std::int64_t matching_engine::first_states_generator(dfs_stack& stack) {
-    std::int64_t degree = pattern->get_vertex_degree(sorted_pattern_vertex[0]);
-    for (std::int64_t i = 0; i < target->get_vertex_count(); i++) {
-        if (degree <= target->get_vertex_degree(i) &&
-            pattern->get_vertex_attribute(sorted_pattern_vertex[0]) ==
-                target->get_vertex_attribute(i)) {
-            stack.push_into_current_level(i);
-        }
-    }
-
-    return stack.get_current_level_fill_size();
 }
 
 std::int64_t matching_engine::extract_candidates(state* current_state, bool check_solution) {
@@ -358,26 +269,19 @@ solution matching_engine::get_solution() {
     return std::move(engine_solutions);
 }
 
-void matching_engine::run_and_wait(bool main_engine) {
-    if (main_engine) {
-        first_states_generator(hlocal_stack);
-    }
+std::int64_t matching_engine::run_and_wait(bool main_engine) {
+    std::int64_t total_count = 0;
     if (target->bit_representation) { /* dense graph case */
         while (hlocal_stack.states_in_stack() > 0) {
-            state_exploration_bit();
+            total_count += state_exploration_bit();
         }
     }
     else { /* sparse graph case */
         while (hlocal_stack.states_in_stack() > 0) {
-            state_exploration_list();
+            total_count += state_exploration_list();
         }
     }
-    return;
-}
-
-solution matching_engine::run(bool main_engine) {
-    run_and_wait(main_engine);
-    return std::move(engine_solutions);
+    return total_count;
 }
 
 engine_bundle::engine_bundle(const graph* ppattern,
@@ -427,69 +331,81 @@ solution engine_bundle::run() {
             static_cast<bool>(first_states_count % max_threads_count);
     }
 
-    const std::uint64_t array_size = max_threads_count * 2;
-    matching_engine* engine_array =
-        static_cast<matching_engine*>(_mm_malloc(sizeof(matching_engine) * array_size, 64));
+    // const std::uint64_t array_size = max_threads_count * 2;
+    // matching_engine* engine_array =
+    //     static_cast<matching_engine*>(_mm_malloc(sizeof(matching_engine) * array_size, 64));
 
-    for (int i = 0; i < array_size; ++i) {
-        new (engine_array + i) matching_engine(pattern,
-                                               target,
-                                               sorted_pattern_vertex,
-                                               predecessor,
-                                               direction,
-                                               pconsistent_conditions,
-                                               isomorphism_kind_);
-    }
+    // for (int i = 0; i < array_size; ++i) {
+    //     new (engine_array + i) matching_engine(pattern,
+    //                                            target,
+    //                                            sorted_pattern_vertex,
+    //                                            predecessor,
+    //                                            direction,
+    //                                            pconsistent_conditions,
+    //                                            isomorphism_kind_);
+    // }
 
-    state null_state;
-    std::uint64_t task_counter = 0, index = 0;
-    for (std::int64_t i = 0; i < target->n; ++i) {
+    // state null_state;
+    // std::uint64_t task_counter = 0, index = 0;
+    // for (std::int64_t i = 0; i < target->n; ++i) {
+    //     if (degree <= target->get_vertex_degree(i) &&
+    //         pattern->get_vertex_attribute(sorted_pattern_vertex[0]) ==
+    //             target->get_vertex_attribute(i)) {
+    //         index = task_counter % array_size;
+    //         engine_array[index].push_into_stack(i);
+
+    //         if ((engine_array[index].hlocal_stack.states_in_stack() /
+    //              possible_first_states_count_per_thread) > 0) {
+    //             task_counter++;
+    //         }
+    //     }
+    // }
+
+    typedef tbb::enumerable_thread_specific<matching_engine> matching_engine_tls;
+    matching_engine_tls matching_eng(matching_engine(pattern,
+                                                     target,
+                                                     sorted_pattern_vertex,
+                                                     predecessor,
+                                                     direction,
+                                                     pconsistent_conditions,
+                                                     isomorphism_kind_));
+    auto first_pattern_attribute = pattern->get_vertex_attribute(sorted_pattern_vertex[0]);
+    dal::detail::threader_for(target->n, target->n, [&](const int i) {
         if (degree <= target->get_vertex_degree(i) &&
-            pattern->get_vertex_attribute(sorted_pattern_vertex[0]) ==
-                target->get_vertex_attribute(i)) {
-            index = task_counter % array_size;
-            engine_array[index].push_into_stack(i);
-
-            if ((engine_array[index].hlocal_stack.states_in_stack() /
-                 possible_first_states_count_per_thread) > 0) {
-                task_counter++;
+            first_pattern_attribute == target->get_vertex_attribute(i)) {
+            matching_engine_tls::reference local_engine = matching_eng.local();
+            local_engine.push_into_stack(i);
+            if (local_engine.run_and_wait()) {
+                tbb::spin_mutex mutex;
+                tbb::spin_mutex::scoped_lock lock(mutex);
+                bundle_solutions.add(local_engine.get_solution());
             }
         }
-    }
-
-    dal::detail::threader_for(array_size, array_size, [&](const int index) {
-        engine_array[index].run_and_wait(false);
     });
-
-    for (int i = 0; i < array_size; i++) {
-        bundle_solutions.add(engine_array[i].get_solution());
-        engine_array[i].~matching_engine();
-    }
-    _mm_free(engine_array);
 
     return std::move(bundle_solutions);
 }
 
-void engine_bundle::first_states_generator(bool use_exploration_stack) {
-    if (use_exploration_stack) {
-        bundle::ptr_t local_engine = matching_bundle.local();
-        local_engine->first_states_generator(exploration_stack);
-    }
-    else {
-        std::int64_t degree = pattern->get_vertex_degree(sorted_pattern_vertex[0]);
-        dal::detail::threader_for(target->get_vertex_count(),
-                                  target->get_vertex_count(),
-                                  [=](const int i) {
-                                      bundle::ptr_t local_engine = matching_bundle.local();
-                                      state null_state;
-                                      if (degree <= target->get_vertex_degree(i) &&
-                                          pattern->get_vertex_attribute(sorted_pattern_vertex[0]) ==
-                                              target->get_vertex_attribute(i)) {
-                                          void* place = _mm_malloc(sizeof(state), 64);
-                                          state* new_state = new (place) state(&null_state, i);
-                                          local_engine->local_stack.push(new_state);
-                                      }
-                                  });
-    }
-}
+// void engine_bundle::first_states_generator(bool use_exploration_stack) {
+//     if (use_exploration_stack) {
+//         bundle::ptr_t local_engine = matching_bundle.local();
+//         local_engine->first_states_generator(exploration_stack);
+//     }
+//     else {
+//         std::int64_t degree = pattern->get_vertex_degree(sorted_pattern_vertex[0]);
+//         dal::detail::threader_for(target->get_vertex_count(),
+//                                   target->get_vertex_count(),
+//                                   [=](const int i) {
+//                                       bundle::ptr_t local_engine = matching_bundle.local();
+//                                       state null_state;
+//                                       if (degree <= target->get_vertex_degree(i) &&
+//                                           pattern->get_vertex_attribute(sorted_pattern_vertex[0]) ==
+//                                               target->get_vertex_attribute(i)) {
+//                                           void* place = _mm_malloc(sizeof(state), 64);
+//                                           state* new_state = new (place) state(&null_state, i);
+//                                           local_engine->local_stack.push(new_state);
+//                                       }
+//                                   });
+//     }
+// }
 } // namespace oneapi::dal::preview::subgraph_isomorphism::detail

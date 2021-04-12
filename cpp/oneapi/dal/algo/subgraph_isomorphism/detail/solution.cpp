@@ -112,6 +112,13 @@ std::int64_t solution::get_solution_count() const {
     return solution_count;
 }
 
+void solution::reallocate_data() {
+    data = static_cast<std::int64_t**>(_mm_malloc(sizeof(std::int64_t*) * max_solution_cout, 64));
+    for (std::int64_t i = 0; i < max_solution_cout; i++) {
+        data[i] = nullptr;
+    }
+}
+
 graph_status solution::add(std::int64_t** state_core) {
     if (state_core != nullptr && *state_core != nullptr) {
         if (solution_count >= max_solution_cout) {
@@ -119,6 +126,9 @@ graph_status solution::add(std::int64_t** state_core) {
             if (increase_status != ok) {
                 return increase_status;
             }
+        }
+        if (data == nullptr) {
+            reallocate_data();
         }
         data[solution_count] = *state_core;
         *state_core = nullptr;
