@@ -20,9 +20,11 @@
 #include "oneapi/dal/algo/subgraph_isomorphism/backend/cpu/solution.hpp"
 #include "oneapi/dal/algo/subgraph_isomorphism/backend/cpu/sorter.hpp"
 #include "oneapi/dal/algo/subgraph_isomorphism/backend/cpu/matching.hpp"
+#include "oneapi/dal/algo/subgraph_isomorphism/backend/cpu/debug.hpp"
 #include "oneapi/dal/algo/subgraph_isomorphism/common.hpp"
 #include "oneapi/dal/algo/subgraph_isomorphism/graph_matching_types.hpp"
 #include "oneapi/dal/backend/dispatcher.hpp"
+#include <iostream>
 
 namespace oneapi::dal::preview::subgraph_isomorphism::backend {
 using namespace oneapi::dal::preview::subgraph_isomorphism::backend;
@@ -45,6 +47,8 @@ solution si(const graph<Cpu>& pattern,
     sorter_graph.sorting_pattern_vertices(pattern,
                                           pattern_vertex_probability.get(),
                                           sorted_pattern_vertex.get());
+
+    ___PR_ARR___(sorted_pattern_vertex.get(), pattern_vetrex_count)
 
     auto predecessor = local_allocator.make_shared_memory<std::int64_t>(pattern_vetrex_count);
     auto direction = local_allocator.make_shared_memory<edge_direction>(pattern_vetrex_count);
@@ -93,6 +97,7 @@ subgraph_isomorphism::graph_matching_result si_call_kernel(
     graph<Cpu> pattern(p_data, graph_storage_scheme::bit, alloc_ptr);
     graph<Cpu> target(t_data, graph_storage_scheme::auto_detect, alloc_ptr);
 
+    std::cout << "\n\n Graph \n\n created" << std::endl;
     const auto t_vertex_count = t_data._vertex_count;
     const auto p_vertex_count = p_data._vertex_count;
 

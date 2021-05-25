@@ -248,6 +248,8 @@ std::int64_t matching_engine<Cpu>::state_exploration_bit(bool check_solution) {
     std::uint64_t current_level_index = hlocal_stack.get_current_level_index();
     std::int64_t divider = pconsistent_conditions[current_level_index].divider;
 
+    std::cout << "divider = " << divider << std::endl;
+
     if (isomorphism_kind_ != kind::non_induced) {
         ONEDAL_IVDEP
         for (std::int64_t j = 0; j < divider; j++) {
@@ -302,6 +304,8 @@ std::int64_t matching_engine<Cpu>::extract_candidates(bool check_solution) {
             feasible_result_count += check_vertex_candidate(check_solution, candidate);
         }
     }
+
+    std::cout << "feasible_result_count = " << feasible_result_count << std::endl;
 
     hlocal_stack.update();
 
@@ -530,8 +534,14 @@ void matching_engine<Cpu>::run_and_wait(bool main_engine) {
         first_states_generator(hlocal_stack);
     }
     if (target->bit_representation) { /* dense graph case */
+        int i = 0;
         while (hlocal_stack.states_in_stack() > 0) {
+            i++;
+            std::cout << "hlocal_stack.states_in_stack() = " << hlocal_stack.states_in_stack()
+                      << std::endl;
             state_exploration_bit();
+            if (i == 2)
+                return;
         }
     }
     else { /* sparse graph case */

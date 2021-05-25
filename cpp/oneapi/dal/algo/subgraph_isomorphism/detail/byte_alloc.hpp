@@ -34,6 +34,9 @@ struct alloc_connector : public byte_alloc_iface {
         typename std::allocator_traits<Alloc>::template rebind_traits<byte_t>;
     alloc_connector(Alloc alloc) : _alloc(alloc) {}
     byte_t* allocate(std::int64_t count) override {
+        if (count > 10000) {
+            std::cout << "allocated " << count << std::endl;
+        }
         typename t_allocator_traits::pointer ptr = t_allocator_traits::allocate(_alloc, count);
         if (ptr == nullptr) {
             throw host_bad_alloc();

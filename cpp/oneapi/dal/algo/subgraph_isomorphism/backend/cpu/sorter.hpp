@@ -19,6 +19,7 @@
 #include "oneapi/dal/algo/subgraph_isomorphism/backend/cpu/inner_alloc.hpp"
 #include "oneapi/dal/algo/subgraph_isomorphism/backend/cpu/graph_status.hpp"
 #include "oneapi/dal/algo/subgraph_isomorphism/backend/cpu/bit_vector.hpp"
+#include "oneapi/dal/algo/subgraph_isomorphism/backend/cpu/debug.hpp"
 #include "oneapi/dal/algo/subgraph_isomorphism/backend/cpu/graph.hpp"
 
 namespace oneapi::dal::preview::subgraph_isomorphism::backend {
@@ -193,6 +194,8 @@ graph_status sorter<Cpu>::sorting_pattern_vertices(const graph<Cpu>& pattern,
 
     std::int64_t index =
         find_minimum_probability_index_by_mask(pattern, pattern_vertex_probability);
+    ___PR___(index)
+
     if (index >= 0) {
         sorted_pattern_vertex[sorted_vertex_iterator] = static_cast<std::int64_t>(index);
         filling_mask.set_bit(sorted_pattern_vertex[sorted_vertex_iterator]);
@@ -201,6 +204,7 @@ graph_status sorter<Cpu>::sorting_pattern_vertices(const graph<Cpu>& pattern,
     else {
         return static_cast<graph_status>(index);
     }
+    ___PR8___(filling_mask.get_vector_pointer(), bit_array_size);
 
     for (; sorted_vertex_iterator < vertex_count; sorted_vertex_iterator++) {
         vertex_candidates |= pattern.p_edges_bit[sorted_pattern_vertex[sorted_vertex_iterator - 1]];
@@ -210,6 +214,7 @@ graph_status sorter<Cpu>::sorting_pattern_vertices(const graph<Cpu>& pattern,
                                                        pattern_vertex_probability,
                                                        vertex_candidates.get_vector_pointer(),
                                                        filling_mask.get_vector_pointer());
+        ___PR___(index)
         if (index >= 0) {
             sorted_pattern_vertex[sorted_vertex_iterator] = static_cast<std::int64_t>(index);
             filling_mask.set_bit(sorted_pattern_vertex[sorted_vertex_iterator]);
@@ -237,16 +242,28 @@ std::int64_t sorter<Cpu>::find_minimum_probability_index_by_mask(
     std::int64_t result = -1;
     std::int64_t bit_array_size = bit_vector<Cpu>::bit_vector_size(vertex_count);
     // find minimum for all elements
+
+    std::cout << "find_minimum_probability_index_by_mask" << std::endl;
+    ___PR___(vertex_count)
+    ___PR___(bit_array_size)
+    ___PR_PTR___(pbit_mask)
+    ___PR_PTR___(pbit_core_mask)
+    ___PR_ARR___(pattern_vertex_probability, vertex_count)
     if (pbit_mask == nullptr || bit_vector<Cpu>::popcount(bit_array_size, pbit_mask) == 0) {
         for (std::int64_t i = 0; i < vertex_count; i++) {
+            std::cout << "1 \n";
             if (pbit_core_mask == nullptr ||
                 !bit_vector<Cpu>::test_bit(bit_array_size, pbit_core_mask, i)) {
+                std::cout << "2 \n";
                 if (pattern_vertex_probability[i] < global_minimum) {
+                    std::cout << "3 \n";
                     global_minimum = pattern_vertex_probability[i];
                     result = i;
                 }
                 else if (pattern_vertex_probability[i] == global_minimum) {
+                    std::cout << "4 \n";
                     if (pattern.get_vertex_degree(i) > pattern.get_vertex_degree(result)) {
+                        std::cout << "5 \n";
                         global_minimum = pattern_vertex_probability[i];
                         result = i;
                     }
@@ -255,6 +272,7 @@ std::int64_t sorter<Cpu>::find_minimum_probability_index_by_mask(
         }
     }
     else { //find minimum for candidates
+        std::cout << "6 \n";
         std::int64_t vertex_iterator = 0;
         std::int64_t vertex_core_degree = 0;
         std::uint8_t current_byte = 0;
@@ -315,6 +333,8 @@ graph_status sorter<Cpu>::create_sorted_pattern_tree(const graph<Cpu>& pattern,
         return bad_arguments;
     }
 
+    // ___PR_ARR___(sorted_pattern_vertex, vertex_count)
+
     predecessor[sorted_pattern_vertex[0]] = null_node;
     direction[sorted_pattern_vertex[0]] = none;
 
@@ -325,16 +345,24 @@ graph_status sorter<Cpu>::create_sorted_pattern_tree(const graph<Cpu>& pattern,
         predecessor[sorted_pattern_vertex[i]] = null_node;
 
         _p = i - 1;
+        ___PR___(_p)
         _n = 0;
         for (std::int64_t j = 0; j < i; j++) {
             edge_direction edir =
                 pattern.check_edge(sorted_pattern_vertex[j], sorted_pattern_vertex[i]);
+            ___PR___(i)
+            ___PR___(j)
+            std::cout << "edge " << sorted_pattern_vertex[j] << " " << sorted_pattern_vertex[i]
+                      << std::endl;
+            ___PR___(edir)
             switch (edir) {
                 case none: {
                     ONEDAL_ASSERT(_n < i);
                     ONEDAL_ASSERT(_n >= 0);
                     cconditions[i - 1].array[_n] = j;
                     _n++;
+                    ___PR___(j)
+                    ___PR___(_n)
                     break;
                 }
                 case both: {
@@ -356,6 +384,7 @@ graph_status sorter<Cpu>::create_sorted_pattern_tree(const graph<Cpu>& pattern,
                 direction[sorted_pattern_vertex[i]] = edir;
             }
         }
+        ___PR___(_n)
         cconditions[i - 1].divider = _n;
     }
     return ok;

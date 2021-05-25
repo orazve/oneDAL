@@ -39,6 +39,19 @@ void pr(char* msg, const T* arr, int n) {
     }
     std::cout << std::endl;
 }
+
 #define ___PR_ARR___(x, n) pr(#x, x, n);
+
+template <typename T>
+void pr_ptr(char* msg, const T* arr) {
+    std::cout << msg;
+    if (arr == nullptr)
+        std::cout << "[ nullptr ] ";
+    if (arr) {
+        std::cout << "[ " << arr << " ] " << *arr;
+    }
+    std::cout << std::endl;
+}
+#define ___PR_PTR___(x) pr_ptr(#x, x);
 
 } // namespace oneapi::dal::preview::subgraph_isomorphism::backend
