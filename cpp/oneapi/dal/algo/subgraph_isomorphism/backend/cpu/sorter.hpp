@@ -19,6 +19,7 @@
 #include "oneapi/dal/algo/subgraph_isomorphism/backend/cpu/inner_alloc.hpp"
 #include "oneapi/dal/algo/subgraph_isomorphism/backend/cpu/graph_status.hpp"
 #include "oneapi/dal/algo/subgraph_isomorphism/backend/cpu/bit_vector.hpp"
+#include "oneapi/dal/algo/subgraph_isomorphism/backend/cpu/debug.hpp"
 #include "oneapi/dal/algo/subgraph_isomorphism/backend/cpu/graph.hpp"
 
 namespace oneapi::dal::preview::subgraph_isomorphism::backend {
@@ -192,6 +193,7 @@ graph_status sorter<Cpu>::sorting_pattern_vertices(const graph<Cpu>& pattern,
 
     std::int64_t index =
         find_minimum_probability_index_by_mask(pattern, pattern_vertex_probability);
+    ___PR___(index)
     if (index >= 0) {
         sorted_pattern_vertex[sorted_vertex_iterator] = static_cast<std::int64_t>(index);
         filling_mask.set_bit(sorted_pattern_vertex[sorted_vertex_iterator]);
@@ -209,6 +211,7 @@ graph_status sorter<Cpu>::sorting_pattern_vertices(const graph<Cpu>& pattern,
                                                        pattern_vertex_probability,
                                                        vertex_candidates.get_vector_pointer(),
                                                        filling_mask.get_vector_pointer());
+        ___PR___(index)
         if (index >= 0) {
             sorted_pattern_vertex[sorted_vertex_iterator] = static_cast<std::int64_t>(index);
             filling_mask.set_bit(sorted_pattern_vertex[sorted_vertex_iterator]);
@@ -235,8 +238,27 @@ std::int64_t sorter<Cpu>::find_minimum_probability_index_by_mask(
     float global_minimum = 1.1;
     std::int64_t result = -1;
     std::int64_t bit_array_size = bit_vector<Cpu>::bit_vector_size(vertex_count);
+
+    ___PR___(bit_array_size)
+    ___PR___(vertex_count)
+    ___PR_ARR___(pattern_vertex_probability, vertex_count)
+    if (pbit_mask) {
+        pr("pbit_mask", (int)(*pbit_mask));
+    }
+    else {
+        std::cout << "pbit_mask nullptr" << std::endl;
+    }
+    if (pbit_core_mask) {
+        pr("pbit_core_mask", (int)(*pbit_core_mask));
+    }
+    else {
+        std::cout << "pbit_core_mask nullptr" << std::endl;
+    }
+
     if (pbit_mask == nullptr || bit_vector<Cpu>::popcount(bit_array_size, pbit_mask) == 0) {
+        std::cout << "1" << std::endl;
         for (std::int64_t i = 0; i < vertex_count; i++) {
+            std::cout << "2." << i << std::endl;
             if (pbit_core_mask == nullptr ||
                 !bit_vector<Cpu>::test_bit(bit_array_size, pbit_core_mask, i)) {
                 if (pattern_vertex_probability[i] < global_minimum) {
@@ -253,17 +275,28 @@ std::int64_t sorter<Cpu>::find_minimum_probability_index_by_mask(
         }
     }
     else { //find minimum for candidates
+        std::cout << "3" << std::endl;
         std::int64_t vertex_iterator = 0;
         std::int64_t vertex_core_degree = 0;
         std::uint8_t current_byte = 0;
         std::uint8_t current_bit = 0;
 
         for (std::int64_t i = 0; i < bit_array_size; i++) {
+            std::cout << "4." << i << std::endl;
             current_byte = pbit_mask[i];
+            std::cout << "current_byte " << (int)current_byte << std::endl;
             while (current_byte > 0) {
                 current_bit = current_byte & (-current_byte);
+                std::cout << "current_bit " << (int)current_bit << std::endl;
                 current_byte &= ~current_bit;
+                std::cout << "current_byte2 " << (int)current_byte << std::endl;
+                std::cout << "current_bit " << (int)current_bit << std::endl;
+                std::cout << "find: _lzcnt_u32(current_bit) " << _lzcnt_u32(current_bit)
+                          << std::endl;
+                std::cout << "bit_vector<Cpu>::power_of_two(current_bit); "
+                          << (int)bit_vector<Cpu>::power_of_two(current_bit) << std::endl;
                 vertex_iterator = 8 * i + bit_vector<Cpu>::power_of_two(current_bit);
+                ___PR___(vertex_iterator)
                 if (vertex_iterator >= vertex_count) {
                     return result;
                 }

@@ -19,6 +19,7 @@
 #include "oneapi/dal/algo/subgraph_isomorphism/backend/cpu/graph.hpp"
 #include "oneapi/dal/algo/subgraph_isomorphism/backend/cpu/solution.hpp"
 #include "oneapi/dal/algo/subgraph_isomorphism/backend/cpu/sorter.hpp"
+#include "oneapi/dal/algo/subgraph_isomorphism/backend/cpu/debug.hpp"
 #include "oneapi/dal/algo/subgraph_isomorphism/backend/cpu/matching.hpp"
 #include "oneapi/dal/algo/subgraph_isomorphism/common.hpp"
 #include "oneapi/dal/algo/subgraph_isomorphism/graph_matching_types.hpp"
@@ -42,9 +43,11 @@ solution<Cpu> si(const graph<Cpu>& pattern,
     sorter_graph.get_pattern_vertex_probability(pattern, pattern_vertex_probability.get());
     auto sorted_pattern_vertex =
         local_allocator.make_shared_memory<std::int64_t>(pattern_vetrex_count);
+    pr("pattern_vertex_probability", pattern_vertex_probability.get(), pattern.get_vertex_count());
     sorter_graph.sorting_pattern_vertices(pattern,
                                           pattern_vertex_probability.get(),
                                           sorted_pattern_vertex.get());
+    pr("sorted_pattern_vertex", sorted_pattern_vertex.get(), pattern.get_vertex_count());
 
     auto predecessor = local_allocator.make_shared_memory<std::int64_t>(pattern_vetrex_count);
     auto direction = local_allocator.make_shared_memory<edge_direction>(pattern_vetrex_count);
