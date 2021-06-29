@@ -270,6 +270,8 @@ oneapi::dal::homogen_table solution<Cpu>::export_as_table(std::int64_t max_match
         return dal::homogen_table();
 
     if (max_match_count != 0) {
+        std::cout << "max_match_count " << max_match_count << std::endl;
+        std::cout << "solution_count " << solution_count << std::endl;
         solution_count = std::min(max_match_count, solution_count);
     }
 

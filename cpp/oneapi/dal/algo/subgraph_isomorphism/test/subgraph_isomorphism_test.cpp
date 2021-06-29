@@ -1883,41 +1883,41 @@ public:
 #define SUBGRAPH_ISOMORPHISM_ALLOCATOR_TEST(name) \
     TEST_M(subgraph_isomorphism_test, name, "[subgraph_isomorphism][allocator]")
 
-SUBGRAPH_ISOMORPHISM_INDUCED_TEST("Induced: Bit target representation, all matches check") {
-    this->check_subgraph_isomorphism<double_triangle_target_type, double_triangle_pattern_type>(
-        false,
-        isomorphism_kind::induced,
-        0,
-        12);
-    this->check_subgraph_isomorphism<lolipop_10_15_type, path_16_type>(false,
-                                                                       isomorphism_kind::induced,
-                                                                       0,
-                                                                       20);
-}
-
-// SUBGRAPH_ISOMORPHISM_INDUCED_TEST(
-//     "Induced: Bit target representation, single vertex pattern check") {
-//     this->check_subgraph_isomorphism<k_6_type, single_vertex_type>(false,
-//                                                                    isomorphism_kind::induced,
-//                                                                    0,
-//                                                                    12);
+// SUBGRAPH_ISOMORPHISM_INDUCED_TEST("Induced: Bit target representation, all matches check") {
+//     this->check_subgraph_isomorphism<double_triangle_target_type, double_triangle_pattern_type>(
+//         false,
+//         isomorphism_kind::induced,
+//         0,
+//         12);
+//     this->check_subgraph_isomorphism<lolipop_10_15_type, path_16_type>(false,
+//                                                                        isomorphism_kind::induced,
+//                                                                        0,
+//                                                                        20);
 // }
 
-SUBGRAPH_ISOMORPHISM_INDUCED_TEST("Induced: Bit target representation, self loops check") {
-    this->check_subgraph_isomorphism<cycle_5_self_loops_type, path_3_self_loops_type>(
-        false,
-        isomorphism_kind::induced,
-        0,
-        4);
-}
+// // SUBGRAPH_ISOMORPHISM_INDUCED_TEST(
+// //     "Induced: Bit target representation, single vertex pattern check") {
+// //     this->check_subgraph_isomorphism<k_6_type, single_vertex_type>(false,
+// //                                                                    isomorphism_kind::induced,
+// //                                                                    0,
+// //                                                                    12);
+// // }
+
+// SUBGRAPH_ISOMORPHISM_INDUCED_TEST("Induced: Bit target representation, self loops check") {
+//     this->check_subgraph_isomorphism<cycle_5_self_loops_type, path_3_self_loops_type>(
+//         false,
+//         isomorphism_kind::induced,
+//         0,
+//         4);
+// }
 
 SUBGRAPH_ISOMORPHISM_INDUCED_TEST(
     "Induced: Bit target representation, max_match_count > total number of SI") {
-    this->check_subgraph_isomorphism<self_matching_type, self_matching_type>(
-        false,
-        isomorphism_kind::induced,
-        100,
-        72);
+    // this->check_subgraph_isomorphism<self_matching_type, self_matching_type>(
+    //     false,
+    //     isomorphism_kind::induced,
+    //     100,
+    //     72);
     this->check_subgraph_isomorphism<wheel_11_type, cycle_10_type>(false,
                                                                    isomorphism_kind::induced,
                                                                    21,
