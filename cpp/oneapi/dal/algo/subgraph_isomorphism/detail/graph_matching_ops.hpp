@@ -81,6 +81,20 @@ struct graph_matching_ops {
             dal::preview::get_vertex_count(input.get_pattern_graph())) {
             throw invalid_argument(msg::target_graph_is_smaller_than_pattern_graph());
         }
+        if (desc.get_semantic_match() == true) {
+            const auto &vv_t = dal::detail::get_impl(input.get_target_graph()).get_vertex_values();
+            const auto &vv_p = dal::detail::get_impl(input.get_pattern_graph()).get_vertex_values();
+
+            if (vv_t.get_count() == 0 && vv_p.get_count() == 0) {
+                const auto &ev_t =
+                    dal::detail::get_impl(input.get_target_graph()).get_edge_values();
+                const auto &ev_p =
+                    dal::detail::get_impl(input.get_pattern_graph()).get_edge_values();
+                if (ev_t.get_count() == 0 && ev_p.get_count() == 0) {
+                    throw invalid_argument(msg::semantic_match_is_true_but_labels_are_not_set());
+                }
+            }
+        }
         if (desc.get_max_match_count() < 0) {
             throw invalid_argument(msg::max_match_count_lt_zero());
         }

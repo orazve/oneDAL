@@ -177,6 +177,7 @@ public:
     MSG(incorrect_index_is_returned);
     MSG(invalid_vertex_edge_attributes);
     MSG(target_graph_is_smaller_than_pattern_graph);
+    MSG(semantic_match_is_true_but_labels_are_not_set);
 
     /* K-Means and K-Means Init */
     MSG(cluster_count_leq_zero);

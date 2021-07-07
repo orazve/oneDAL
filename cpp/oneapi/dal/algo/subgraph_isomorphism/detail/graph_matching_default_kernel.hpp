@@ -56,29 +56,32 @@ struct call_subgraph_isomorphism_kernel_cpu {
 
         const auto t_vertex_count = t_data._vertex_count;
         const auto p_vertex_count = p_data._vertex_count;
-        if (vv_t.get_count() != 0) {
-            t_vertex_attribute = reinterpret_cast<std::int64_t*>(
-                alloc_ptr->allocate(t_vertex_count * sizeof(std::int64_t)));
-            if (t_vertex_attribute == nullptr) {
-                throw oneapi::dal::host_bad_alloc();
+        if (desc.get_semantic_match()) {
+            if (vv_t.get_count() != 0) {
+                t_vertex_attribute = reinterpret_cast<std::int64_t*>(
+                    alloc_ptr->allocate(t_vertex_count * sizeof(std::int64_t)));
+                if (t_vertex_attribute == nullptr) {
+                    throw oneapi::dal::host_bad_alloc();
+                }
+                for (std::int32_t i = 0; i < t_vertex_count; i++) {
+                    t_vertex_attribute[i] = vv_t[i];
+                }
             }
-            for (std::int32_t i = 0; i < t_vertex_count; i++) {
-                t_vertex_attribute[i] = vv_t[i];
+            if (vv_p.get_count() != 0) {
+                p_vertex_attribute = reinterpret_cast<std::int64_t*>(
+                    alloc_ptr->allocate(p_vertex_count * sizeof(std::int64_t)));
+                if (p_vertex_attribute == nullptr) {
+                    throw oneapi::dal::host_bad_alloc();
+                }
+                for (std::int32_t i = 0; i < p_vertex_count; i++) {
+                    p_vertex_attribute[i] = vv_p[i];
+                }
             }
-        }
-        if (vv_p.get_count() != 0) {
-            p_vertex_attribute = reinterpret_cast<std::int64_t*>(
-                alloc_ptr->allocate(p_vertex_count * sizeof(std::int64_t)));
-            if (p_vertex_attribute == nullptr) {
-                throw oneapi::dal::host_bad_alloc();
+            if (ev_t.get_count() != 0 || ev_p.get_count() != 0) {
+                using msg = dal::detail::error_messages;
+                throw unimplemented(
+                    msg::subgraph_isomorphism_is_not_implemented_for_labeled_edges());
             }
-            for (std::int32_t i = 0; i < p_vertex_count; i++) {
-                p_vertex_attribute[i] = vv_p[i];
-            }
-        }
-        if (ev_t.get_count() != 0 || ev_p.get_count() != 0) {
-            using msg = dal::detail::error_messages;
-            throw unimplemented(msg::subgraph_isomorphism_is_not_implemented_for_labeled_edges());
         }
         auto result = call_kernel<task::compute>(ctx,
                                                  desc.get_kind(),

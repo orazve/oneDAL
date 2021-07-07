@@ -2032,13 +2032,13 @@ SUBGRAPH_ISOMORPHISM_INDUCED_TEST(
 
 SUBGRAPH_ISOMORPHISM_INDUCED_TEST(
     "Induced + Labeled vertexes: Bit target representation, all matches check") {
-    this->check_subgraph_isomorphism<cycle_5_type, linked_star_5_type>(false,
+    this->check_subgraph_isomorphism<cycle_5_type, linked_star_5_type>(true,
                                                                        isomorphism_kind::induced,
                                                                        0,
                                                                        2,
                                                                        true);
     this->check_subgraph_isomorphism<self_matching_type, self_matching_type>(
-        false,
+        true,
         isomorphism_kind::induced,
         0,
         4,
@@ -2048,7 +2048,7 @@ SUBGRAPH_ISOMORPHISM_INDUCED_TEST(
 SUBGRAPH_ISOMORPHISM_INDUCED_TEST(
     "Induced + Labeled vertexes: Bit target representation, max_match_count > total number of SI") {
     this->check_subgraph_isomorphism<double_triangle_target_type, double_triangle_pattern_type>(
-        false,
+        true,
         isomorphism_kind::induced,
         10,
         8,
@@ -2057,12 +2057,12 @@ SUBGRAPH_ISOMORPHISM_INDUCED_TEST(
 
 SUBGRAPH_ISOMORPHISM_INDUCED_TEST(
     "Induced + Labeled vertexes: Bit target representation, max_match_count <= total number of SI") {
-    this->check_subgraph_isomorphism<wheel_5_type, triangle_type>(false,
+    this->check_subgraph_isomorphism<wheel_5_type, triangle_type>(true,
                                                                   isomorphism_kind::induced,
                                                                   3,
                                                                   3,
                                                                   true);
-    this->check_subgraph_isomorphism<lolipop_10_15_type, path_16_type>(false,
+    this->check_subgraph_isomorphism<lolipop_10_15_type, path_16_type>(true,
                                                                        isomorphism_kind::induced,
                                                                        1,
                                                                        1,
@@ -2071,7 +2071,7 @@ SUBGRAPH_ISOMORPHISM_INDUCED_TEST(
 
 SUBGRAPH_ISOMORPHISM_INDUCED_TEST(
     "Induced + Labeled vertexes: Bit target representation, single match") {
-    this->check_subgraph_isomorphism<wheel_11_type, cycle_10_type>(false,
+    this->check_subgraph_isomorphism<wheel_11_type, cycle_10_type>(true,
                                                                    isomorphism_kind::induced,
                                                                    10,
                                                                    1,
@@ -2080,7 +2080,7 @@ SUBGRAPH_ISOMORPHISM_INDUCED_TEST(
 
 SUBGRAPH_ISOMORPHISM_INDUCED_TEST(
     "Induced + Labeled vertexes: Bit target representation, no matches") {
-    this->check_subgraph_isomorphism<star_5_type, star_4_type>(false,
+    this->check_subgraph_isomorphism<star_5_type, star_4_type>(true,
                                                                isomorphism_kind::induced,
                                                                12,
                                                                0,
@@ -2105,7 +2105,7 @@ SUBGRAPH_ISOMORPHISM_INDUCED_TEST(
 SUBGRAPH_ISOMORPHISM_INDUCED_TEST(
     "Induced + Labeled vertexes: Bit target representation, vertex count > number of threads") {
     this->check_subgraph_isomorphism<vertexes_300_edge_1_labeled_type,
-                                     vertexes_300_edge_1_labeled_type>(false,
+                                     vertexes_300_edge_1_labeled_type>(true,
                                                                        isomorphism_kind::induced,
                                                                        0,
                                                                        4,
@@ -2115,7 +2115,7 @@ SUBGRAPH_ISOMORPHISM_INDUCED_TEST(
 SUBGRAPH_ISOMORPHISM_INDUCED_TEST(
     "Induced + Labeled vertexes: Bit target representation, vertex count > number of threads & edge count > number of threads") {
     this->check_subgraph_isomorphism<connected_4_cycle_80_type, connected_3_cycle_80_type>(
-        false,
+        true,
         isomorphism_kind::induced,
         0,
         16,
@@ -2124,7 +2124,7 @@ SUBGRAPH_ISOMORPHISM_INDUCED_TEST(
 
 SUBGRAPH_ISOMORPHISM_INDUCED_TEST(
     "Induced + Labeled vertexes: List target representation, all matches check") {
-    this->check_subgraph_isomorphism<cycle_100_type, path_10_type>(false,
+    this->check_subgraph_isomorphism<cycle_100_type, path_10_type>(true,
                                                                    isomorphism_kind::induced,
                                                                    0,
                                                                    8,
@@ -2133,7 +2133,7 @@ SUBGRAPH_ISOMORPHISM_INDUCED_TEST(
 
 SUBGRAPH_ISOMORPHISM_INDUCED_TEST(
     "Induced + Labeled vertexes: List target representation, max_match_count > total number of SI") {
-    this->check_subgraph_isomorphism<path_100_type, path_5_type>(false,
+    this->check_subgraph_isomorphism<path_100_type, path_5_type>(true,
                                                                  isomorphism_kind::induced,
                                                                  50,
                                                                  48,
@@ -2142,7 +2142,7 @@ SUBGRAPH_ISOMORPHISM_INDUCED_TEST(
 
 SUBGRAPH_ISOMORPHISM_INDUCED_TEST(
     "Induced + Labeled vertexes: List target representation, max_match_count <= total number of SI") {
-    this->check_subgraph_isomorphism<star_99_type, star_3_type>(false,
+    this->check_subgraph_isomorphism<star_99_type, star_3_type>(true,
                                                                 isomorphism_kind::induced,
                                                                 128,
                                                                 128,
@@ -2151,7 +2151,7 @@ SUBGRAPH_ISOMORPHISM_INDUCED_TEST(
 
 SUBGRAPH_ISOMORPHISM_INDUCED_TEST(
     "Induced + Labeled vertexes: List target representation, single match") {
-    this->check_subgraph_isomorphism<wheel_201_type, triangle_type>(false,
+    this->check_subgraph_isomorphism<wheel_201_type, triangle_type>(true,
                                                                     isomorphism_kind::induced,
                                                                     1,
                                                                     1,
@@ -2161,7 +2161,7 @@ SUBGRAPH_ISOMORPHISM_INDUCED_TEST(
 SUBGRAPH_ISOMORPHISM_INDUCED_TEST(
     "Induced + Labeled vertexes: List target representation, no matches") {
     this->check_subgraph_isomorphism<paths_1_2_100_type, paths_1_2_3_type>(
-        false,
+        true,
         isomorphism_kind::induced,
         1,
         0,
@@ -2170,7 +2170,7 @@ SUBGRAPH_ISOMORPHISM_INDUCED_TEST(
 
 SUBGRAPH_ISOMORPHISM_INDUCED_TEST(
     "Induced + Labeled vertexes: List target representation, vertex count > number of threads") {
-    this->check_subgraph_isomorphism<cycle01_100_type, path01_24_type>(false,
+    this->check_subgraph_isomorphism<cycle01_100_type, path01_24_type>(true,
                                                                        isomorphism_kind::induced,
                                                                        0,
                                                                        100,
@@ -2179,7 +2179,7 @@ SUBGRAPH_ISOMORPHISM_INDUCED_TEST(
 
 SUBGRAPH_ISOMORPHISM_INDUCED_TEST(
     "Induced + Labeled vertexes: List target representation, vertex count > number of threads & edge count > number of threads") {
-    this->check_subgraph_isomorphism<cycle01_100_type, cycle01_100_type>(false,
+    this->check_subgraph_isomorphism<cycle01_100_type, cycle01_100_type>(true,
                                                                          isomorphism_kind::induced,
                                                                          0,
                                                                          100,
